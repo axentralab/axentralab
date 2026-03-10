@@ -87,8 +87,8 @@ export default function App() {
               <Route path="/quote"     element={<PublicLayout><QuoteCalculator /></PublicLayout>} />
 
               {/* ── AUTH ── */}
-              <Route path="/login"    element={<PublicLayout><LoginPage /></PublicLayout>} />
-              <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
+              <Route path="/login"    element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
               {/* ── CART & CHECKOUT ── */}
               <Route path="/cart"     element={<PublicLayout><CartPage /></PublicLayout>} />
