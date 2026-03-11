@@ -34,60 +34,60 @@ export default function ShopPage() {
   };
 
   return (
-    <div style={{ padding: '100px 5% 80px', minHeight: '100vh' }}>
-      <div style={{ textAlign: 'center', marginBottom: 60 }}>
-        <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E12', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Services & Pricing</span>
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px,5vw,56px)', fontWeight: 900, color: '#fff', marginTop: 16, letterSpacing: -1.5 }}>Choose Your Plan</h1>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 16, maxWidth: 480, margin: '14px auto 0' }}>Enterprise-grade tech services with transparent pricing. Add to cart and checkout in minutes.</p>
+    <div style={{ padding: 'clamp(60px, 5%, 100px) clamp(4%, 5%, 6%) clamp(40px, 5%, 80px)', minHeight: '100vh' }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(40px, 5%, 60px)' }}>
+        <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E12', color: '#22C55E', fontSize: 'clamp(9px, 1.5vw, 11px)', fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Services & Pricing</span>
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px, 4.5vw, 56px)', fontWeight: 900, color: '#fff', marginTop: 'clamp(12px, 2%, 16px)', letterSpacing: -1.5 }}>Choose Your Plan</h1>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 'clamp(14px, 2vw, 16px)', maxWidth: 480, margin: 'clamp(12px, 2%, 14px) auto 0' }}>Enterprise-grade tech services with transparent pricing. Add to cart and checkout in minutes.</p>
       </div>
 
       {services.map(service => (
-        <div key={service._id} style={{ maxWidth: 1100, margin: '0 auto 48px' }}>
+        <div key={service._id} style={{ maxWidth: 1100, margin:'0 auto clamp(32px, 4%, 48px)' }}>
           {/* Service header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, cursor: 'pointer' }} onClick={() => setActiveService(activeService === service._id ? null : service._id)}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: `${service.color}15`, border: `1px solid ${service.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flexShrink: 0 }}>{service.icon}</div>
-            <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: -0.4, marginBottom: 4 }}>{service.title}</h2>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>{service.description}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(12px, 2%, 16px)', marginBottom: 'clamp(16px, 3%, 24px)', cursor: 'pointer', flexWrap:'wrap' }} onClick={() => setActiveService(activeService === service._id ? null : service._id)}>
+            <div style={{ width: 'clamp(44px, 10vw, 52px)', height: 'clamp(44px, 10vw, 52px)', borderRadius: 14, background: `${service.color}15`, border: `1px solid ${service.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(20px, 5vw, 26px)', flexShrink: 0 }}>{service.icon}</div>
+            <div style={{ flex: 1, minWidth:'200px' }}>
+              <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(18px, 3vw, 22px)', fontWeight: 800, color: '#fff', letterSpacing: -0.4, marginBottom: 4 }}>{service.title}</h2>
+              <p style={{ fontSize: 'clamp(12px, 2vw, 14px)', color: 'rgba(255,255,255,0.5)' }}>{service.description}</p>
             </div>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'rgba(255,255,255,0.5)', transition: 'transform 0.2s', transform: activeService === service._id ? 'rotate(180deg)' : 'none' }}>▼</div>
+            <div style={{ width: 'clamp(28px, 6vw, 32px)', height: 'clamp(28px, 6vw, 32px)', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(12px, 2.5vw, 16px)', color: 'rgba(255,255,255,0.5)', transition: 'transform 0.2s', transform: activeService === service._id ? 'rotate(180deg)' : 'none', flexShrink:0 }}>▼</div>
           </div>
 
           {/* Plans grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 'clamp(12px, 2%, 16px)' }}>
             {(service.plans || []).map((plan, pi) => {
               const inCart = isInCart(service._id, plan.name);
               const isPopular = pi === 1;
               return (
-                <div key={plan.name} style={{ background: isPopular ? `${service.color}08` : 'rgba(255,255,255,0.025)', border: `1px solid ${isPopular ? service.color + '40' : 'rgba(255,255,255,0.08)'}`, borderRadius: 18, padding: 24, position: 'relative', transition: 'all 0.25s' }}
+                <div key={plan.name} style={{ background: isPopular ? `${service.color}08` : 'rgba(255,255,255,0.025)', border: `1px solid ${isPopular ? service.color + '40' : 'rgba(255,255,255,0.08)'}`, borderRadius: 18, padding: 'clamp(16px, 3%, 24px)', position: 'relative', transition: 'all 0.25s' }}
                   onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 12px 36px ${service.color}15`; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
                   {isPopular && (
-                    <div style={{ position: 'absolute', top: -10, right: 20, background: service.color, color: '#000', fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 999, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5 }}>POPULAR</div>
+                    <div style={{ position: 'absolute', top: -10, right: 20, background: service.color, color: '#000', fontSize: 'clamp(8px, 1.2vw, 10px)', fontWeight: 800, padding: '3px 10px', borderRadius: 999, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5 }}>POPULAR</div>
                   )}
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 8 }}>{plan.name}</div>
+                    <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(15px, 2.5vw, 17px)', fontWeight: 800, color: '#fff', marginBottom: 8 }}>{plan.name}</div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                      <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 32, fontWeight: 900, color: service.color }}>${plan.price.toLocaleString()}</span>
-                      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>/ {plan.billing === 'monthly' ? 'mo' : plan.billing === 'yearly' ? 'yr' : 'one-time'}</span>
+                      <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(24px, 5vw, 32px)', fontWeight: 900, color: service.color }}>${plan.price.toLocaleString()}</span>
+                      <span style={{ fontSize: 'clamp(11px, 1.5vw, 13px)', color: 'rgba(255,255,255,0.4)' }}>/ {plan.billing === 'monthly' ? 'mo' : plan.billing === 'yearly' ? 'yr' : 'one-time'}</span>
                     </div>
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px' }}>
                     {(plan.features || []).map((f, fi) => (
-                      <li key={fi} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: fi < plan.features.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                        <span style={{ color: service.color, fontSize: 12, flexShrink: 0 }}>✓</span>
-                        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>{f}</span>
+                      <li key={fi} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 'clamp(4px, 1%, 6px) 0', borderBottom: fi < plan.features.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                        <span style={{ color: service.color, fontSize: 'clamp(10px, 1.5vw, 12px)', flexShrink: 0 }}>✓</span>
+                        <span style={{ fontSize: 'clamp(12px, 1.8vw, 13px)', color: 'rgba(255,255,255,0.65)' }}>{f}</span>
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => handleBuy(service, plan)} style={{ width: '100%', padding: '12px', borderRadius: 10, background: inCart ? 'rgba(34,197,94,0.1)' : service.color, border: inCart ? `1px solid ${service.color}40` : 'none', color: inCart ? service.color : '#000', fontWeight: 700, fontSize: 14, transition: 'all 0.2s', fontFamily: "'Inter',sans-serif" }}>
+                  <button onClick={() => handleBuy(service, plan)} style={{ width: '100%', padding: 'clamp(10px, 1.5%, 12px)', borderRadius: 10, background: inCart ? 'rgba(34,197,94,0.1)' : service.color, border: inCart ? `1px solid ${service.color}40` : 'none', color: inCart ? service.color : '#000', fontWeight: 700, fontSize: 'clamp(12px, 2vw, 14px)', transition: 'all 0.2s', fontFamily: "'Inter',sans-serif" }}>
                     {inCart ? '✓ Added to Cart' : isAuthenticated ? '🛒 Add to Cart' : 'Get Started →'}
                   </button>
                 </div>
               );
             })}
           </div>
-          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', marginTop: 24 }} />
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', marginTop: 'clamp(16px, 3%, 24px)' }} />
         </div>
       ))}
     </div>
