@@ -63,17 +63,77 @@ export default function ContactPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
+        @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+        @keyframes scan   { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+        @keyframes spin   { to{transform:rotate(360deg)} }
         .contact-input::placeholder { color: rgba(255,255,255,0.18); }
         .contact-input option { background: #0a0f1a; color: #fff; }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
-        @keyframes scan { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
-        .trust-card:hover { border-color: rgba(34,197,94,0.25) !important; transform: translateY(-2px); }
+        .trust-card:hover  { border-color: rgba(34,197,94,0.25) !important; transform: translateY(-2px); }
         .submit-btn:hover:not(:disabled) { background: #16a34a !important; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(34,197,94,0.25) !important; }
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── Responsive Layout ── */
+        .contact-main-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.45fr;
+          gap: 32px;
+          align-items: start;
+        }
+        .contact-form-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .contact-trust-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .contact-footer {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .contact-footer-links {
+          display: flex;
+          gap: 20px;
+        }
+
+        @media (max-width: 860px) {
+          .contact-main-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .contact-form-grid-2 {
+            grid-template-columns: 1fr !important;
+          }
+          .contact-trust-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .contact-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+          }
+          .contact-footer-links {
+            flex-wrap: wrap;
+            gap: 14px;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .contact-trust-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
 
-      <div style={{ minHeight: '100vh', padding: '90px 0 0', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ minHeight:'100vh', padding:'clamp(70px,10vw,90px) 0 0', position:'relative', overflow:'hidden' }}>
 
         {/* bg scanline sweep */}
         <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, pointerEvents:'none', zIndex:0, overflow:'hidden' }}>
@@ -84,10 +144,10 @@ export default function ContactPage() {
         <div style={{ position:'fixed', top:'15%', left:'-8%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle,rgba(34,197,94,0.055) 0%,transparent 70%)', pointerEvents:'none', zIndex:0 }} />
         <div style={{ position:'fixed', bottom:'10%', right:'-5%', width:340, height:340, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.04) 0%,transparent 70%)', pointerEvents:'none', zIndex:0 }} />
 
-        <div style={{ position:'relative', zIndex:1, maxWidth:1160, margin:'0 auto', padding:'0 5%' }}>
+        <div style={{ position:'relative', zIndex:1, maxWidth:1160, margin:'0 auto', padding:'0 clamp(16px,5%,5%)' }}>
 
           {/* ── Page Header ── */}
-          <div style={{ textAlign:'center', marginBottom:64 }}>
+          <div style={{ textAlign:'center', marginBottom:'clamp(36px,6vw,64px)' }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:999, border:'1px solid rgba(34,197,94,0.25)', background:'rgba(34,197,94,0.06)', marginBottom:18 }}>
               <span style={{ width:7, height:7, borderRadius:'50%', background:'#22C55E', display:'inline-block', animation:'blink 1.4s ease-in-out infinite' }} />
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#22C55E', letterSpacing:2, textTransform:'uppercase', fontWeight:700 }}>Secure Channel Open</span>
@@ -103,7 +163,7 @@ export default function ContactPage() {
           </div>
 
           {/* ── Main Grid ── */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1.45fr', gap:32, alignItems:'start' }}>
+          <div className="contact-main-grid">
 
             {/* ── LEFT PANEL ── */}
             <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -153,7 +213,7 @@ export default function ContactPage() {
               </div>
 
               {/* Trust grid */}
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+              <div className="contact-trust-grid">
                 {TRUST_POINTS.map((t,i) => (
                   <div key={i} className="trust-card" style={{ padding:'16px 14px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, transition:'all 0.2s', cursor:'default' }}>
                     <div style={{ fontSize:22, marginBottom:8 }}>{t.icon}</div>
@@ -175,7 +235,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div style={{ padding:'28px' }}>
+              <div style={{ padding:'clamp(18px,4vw,28px)' }}>
                 {submitted ? (
                   <div style={{ textAlign:'center', padding:'48px 0', animation:'fadeUp 0.5s ease' }}>
                     <div style={{ width:72, height:72, borderRadius:'50%', background:'rgba(34,197,94,0.1)', border:'2px solid rgba(34,197,94,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:32, margin:'0 auto 20px' }}>✅</div>
@@ -198,7 +258,7 @@ export default function ContactPage() {
                     <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
 
                       {/* Name + Email */}
-                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      <div className="contact-form-grid-2">
                         {[{ k:'name', l:'Your Name', ph:'John Smith', type:'text', req:true }, { k:'email', l:'Email Address', ph:'john@company.com', type:'email', req:true }].map(f => (
                           <div key={f.k}>
                             <label style={labelStyle}>{f.l}</label>
@@ -220,7 +280,7 @@ export default function ContactPage() {
                       </div>
 
                       {/* Service + Budget */}
-                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      <div className="contact-form-grid-2">
                         {[{ k:'service', l:'Service Needed', opts:SERVICES }, { k:'budget', l:'Budget Range', opts:BUDGETS }].map(f => (
                           <div key={f.k}>
                             <label style={labelStyle}>{f.l}</label>
@@ -264,12 +324,12 @@ export default function ContactPage() {
           </div>
 
           {/* ── Bottom strip ── */}
-          <div style={{ marginTop:72, paddingBottom:80, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:40, display:'flex', flexWrap:'wrap', gap:24, alignItems:'center', justifyContent:'space-between' }}>
+          <div className="contact-footer" style={{ marginTop:'clamp(40px,6vw,72px)', paddingBottom:80, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:36 }}>
             <div>
               <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:16, color:'#fff', letterSpacing:-0.4 }}>Axentralab</span>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', marginLeft:12, letterSpacing:1 }}>© 2025 · All rights reserved</span>
             </div>
-            <div style={{ display:'flex', gap:20 }}>
+            <div className="contact-footer-links">
               {['Privacy Policy','Terms of Service','Security'].map((l,i) => (
                 <span key={i} style={{ fontSize:12, color:'rgba(255,255,255,0.25)', fontFamily:"'DM Sans',sans-serif", cursor:'pointer' }}
                   onMouseEnter={e => e.currentTarget.style.color='rgba(255,255,255,0.6)'}
@@ -281,7 +341,6 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </>
   );
 }
