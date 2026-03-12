@@ -195,8 +195,8 @@ export default function ContactPage() {
               {/* Contact details */}
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {[
-                  { icon:'📧', label:'Email', val:'hello@axentralab.com', color:'#22C55E' },
-                  { icon:'💬', label:'Telegram', val:'@axentralab', color:'#3B82F6' },
+                  { icon:'📧', label:'Email', val:'axentralab@gmail.com', color:'#22C55E' },
+                  { icon:'💬', label:'Facebook', val:'@Axentralab', color:'#3B82F6' },
                   { icon:'🌍', label:'Timezone', val:'Worldwide · 24/7', color:'#A855F7' },
                 ].map((c,i) => (
                   <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, transition:'all 0.2s', cursor:'default' }}
