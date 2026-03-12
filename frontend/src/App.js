@@ -17,6 +17,7 @@ import ShopPage        from './pages/ShopPage';
 import ProductsPage    from './pages/ProductsPage';
 import PortfolioPage   from './pages/PortfolioPage';
 import BlogPage        from './pages/BlogPage';
+import BlogPostPage    from './pages/BlogPostPage';   // ← NEW
 import ContactPage     from './pages/ContactPage';
 import LoginPage       from './pages/LoginPage';
 import RegisterPage    from './pages/RegisterPage';
@@ -40,7 +41,6 @@ function ScrollToTop() {
   return null;
 }
 
-// Pages with full layout (navbar + footer)
 function PublicLayout({ children }) {
   return (
     <>
@@ -51,7 +51,6 @@ function PublicLayout({ children }) {
   );
 }
 
-// Dashboard/Admin layout (no footer, navbar still shown)
 function AppLayout({ children }) {
   return (
     <>
@@ -67,22 +66,19 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <div style={{ minHeight:'100vh', background:'#020617', position:'relative' }}>
-            {/* Global grid background */}
             <div className="grid-bg" />
-
             <ScrollToTop />
             <Toaster position="top-right" toastOptions={{ style:{ background:'#1E293B', color:'#fff', border:'1px solid rgba(255,255,255,0.1)' } }} />
-            
-            {/* AI Chatbot - Floating Widget */}
             <AIChatbot />
 
             <Routes>
               {/* ── PUBLIC ── */}
-              <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
+              <Route path="/"          element={<PublicLayout><HomePage /></PublicLayout>} />
               <Route path="/services"  element={<PublicLayout><ShopPage /></PublicLayout>} />
               <Route path="/products"  element={<PublicLayout><ProductsPage /></PublicLayout>} />
               <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
               <Route path="/blog"      element={<PublicLayout><BlogPage /></PublicLayout>} />
+              <Route path="/blog/:id"  element={<PublicLayout><BlogPostPage /></PublicLayout>} />  {/* ← NEW */}
               <Route path="/contact"   element={<PublicLayout><ContactPage /></PublicLayout>} />
               <Route path="/quote"     element={<PublicLayout><QuoteCalculator /></PublicLayout>} />
 
