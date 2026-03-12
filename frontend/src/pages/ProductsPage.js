@@ -2,14 +2,15 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+// demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
 
 const PRODUCTS = [
-  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:29, billing:'monthly', color:'#22C55E' },
-  { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6' },
-  { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444' },
-  { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7' },
-  { id:'p5', name:'PenBot', tag:'Automated Pentesting', desc:'Simulated attacker that runs automated penetration tests on your web apps continuously, not just once a year.', features:['Continuous attack simulation','OWASP Top 10 coverage','Session & auth bypass tests','Custom scan schedules','Executive + dev reports'], price:89, billing:'monthly', color:'#F97316' },
-  { id:'p6', name:'DataVault', tag:'Data Privacy', desc:'Discover, classify, and protect sensitive data across databases, file stores, and SaaS platforms automatically.', features:['PII/PHI auto-discovery','GDPR & CCPA mapping','Data lineage tracking','Breach risk scoring','One-click redaction'], price:59, billing:'monthly', color:'#06B6D4' },
+  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:29, billing:'monthly', color:'#22C55E', demoUrl:'https://wp-shield-pi.vercel.app/', demoPreview:'Scan your WordPress site for 1,000+ known vulnerabilities and get a full report in under 60 seconds.' },
+  { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6', demoUrl:'https://demo.axentralab.com/siteguard', demoPreview:'Watch SiteGuard detect and block a simulated brute-force attack in real time on a live staging environment.' },
+  { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444', demoUrl:'https://demo.axentralab.com/api-scanner', demoPreview:'Point API Scanner at a sample REST API and see broken auth, excessive data exposure, and rate-limit flaws flagged instantly.' },
+  { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7', demoUrl:'https://demo.axentralab.com/cloudarmor', demoPreview:'Connect a sandbox AWS account and CloudArmor surfaces open S3 buckets, over-privileged IAM roles, and CIS benchmark gaps in minutes.' },
+  { id:'p5', name:'PenBot', tag:'Automated Pentesting', desc:'Simulated attacker that runs automated penetration tests on your web apps continuously, not just once a year.', features:['Continuous attack simulation','OWASP Top 10 coverage','Session & auth bypass tests','Custom scan schedules','Executive + dev reports'], price:89, billing:'monthly', color:'#F97316', demoUrl:'https://demo.axentralab.com/penbot', demoPreview:'See PenBot run a full OWASP Top 10 attack simulation against a demo app — exploiting an auth bypass and generating an executive report.' },
+  { id:'p6', name:'DataVault', tag:'Data Privacy', desc:'Discover, classify, and protect sensitive data across databases, file stores, and SaaS platforms automatically.', features:['PII/PHI auto-discovery','GDPR & CCPA mapping','Data lineage tracking','Breach risk scoring','One-click redaction'], price:59, billing:'monthly', color:'#06B6D4', demoUrl:'https://demo.axentralab.com/datavault', demoPreview:'Watch DataVault scan a sample PostgreSQL database, auto-tag 14 PII fields, map them to GDPR articles, and generate a risk score.' },
 ];
 
 const ENTERPRISE_FEATURES = [
@@ -110,7 +111,15 @@ export default function ProductsPage() {
                 <button onClick={() => handleBuy(p)} className="btn-primary" style={{ flex:1, padding:'12px', background:isInCart(p.id)?'rgba(34,197,94,0.15)':p.color, color:isInCart(p.id)?p.color:'#000', border:isInCart(p.id)?`1px solid ${p.color}40`:'none', fontSize:14 }}>
                   {isInCart(p.id) ? '✓ Added to Cart' : isAuthenticated ? '🛒 Start Free Trial' : 'Get Started →'}
                 </button>
-                <button className="btn-outline" style={{ padding:'12px 16px', fontSize:13 }}>Demo</button>
+                <a
+                  href={p.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-outline"
+                  style={{ padding:'12px 16px', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center' }}
+                >
+                  Demo
+                </a>
               </div>
             </div>
           </div>
@@ -154,7 +163,6 @@ export default function ProductsPage() {
       {/* ── Enterprise Section ── */}
       <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
         <div style={{ background:'linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(59,130,246,0.06) 100%)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:24, padding:'56px 48px', position:'relative', overflow:'hidden' }}>
-          {/* bg decoration */}
           <div style={{ position:'absolute', top:-60, right:-60, width:260, height:260, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%)', pointerEvents:'none' }} />
           <div style={{ position:'absolute', bottom:-40, left:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', pointerEvents:'none' }} />
 
