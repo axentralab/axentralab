@@ -1,32 +1,18 @@
 import { useState } from 'react';
 
-// ── প্রতিটা project-এর image ও demoUrl নিজের file নাম দিয়ে replace করো ──
-import imgFintech     from '../assets/fintech-dashboard.png';
-import imgEcommerce   from '../assets/ecommerce-ai.png';
-import imgBankco      from '../assets/security-bankco.png';
-import imgCloud       from '../assets/cloud-migration.png';
-import imgHealthcare  from '../assets/healthcare-saas.png';
-import imgCrm         from '../assets/ai-crm.png';
-import imgApiThreat   from '../assets/api-threat.png';
-import imgDevops      from '../assets/devops-pipeline.png';
-import imgMobile      from '../assets/mobile-fintech.png';
-import imgElearning   from '../assets/elearning.png';
-import imgPentest     from '../assets/pentest.png';
-import imgLogistics   from '../assets/logistics-ai.png';
-
 const PROJECTS = [
-  { title:'FinTech Dashboard',         category:'Web Dev',       tech:['React','Node.js','MongoDB'],      result:'+340% performance',        color:'#22C55E', img:imgFintech,    demoUrl:'https://fintech-seven-gamma.vercel.app/',     desc:'Real-time financial analytics platform with live data streaming and custom charting.' },
-  { title:'E-Commerce AI Automation',  category:'AI Automation', tech:['Python','GPT-4','Zapier'],        result:'80% manual work cut',       color:'#3B82F6', img:imgEcommerce,  demoUrl:'https://demo.axentralab.com/ecommerce',   desc:'End-to-end order processing automation that eliminated repetitive ops tasks entirely.' },
-  { title:'Security Audit – BankCo',   category:'Cybersecurity', tech:['Burp Suite','Metasploit'],        result:'0 breaches post-audit',     color:'#EF4444', img:imgBankco,     demoUrl:'https://demo.axentralab.com/bankco',      desc:'Full red-team engagement uncovering 23 critical CVEs before the platform went live.' },
-  { title:'Cloud Migration – SaaS Co', category:'DevOps',        tech:['Docker','AWS','Terraform'],       result:'60% cost reduction',        color:'#8B5CF6', img:imgCloud,      demoUrl:'https://demo.axentralab.com/cloud',       desc:'Migrated a monolith to containerised microservices, cutting infra spend by more than half.' },
-  { title:'Healthcare SaaS Platform',  category:'SaaS Dev',      tech:['Next.js','PostgreSQL','Redis'],   result:'10k+ users in 3 months',    color:'#F59E0B', img:imgHealthcare, demoUrl:'https://demo.axentralab.com/healthcare',  desc:'HIPAA-compliant patient management SaaS built and shipped from zero in 11 weeks.' },
-  { title:'AI CRM Integration',        category:'AI Automation', tech:['LangChain','HubSpot API'],        result:'3x lead conversion',        color:'#06B6D4', img:imgCrm,        demoUrl:'https://demo.axentralab.com/crm',         desc:'LLM-powered lead scoring and auto-follow-up sequences plugged directly into HubSpot.' },
-  { title:'API Threat Detection',      category:'Cybersecurity', tech:['Python','FastAPI','ML'],          result:'99.4% detection rate',      color:'#F43F5E', img:imgApiThreat,  demoUrl:'https://demo.axentralab.com/api-threat',  desc:'Machine-learning model that flags anomalous API traffic patterns in under 80ms.' },
-  { title:'DevOps Pipeline Overhaul',  category:'DevOps',        tech:['GitHub Actions','K8s','ArgoCD'], result:'Deploy: 45 min → 4 min',    color:'#A855F7', img:imgDevops,     demoUrl:'#',      desc:'Rebuilt a legacy Jenkins pipeline into a fully declarative GitOps workflow.' },
-  { title:'Mobile Fintech App',        category:'Web Dev',       tech:['React Native','Plaid','Stripe'],  result:'4.9★ App Store rating',     color:'#10B981', img:imgMobile,     demoUrl:'#',      desc:'Cross-platform personal finance app with bank-grade security and instant transfers.' },
-  { title:'E-Learning Platform',       category:'SaaS Dev',      tech:['Vue.js','Django','Celery'],       result:'50k+ enrolled learners',    color:'#F97316', img:imgElearning,  demoUrl:'#',   desc:'Full LMS with live video, quizzes, certificates, and Stripe subscription billing.' },
-  { title:'Pentesting Automation',     category:'Cybersecurity', tech:['Nuclei','Playwright','Go'],       result:'10× faster scan cycles',    color:'#EF4444', img:imgPentest,    demoUrl:'#',     desc:'Custom scanner that chains recon, fuzzing, and exploit checks in a single pipeline.' },
-  { title:'Logistics AI Dispatcher',   category:'AI Automation', tech:['OR-Tools','GPT-4','Maps API'],   result:'31% fuel cost saved',       color:'#3B82F6', img:imgLogistics,  demoUrl:'#',   desc:'Route-optimisation engine that dynamically re-plans deliveries based on live traffic.' },
+  { title:'FinTech Dashboard',         category:'Web Dev',       tech:['React','Node.js','MongoDB'],      result:'+340% performance',        color:'#22C55E', DemoURL:'https://fintech-seven-gamma.vercel.app/', desc:'Real-time financial analytics platform with live data streaming and custom charting.' },
+  { title:'E-Commerce AI Automation',  category:'AI Automation', tech:['Python','GPT-4','Zapier'],        result:'80% manual work cut',       color:'#3B82F6', DemoURL:'https://example.com/ecommerce',           desc:'End-to-end order processing automation that eliminated repetitive ops tasks entirely.' },
+  { title:'Security Audit – BankCo',   category:'Cybersecurity', tech:['Burp Suite','Metasploit'],        result:'0 breaches post-audit',     color:'#EF4444', DemoURL:'https://example.com/security',            desc:'Full red-team engagement uncovering 23 critical CVEs before the platform went live.' },
+  { title:'Cloud Migration – SaaS Co', category:'DevOps',        tech:['Docker','AWS','Terraform'],       result:'60% cost reduction',        color:'#8B5CF6', DemoURL:'https://example.com/cloud',               desc:'Migrated a monolith to containerised microservices, cutting infra spend by more than half.' },
+  { title:'Healthcare SaaS Platform',  category:'SaaS Dev',      tech:['Next.js','PostgreSQL','Redis'],   result:'10k+ users in 3 months',    color:'#F59E0B', DemoURL:'https://example.com/healthcare',          desc:'HIPAA-compliant patient management SaaS built and shipped from zero in 11 weeks.' },
+  { title:'AI CRM Integration',        category:'AI Automation', tech:['LangChain','HubSpot API'],        result:'3x lead conversion',        color:'#06B6D4', DemoURL:'https://example.com/crm',                 desc:'LLM-powered lead scoring and auto-follow-up sequences plugged directly into HubSpot.' },
+  { title:'API Threat Detection',      category:'Cybersecurity', tech:['Python','FastAPI','ML'],          result:'99.4% detection rate',      color:'#F43F5E', DemoURL:'https://example.com/api',                 desc:'Machine-learning model that flags anomalous API traffic patterns in under 80ms.' },
+  { title:'DevOps Pipeline Overhaul',  category:'DevOps',        tech:['GitHub Actions','K8s','ArgoCD'], result:'Deploy time: 45 min → 4 min', color:'#A855F7', DemoURL:'https://example.com/devops',             desc:'Rebuilt a legacy Jenkins pipeline into a fully declarative GitOps workflow.' },
+  { title:'Mobile Fintech App',        category:'Web Dev',       tech:['React Native','Plaid','Stripe'],  result:'4.9★ App Store rating',     color:'#10B981', DemoURL:'https://example.com/mobile',              desc:'Cross-platform personal finance app with bank-grade security and instant transfers.' },
+  { title:'E-Learning Platform',       category:'SaaS Dev',      tech:['Vue.js','Django','Celery'],       result:'50k+ enrolled learners',    color:'#F97316', DemoURL:'https://example.com/elearning',           desc:'Full LMS with live video, quizzes, certificates, and Stripe subscription billing.' },
+  { title:'Pentesting Automation',     category:'Cybersecurity', tech:['Nuclei','Playwright','Go'],       result:'10× faster scan cycles',    color:'#EF4444', DemoURL:'https://example.com/pentesting',          desc:'Custom scanner that chains recon, fuzzing, and exploit checks in a single pipeline.' },
+  { title:'Logistics AI Dispatcher',   category:'AI Automation', tech:['OR-Tools','GPT-4','Maps API'],   result:'31% fuel cost saved',       color:'#3B82F6', DemoURL:'https://example.com/logistics',           desc:'Route-optimisation engine that dynamically re-plans deliveries based on live traffic.' },
 ];
 
 const CATS = ['All','Web Dev','AI Automation','Cybersecurity','DevOps','SaaS Dev'];
@@ -57,92 +43,92 @@ const CLIENTS = ['FinNova','BankCo','LearnLoop','Carrgo','NexoraSaaS','CloudStac
 /* ── Demo Modal ── */
 function DemoModal({ project, onClose }) {
   if (!project) return null;
-  const { title, category, desc, tech, result, color, img, demoUrl } = project;
+  const { title, category, desc, tech, result, color, DemoURL } = project;
+  const lightColor = ['#22C55E','#F59E0B','#F97316','#10B981'].includes(color);
+
   return (
     <div
       onClick={onClose}
       style={{
         position:'fixed', inset:0, zIndex:1000,
-        background:'rgba(0,0,0,0.8)', backdropFilter:'blur(8px)',
+        background:'rgba(0,0,0,0.82)', backdropFilter:'blur(10px)',
         display:'flex', alignItems:'center', justifyContent:'center', padding:20,
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background:'#0d0d12',
+          background:'#0e0e14',
           border:`1px solid ${color}35`,
-          borderRadius:24,
-          width:'100%', maxWidth:620,
-          boxShadow:`0 40px 100px ${color}20`,
+          borderRadius:24, width:'100%', maxWidth:520,
+          boxShadow:`0 40px 100px ${color}22`,
           overflow:'hidden',
         }}
       >
-        {/* top colour bar */}
+        {/* colour bar */}
         <div style={{ height:4, background:`linear-gradient(90deg,${color},transparent)` }} />
 
-        {/* project screenshot */}
-        <div style={{ position:'relative', height:240, overflow:'hidden', background:`linear-gradient(135deg,${color}15,${color}05)` }}>
-          <img
-            src={img}
-            alt={title}
-            style={{ width:'100%', height:'100%', objectFit:'cover', opacity:0.9 }}
-          />
-          {/* gradient overlay bottom */}
-          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:80, background:'linear-gradient(to top, #0d0d12, transparent)' }} />
-          {/* category badge */}
-          <span style={{
-            position:'absolute', top:14, left:16,
-            padding:'3px 10px', borderRadius:999,
-            border:`1px solid ${color}40`, background:`${color}20`,
-            color:color, fontSize:10, fontFamily:"'Space Mono',monospace",
-            letterSpacing:0.5, textTransform:'uppercase', fontWeight:600,
-          }}>{category}</span>
-          {/* close button */}
+        {/* header */}
+        <div style={{ padding:'28px 28px 0', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+          <div>
+            <span style={{
+              display:'inline-block', padding:'2px 10px', borderRadius:999,
+              border:`1px solid ${color}30`, background:`${color}12`,
+              color:color, fontSize:10, fontFamily:"'Space Mono',monospace",
+              letterSpacing:0.5, textTransform:'uppercase', fontWeight:600,
+            }}>{category}</span>
+            <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', margin:'10px 0 0', letterSpacing:-0.5 }}>{title}</h3>
+          </div>
           <button
             onClick={onClose}
             style={{
-              position:'absolute', top:12, right:14,
-              background:'rgba(0,0,0,0.55)', border:'1px solid rgba(255,255,255,0.12)',
-              color:'rgba(255,255,255,0.7)', width:32, height:32,
-              borderRadius:999, cursor:'pointer', fontSize:15,
+              background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)',
+              color:'rgba(255,255,255,0.5)', width:34, height:34, borderRadius:999,
+              cursor:'pointer', fontSize:16, flexShrink:0,
               display:'flex', alignItems:'center', justifyContent:'center',
             }}
           >✕</button>
         </div>
 
-        <div style={{ padding:'24px 28px 28px' }}>
-          {/* title + result */}
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12, marginBottom:12, flexWrap:'wrap' }}>
-            <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', margin:0, letterSpacing:-0.5 }}>{title}</h3>
-            <span style={{ display:'flex', alignItems:'center', gap:6, color:color, fontWeight:700, fontSize:13, flexShrink:0 }}>
-              <span style={{ fontSize:16 }}>↗</span>{result}
-            </span>
+        <div style={{ padding:'20px 28px 28px' }}>
+
+          {/* result badge */}
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:999, background:`${color}14`, border:`1px solid ${color}30`, marginBottom:16 }}>
+            <span style={{ color:color, fontSize:15 }}>↗</span>
+            <span style={{ color:color, fontWeight:700, fontSize:13 }}>{result}</span>
           </div>
 
           {/* description */}
-          <p style={{ fontSize:14, color:'rgba(255,255,255,0.55)', lineHeight:1.75, marginBottom:18 }}>{desc}</p>
+          <p style={{ fontSize:14, color:'rgba(255,255,255,0.55)', lineHeight:1.8, marginBottom:20 }}>{desc}</p>
 
           {/* tech tags */}
           <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:24 }}>
             {tech.map((t,i) => (
-              <span key={i} style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(255,255,255,0.45)', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.08)', padding:'4px 10px', borderRadius:6 }}>{t}</span>
+              <span key={i} style={{
+                fontFamily:"'Space Mono',monospace", fontSize:11,
+                color:'rgba(255,255,255,0.45)', background:'rgba(255,255,255,0.05)',
+                border:'1px solid rgba(255,255,255,0.08)',
+                padding:'4px 10px', borderRadius:6,
+              }}>{t}</span>
             ))}
           </div>
 
-          {/* action buttons */}
+          <div style={{ height:1, background:'rgba(255,255,255,0.06)', marginBottom:24 }} />
+
+          {/* buttons */}
           <div style={{ display:'flex', gap:10 }}>
             <a
-              href={demoUrl}
+              href={DemoURL}
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                flex:1, padding:'13px', background:color,
-                color: ['#22C55E','#F59E0B','#F97316','#10B981'].includes(color) ? '#000' : '#fff',
+                flex:1, padding:'13px 0',
+                background:color,
+                color: lightColor ? '#000' : '#fff',
                 borderRadius:12, fontSize:14, fontWeight:700,
                 fontFamily:"'Sora',sans-serif", textAlign:'center',
-                textDecoration:'none', display:'flex',
-                alignItems:'center', justifyContent:'center', gap:8, cursor:'pointer',
+                textDecoration:'none',
+                display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               }}
             >
               🚀 View Live Demo
@@ -159,6 +145,7 @@ function DemoModal({ project, onClose }) {
               Close
             </button>
           </div>
+
         </div>
       </div>
     </div>
@@ -168,7 +155,7 @@ function DemoModal({ project, onClose }) {
 export default function PortfolioPage() {
   const [filter, setFilter]     = useState('All');
   const [hovered, setHovered]   = useState(null);
-  const [modalProject, setModalProject] = useState(null);
+  const [modalProject, setModal] = useState(null);
 
   const shown = filter === 'All' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
 
@@ -176,7 +163,7 @@ export default function PortfolioPage() {
     <div style={{ padding:'100px 5% 0', minHeight:'100vh' }}>
 
       {/* ── Demo Modal ── */}
-      <DemoModal project={modalProject} onClose={() => setModalProject(null)} />
+      <DemoModal project={modalProject} onClose={() => setModal(null)} />
 
       {/* ── Hero ── */}
       <div style={{ textAlign:'center', marginBottom:52 }}>
@@ -213,46 +200,49 @@ export default function PortfolioPage() {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:20, maxWidth:1100, margin:'0 auto' }}>
         {shown.map((p,i) => (
           <div key={`${filter}-${i}`}
-            onClick={() => setModalProject(p)}
-            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, cursor:'pointer', transition:'all 0.25s', overflow:'hidden' }}
-            onMouseEnter={e => { setHovered(i); e.currentTarget.style.transform='translateY(-5px)'; e.currentTarget.style.borderColor=p.color+'40'; e.currentTarget.style.boxShadow=`0 16px 40px ${p.color}14`; }}
+            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, transition:'all 0.25s', overflow:'hidden' }}
+            onMouseEnter={e => { setHovered(i); e.currentTarget.style.transform='translateY(-5px)'; e.currentTarget.style.borderColor=p.color+'40'; e.currentTarget.style.boxShadow=`0 16px 40px ${p.color}12`; }}
             onMouseLeave={e => { setHovered(null); e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow='none'; }}
           >
-            {/* ── Project Image ── */}
-            <div style={{ height:180, overflow:'hidden', position:'relative', background:`linear-gradient(135deg,${p.color}18,${p.color}06)` }}>
-              <img
-                src={p.img}
-                alt={p.title}
-                style={{ width:'100%', height:'100%', objectFit:'cover', transition:'transform 0.35s' }}
-                onMouseEnter={e => e.currentTarget.style.transform='scale(1.05)'}
-                onMouseLeave={e => e.currentTarget.style.transform='scale(1)'}
-              />
-              {/* bottom fade */}
-              <div style={{ position:'absolute', bottom:0, left:0, right:0, height:60, background:'linear-gradient(to top, rgba(13,13,18,0.85), transparent)' }} />
-              {/* category badge */}
-              <span style={{
-                position:'absolute', bottom:10, right:12,
-                padding:'3px 10px', borderRadius:999,
-                border:`1px solid ${p.color}35`, background:`${p.color}18`,
-                color:p.color, fontSize:10,
-                fontFamily:"'Space Mono',monospace", letterSpacing:0.5,
-                textTransform:'uppercase', fontWeight:600,
-              }}>{p.category}</span>
+            {/* card banner */}
+            <div style={{ height:120, background:`linear-gradient(135deg,${p.color}20,${p.color}06)`, display:'flex', alignItems:'center', justifyContent:'center', borderBottom:'1px solid rgba(255,255,255,0.05)', position:'relative', overflow:'hidden' }}>
+              <span style={{ fontFamily:"'Sora',sans-serif", fontSize:44, fontWeight:900, color:`${p.color}40` }}>{p.title.slice(0,2)}</span>
+              <div style={{ position:'absolute', bottom:10, right:14 }}>
+                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:999, border:`1px solid ${p.color}30`, background:`${p.color}15`, color:p.color, fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{p.category}</span>
+              </div>
             </div>
 
             <div style={{ padding:22 }}>
               <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:800, color:'#fff', margin:'0 0 8px', letterSpacing:-0.3 }}>{p.title}</h3>
               <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', lineHeight:1.65, marginBottom:14 }}>{p.desc}</p>
-              <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:16 }}>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:14 }}>
                 {p.tech.map((t,j) => <span key={j} style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.35)', background:'rgba(255,255,255,0.05)', padding:'2px 7px', borderRadius:4 }}>{t}</span>)}
               </div>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <span style={{ color:p.color, fontSize:14 }}>↗</span>
-                  <span style={{ fontSize:13, color:p.color, fontWeight:700 }}>{p.result}</span>
-                </div>
-                <span style={{ fontSize:12, color:'rgba(255,255,255,0.25)', fontFamily:"'Space Mono',monospace" }}>View case →</span>
+
+              {/* result */}
+              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:16 }}>
+                <span style={{ color:p.color, fontSize:14 }}>↗</span>
+                <span style={{ fontSize:13, color:p.color, fontWeight:700 }}>{p.result}</span>
               </div>
+
+              {/* ── Demo Button ── */}
+              <button
+                onClick={() => setModal(p)}
+                style={{
+                  width:'100%', padding:'11px 0',
+                  background:`${p.color}14`,
+                  border:`1px solid ${p.color}35`,
+                  borderRadius:10, color:p.color,
+                  fontSize:13, fontWeight:700,
+                  fontFamily:"'Sora',sans-serif",
+                  cursor:'pointer', transition:'background 0.2s, border-color 0.2s',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:7,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background=`${p.color}26`; e.currentTarget.style.borderColor=`${p.color}60`; }}
+                onMouseLeave={e => { e.currentTarget.style.background=`${p.color}14`; e.currentTarget.style.borderColor=`${p.color}35`; }}
+              >
+                <span>▶</span> View Demo
+              </button>
             </div>
           </div>
         ))}
