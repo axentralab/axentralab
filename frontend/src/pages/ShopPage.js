@@ -5,12 +5,93 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const FALLBACK = [
-  { _id:'1', title:'AI Automation', icon:'⚡', color:'#F59E0B', description:'Chatbots, workflow automation, CRM integration, and intelligent AI agents.', features:['AI chatbots','Workflow automation','CRM integration','AI agents'], plans:[{name:'Starter',price:499,billing:'one-time',features:['1 chatbot','Basic workflow','Email support']},{name:'Pro',price:999,billing:'one-time',features:['5 chatbots','Advanced workflows','Priority support','CRM integration']},{name:'Enterprise',price:2499,billing:'one-time',features:['Unlimited bots','Custom AI agents','Dedicated support','Full CRM suite']}] },
-  { _id:'2', title:'Web Development', icon:'🌐', color:'#3B82F6', description:'MERN apps, SaaS platforms, dashboards, and enterprise-grade websites.', features:['React/Next.js','Node.js backend','MongoDB','Deployment'], plans:[{name:'Landing Page',price:799,billing:'one-time',features:['5 sections','Responsive','SEO ready','1 month support']},{name:'Web App',price:2999,billing:'one-time',features:['Full MERN stack','Auth system','Dashboard','3 months support']},{name:'SaaS Platform',price:7999,billing:'one-time',features:['Multi-tenant','Stripe billing','Admin panel','6 months support']}] },
-  { _id:'3', title:'Cybersecurity', icon:'🛡️', color:'#EF4444', description:'Vulnerability scanning, penetration testing, malware removal, security audits.', features:['Pen testing','Vuln scanning','Security audit','Malware removal'], plans:[{name:'Basic Audit',price:399,billing:'one-time',features:['Surface scan','Report','Fix recommendations']},{name:'Full Pentest',price:1499,billing:'one-time',features:['Deep penetration test','OWASP coverage','Detailed report','Fix support']},{name:'Ongoing Monitor',price:299,billing:'monthly',features:['24/7 monitoring','Instant alerts','Monthly reports','Incident response']}] },
-  { _id:'4', title:'DevOps & Cloud', icon:'☁️', color:'#8B5CF6', description:'CI/CD pipelines, cloud automation, containerization, infrastructure monitoring.', features:['CI/CD','Docker/K8s','Cloud setup','Monitoring'], plans:[{name:'Setup',price:699,billing:'one-time',features:['CI/CD pipeline','Docker setup','Basic monitoring']},{name:'Full DevOps',price:1999,billing:'one-time',features:['Full infra setup','Auto-scaling','Advanced monitoring','Runbooks']},{name:'Managed',price:499,billing:'monthly',features:['Ongoing management','24/7 support','Scaling','Incident response']}] },
-  { _id:'5', title:'SaaS Development', icon:'📦', color:'#22C55E', description:'Full-cycle SaaS product design, development, and deployment.', features:['Full dev cycle','Subscription billing','Multi-tenant','Analytics'], plans:[{name:'MVP',price:4999,billing:'one-time',features:['Core features','Auth & billing','Basic analytics','3 months support']},{name:'Full SaaS',price:14999,billing:'one-time',features:['All features','Admin dashboard','Advanced analytics','6 months support','Dedicated PM']}] },
-  { _id:'6', title:'IT Consulting', icon:'💡', color:'#06B6D4', description:'Architecture planning, digital transformation, tech stack consulting.', features:['Architecture','Digital transformation','Tech stack advice','Roadmapping'], plans:[{name:'1-hour Call',price:149,billing:'one-time',features:['60 min consultation','Written summary','Action items']},{name:'Deep Dive',price:799,billing:'one-time',features:['Full day workshop','Architecture doc','Tech roadmap','Follow-up call']},{name:'Retainer',price:999,billing:'monthly',features:['10 hours/month','Priority access','Ongoing guidance','Slack access']}] },
+  {
+    _id:'1', title:'Web Development', icon:'🌐', color:'#3B82F6',
+    description:'Business websites, landing pages, web apps, and SaaS platforms built with React, Next.js & Node.js.',
+    features:['React / Next.js','Node.js & Express','MongoDB','REST API','Tailwind CSS'],
+    subServices:['Business / Corporate Website','Landing Page Design','Portfolio Website','Web Application','SaaS Platform','MERN Stack Development','API Development & Integration'],
+    plans:[
+      { name:'Landing Page',   price:250,  billing:'one-time', bdt:'৳25,000',  features:['Responsive design','Up to 5 sections','Basic SEO','1 month support','Source code included'] },
+      { name:'Business Site',  price:600,  billing:'one-time', bdt:'৳60,000',  features:['Multi-page site','Contact form','SEO ready','CMS integration','3 months support'] },
+      { name:'Custom Web App', price:3000, billing:'one-time', bdt:'৳3,00,000', features:['Full MERN stack','Auth system','Dashboard','REST API','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'2', title:'E-Commerce', icon:'🛒', color:'#F97316',
+    description:'Online stores with Shopify, WooCommerce, or fully custom — including payment gateways and subscriptions.',
+    features:['Shopify / WooCommerce','Custom store','Payment gateway','Subscription system','Product management'],
+    subServices:['Shopify Store Development','WooCommerce Store Development','Custom E-commerce Website','Payment Gateway Integration','Subscription / Membership System'],
+    plans:[
+      { name:'Shopify Starter', price:300, billing:'one-time', bdt:'৳30,000', features:['Up to 50 products','Payment gateway','Responsive','Basic SEO','2 weeks delivery'] },
+      { name:'WooCommerce Pro', price:500, billing:'one-time', bdt:'৳50,000', features:['Unlimited products','Custom theme','Payment + shipping','Coupons & offers','2 months support'] },
+      { name:'Custom Store',    price:2500,billing:'one-time', bdt:'৳2,50,000',features:['Fully custom build','Subscription billing','Admin panel','Analytics','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'3', title:'Cybersecurity', icon:'🛡️', color:'#EF4444',
+    description:'Security audits, malware removal, penetration testing, and server hardening for web apps and servers.',
+    features:['Security audit','Malware removal','Penetration testing','Server hardening','24/7 monitoring'],
+    subServices:['Website Security Audit','Malware Removal','WordPress Security Hardening','Vulnerability Scanning','Penetration Testing (Web Apps)','Server Security Hardening','Incident Response'],
+    plans:[
+      { name:'Basic Audit',       price:80,  billing:'one-time', bdt:'৳8,000',  features:['Surface vulnerability scan','Written report','Fix recommendations','PDF delivery'] },
+      { name:'Full Pentest',      price:800, billing:'one-time', bdt:'৳80,000', features:['Deep penetration test','OWASP Top 10 coverage','Exploit PoC','Detailed report','Fix support'] },
+      { name:'Security Monitor',  price:99,  billing:'monthly',  bdt:'৳10,000/mo', features:['24/7 monitoring','Instant breach alerts','Monthly security report','Incident response','Server hardening check'] },
+    ],
+  },
+  {
+    _id:'4', title:'Website Optimization', icon:'⚡', color:'#F59E0B',
+    description:'Speed up slow websites, fix Core Web Vitals, optimize databases, and set up CDN for peak performance.',
+    features:['Speed optimization','Core Web Vitals','DB optimization','Image & asset opt','CDN setup'],
+    subServices:['Website Speed Optimization','Core Web Vitals Optimization','Database Optimization','Image & Asset Optimization','CDN Setup','Performance Audit'],
+    plans:[
+      { name:'Speed Fix',       price:50,  billing:'one-time', bdt:'৳5,000',  features:['Image compression','Caching setup','Basic JS/CSS minify','Performance report'] },
+      { name:'Advanced Boost',  price:200, billing:'one-time', bdt:'৳20,000', features:['Core Web Vitals fix','DB query optimization','CDN integration','Lazy loading','Before/after report'] },
+      { name:'Full Audit+Fix',  price:300, billing:'one-time', bdt:'৳30,000', features:['Full performance audit','All above fixes','Server-side optimizations','3-month monitoring','Written SLA'] },
+    ],
+  },
+  {
+    _id:'5', title:'Hosting & DevOps', icon:'☁️', color:'#8B5CF6',
+    description:'VPS setup, cloud deployment on AWS/DigitalOcean, CI/CD pipelines, Docker, and disaster recovery.',
+    features:['VPS setup','AWS / Vercel / DO','CI/CD pipeline','Docker deployment','Backup & recovery'],
+    subServices:['VPS Setup & Management','Cloud Deployment (AWS / Vercel / DigitalOcean)','CI/CD Pipeline Setup','Docker Deployment','Server Monitoring','Backup & Disaster Recovery'],
+    plans:[
+      { name:'VPS Setup',      price:120, billing:'one-time', bdt:'৳12,000', features:['Server provisioning','Nginx / Apache config','SSL setup','Basic monitoring','Docs handover'] },
+      { name:'Full DevOps',    price:250, billing:'one-time', bdt:'৳25,000', features:['Cloud deployment','CI/CD pipeline','Docker + K8s','Auto-scaling','Runbooks'] },
+      { name:'Managed Server', price:150, billing:'monthly',  bdt:'৳15,000/mo', features:['24/7 monitoring','Auto backups','Incident response','Security patches','Monthly report'] },
+    ],
+  },
+  {
+    _id:'6', title:'SaaS & Custom Software', icon:'📦', color:'#22C55E',
+    description:'End-to-end SaaS product development — CRM dashboards, fintech tools, admin panels, and business automation.',
+    features:['SaaS product dev','CRM / Fintech dashboard','Analytics panel','Admin tools','Multi-tenant'],
+    subServices:['SaaS Product Development','CRM Dashboard','Fintech Dashboard','Analytics Dashboard','Admin Panels','Internal Business Tools'],
+    plans:[
+      { name:'MVP',       price:1500, billing:'one-time', bdt:'৳1,50,000', features:['Core features','Auth & billing','Basic analytics','3 months support','Source code'] },
+      { name:'Full SaaS', price:8000, billing:'one-time', bdt:'৳8,00,000', features:['All features','Multi-tenant','Admin dashboard','Advanced analytics','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'7', title:'UI/UX Design', icon:'🎨', color:'#EC4899',
+    description:'Beautiful, conversion-focused UI designs for websites, SaaS dashboards, and mobile apps using Figma.',
+    features:['Website UI','Mobile app UI','SaaS dashboard UI','Wireframe & prototype','Design system'],
+    subServices:['Website UI Design','Mobile App UI','SaaS Dashboard UI','Wireframe & Prototype','Design System'],
+    plans:[
+      { name:'Landing Page UI', price:120, billing:'one-time', bdt:'৳12,000', features:['1-page design','Desktop + mobile','Figma source file','2 revision rounds','3-day delivery'] },
+      { name:'Website UI',      price:400, billing:'one-time', bdt:'৳40,000', features:['Up to 8 pages','Component library','Figma + handoff','3 revision rounds','1 week delivery'] },
+      { name:'SaaS Dashboard',  price:600, billing:'one-time', bdt:'৳60,000', features:['Full dashboard UI','Design system','Interactive prototype','Unlimited revisions','Dev handoff notes'] },
+    ],
+  },
+  {
+    _id:'8', title:'Maintenance & Support', icon:'🛠️', color:'#06B6D4',
+    description:'Ongoing website maintenance, bug fixing, security monitoring, and performance upkeep after launch.',
+    features:['Bug fixing','Security monitoring','Performance check','Content updates','Monthly reports'],
+    subServices:['Website Maintenance','Security Monitoring','Bug Fixing','Performance Monitoring','Monthly Support Plans'],
+    plans:[
+      { name:'Basic',    price:30,  billing:'monthly', bdt:'৳3,000/mo',  features:['Monthly backup','Bug fixes (2hrs)','Uptime monitoring','Email support'] },
+      { name:'Standard', price:60,  billing:'monthly', bdt:'৳6,000/mo',  features:['Weekly backup','Bug fixes (5hrs)','Security scan','Performance check','Priority support'] },
+      { name:'Premium',  price:120, billing:'monthly', bdt:'৳12,000/mo', features:['Daily backup','Unlimited bug fixes','24/7 monitoring','Monthly report','Dedicated engineer','SLA guarantee'] },
+    ],
+  },
 ];
 
 const FAQS = [
@@ -23,12 +104,14 @@ const FAQS = [
 ];
 
 const COMPARE_ROWS = [
-  { label:'Dedicated PM',          vals:[false,true,true,false,true,false] },
-  { label:'Source code ownership', vals:[true,true,true,true,true,false]  },
-  { label:'Monthly retainer opt',  vals:[false,false,true,true,false,true] },
-  { label:'SLA guarantee',         vals:[false,true,true,true,true,true]  },
-  { label:'NDA included',          vals:[true,true,true,true,true,true]   },
-  { label:'Post-delivery support', vals:[false,true,true,true,true,true]  },
+  { label:'Source code included',  vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Dedicated PM',          vals:[false,false,false,false,false,true, false,false] },
+  { label:'Monthly retainer opt',  vals:[false,false,true, false,true, false,false,true]  },
+  { label:'SLA guarantee',         vals:[false,false,true, false,true, false,false,true]  },
+  { label:'NDA included',          vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Post-delivery support', vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Design (Figma) files',  vals:[false,false,false,false,false,false,true,false]  },
+  { label:'24/7 monitoring',       vals:[false,false,true, false,true, false,false,true]  },
 ];
 
 const HOW_IT_WORKS = [
@@ -38,7 +121,7 @@ const HOW_IT_WORKS = [
   { n:'04', icon:'🚀', title:'Launch & Handover',  desc:'Full docs, repo transfer, and optional retainer. You own everything — forever.' },
 ];
 
-const STACK_BADGES = ['React','Next.js','Node.js','Python','Go','Docker','Kubernetes','AWS','GCP','Terraform','PostgreSQL','MongoDB','Redis','LangChain','GPT-4','Burp Suite','Metasploit'];
+const STACK_BADGES = ['React','Next.js','Node.js','MongoDB','Express','Tailwind','Shopify','WooCommerce','Docker','AWS','DigitalOcean','Vercel','Figma','Adobe XD','Burp Suite','OWASP','Nginx','PostgreSQL','Redis','CI/CD'];
 
 export default function ShopPage() {
   const [services, setServices] = useState(FALLBACK);
@@ -245,11 +328,21 @@ export default function ShopPage() {
                       </span>
                     </div>
                     <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'0 0 12px', lineHeight:1.6 }}>{activeService.description}</p>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: activeService.subServices ? 12 : 0 }}>
                       {(activeService.features||[]).map((f,i) => (
                         <span key={i} style={{ padding:'3px 9px', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:6, fontSize:10, color:'rgba(255,255,255,0.45)', fontFamily:"'Space Mono',monospace" }}>{f}</span>
                       ))}
                     </div>
+                    {activeService.subServices && (
+                      <div style={{ marginTop:10, paddingTop:10, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ fontSize:9, fontFamily:"'Space Mono',monospace", color:'rgba(255,255,255,0.2)', letterSpacing:1.5, textTransform:'uppercase', marginBottom:8 }}>Includes</div>
+                        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                          {activeService.subServices.map((s,i) => (
+                            <span key={i} style={{ padding:'3px 9px', background:`${activeService.color}08`, border:`1px solid ${activeService.color}20`, borderRadius:6, fontSize:11, color:`${activeService.color}cc` }}>{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -282,8 +375,13 @@ export default function ShopPage() {
                               {plan.billing==='monthly' ? '/mo' : plan.billing==='yearly' ? '/yr' : ' once'}
                             </span>
                           </div>
+                          {plan.bdt && (
+                            <div style={{ marginTop:4, fontSize:12, color:`${activeService.color}90`, fontFamily:"'Space Mono',monospace", fontWeight:700 }}>
+                              ≈ {plan.bdt}
+                            </div>
+                          )}
                           {plan.billing==='monthly' && (
-                            <div style={{ marginTop:5, fontSize:11, color:'rgba(255,255,255,0.22)', fontFamily:"'Space Mono',monospace" }}>
+                            <div style={{ marginTop:3, fontSize:10, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>
                               billed monthly · ${(plan.price*12).toLocaleString()}/yr
                             </div>
                           )}
