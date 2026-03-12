@@ -86,12 +86,47 @@ export default function ShopPage() {
         .how-card:hover  { border-color: rgba(255,255,255,0.15) !important; transform: translateY(-3px); }
         .faq-row:hover   { background: rgba(255,255,255,0.04) !important; }
         .cta-btn:hover   { filter: brightness(1.1); transform: translateY(-1px); }
+
+        /* ── RESPONSIVE ── */
+        .hero-grid    { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; margin-bottom:88px; }
+        .browse-hdr   { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
+        .svc-hdr      { display:flex; align-items:flex-start; gap:18px; }
+        .cta-section  { padding:60px 44px; }
+        .cart-sticky  { position:sticky; top:96px; }
+        .stat-pills   { display:flex; gap:10px; flex-wrap:wrap; }
+        .pill-scroll  { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
+        .billing-bar  { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:4px; }
+
+        @media (max-width: 900px) {
+          .hero-grid { grid-template-columns:1fr !important; gap:32px !important; margin-bottom:56px !important; }
+          .cart-sticky { position:static !important; top:unset !important; }
+        }
+
+        @media (max-width: 640px) {
+          .hero-grid    { margin-bottom:40px !important; }
+          .cta-section  { padding:36px 22px !important; }
+          .svc-hdr      { flex-wrap:wrap !important; }
+          .browse-hdr   { flex-direction:column !important; align-items:flex-start !important; }
+          .billing-bar  { width:100%; justify-content:space-between; }
+          .billing-bar button { flex:1; }
+          .stat-pills   { gap:8px; }
+          .stat-pills > div { flex:1 1 calc(50% - 8px); min-width:80px; }
+          .pill-scroll  { overflow-x:auto; flex-wrap:nowrap !important; padding-bottom:6px; }
+          .pill-scroll::-webkit-scrollbar { display:none; }
+        }
+
+        @media (max-width: 420px) {
+          .cta-btns { flex-direction:column !important; }
+          .cta-btns button { width:100% !important; }
+          .trust-pills { flex-direction:column !important; }
+          .trust-pills span { text-align:center; }
+        }
       `}</style>
 
       <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:82 }}>
 
         {/* ── Ticker ── */}
-        <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:64 }}>
+        <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:'clamp(32px,5vw,64px)' }}>
           <div style={{ display:'flex', animation:'ticker 30s linear infinite', width:'max-content' }}>
             {[...STACK_BADGES,...STACK_BADGES].map((b,i) => (
               <span key={i} style={{ padding:'0 24px', fontSize:11, color:'rgba(255,255,255,0.18)', fontFamily:"'Space Mono',monospace", whiteSpace:'nowrap' }}>
@@ -101,10 +136,10 @@ export default function ShopPage() {
           </div>
         </div>
 
-        <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 5%' }}>
+        <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 clamp(16px,5%,5%)' }}>
 
           {/* ── Hero split ── */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:48, alignItems:'start', marginBottom:88 }}>
+          <div className="hero-grid">
 
             <div>
               <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:6, background:'rgba(34,197,94,0.07)', border:'1px solid rgba(34,197,94,0.18)', marginBottom:22 }}>
@@ -119,7 +154,7 @@ export default function ShopPage() {
               <p style={{ fontSize:15, color:'rgba(255,255,255,0.37)', lineHeight:1.8, maxWidth:420, margin:'0 0 32px' }}>
                 No discovery fees. No hidden costs. Pick a plan, add to cart, and we kick off within 24 hours.
               </p>
-              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+              <div className="stat-pills">
                 {[['120+','Projects'],['98%','Retention'],['24hr','Kickoff'],['NDA','Default']].map(([v,l],i) => (
                   <div key={i} style={{ padding:'10px 16px', background:'rgba(255,255,255,0.035)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10 }}>
                     <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:900, color:'#fff', letterSpacing:-0.5 }}>{v}</div>
@@ -130,7 +165,7 @@ export default function ShopPage() {
             </div>
 
             {/* Live cart summary */}
-            <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden', position:'sticky', top:96 }}>
+            <div className="cart-sticky" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden' }}>
               <div style={{ padding:'16px 22px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, color:'#fff' }}>🛒 Your Cart</span>
                 <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.22)', letterSpacing:1 }}>{cart.length} ITEM{cart.length!==1?'S':''}</span>
@@ -171,10 +206,10 @@ export default function ShopPage() {
           </div>
 
           {/* ── Browse Services ── */}
-          <div style={{ marginBottom:88 }}>
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:14, marginBottom:22 }}>
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
+            <div className="browse-hdr">
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', letterSpacing:-0.5, margin:0 }}>Browse Services</h2>
-              <div style={{ display:'flex', gap:4, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:4 }}>
+              <div className="billing-bar">
                 {[['all','All'],['one-time','One-time'],['monthly','Monthly']].map(([val,label]) => (
                   <button key={val} onClick={() => setBilling(val)}
                     style={{ padding:'6px 14px', borderRadius:7, border:'none', background: billing===val ? 'rgba(255,255,255,0.1)' : 'transparent', color: billing===val ? '#fff' : 'rgba(255,255,255,0.3)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:12, cursor:'pointer', transition:'all 0.15s' }}>
@@ -185,7 +220,7 @@ export default function ShopPage() {
             </div>
 
             {/* Service pills */}
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:32 }}>
+            <div className="pill-scroll">
               {services.map(s => (
                 <button key={s._id} className="srv-pill"
                   onClick={() => setSelected(s._id)}
@@ -200,7 +235,7 @@ export default function ShopPage() {
             {/* Active service */}
             {activeService && (
               <div key={selected} style={{ animation:'slideUp 0.22s ease' }}>
-                <div style={{ display:'flex', alignItems:'flex-start', gap:18, padding:'22px 26px', background:`linear-gradient(120deg,${activeService.color}08,rgba(255,255,255,0.02))`, border:`1px solid ${activeService.color}20`, borderRadius:18, marginBottom:22 }}>
+                <div className="svc-hdr" style={{ padding:'22px 26px', background:`linear-gradient(120deg,${activeService.color}08,rgba(255,255,255,0.02))`, border:`1px solid ${activeService.color}20`, borderRadius:18, marginBottom:22 }}>
                   <div style={{ width:54, height:54, borderRadius:15, background:`${activeService.color}14`, border:`1px solid ${activeService.color}28`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{activeService.icon}</div>
                   <div style={{ flex:1 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:5 }}>
@@ -282,7 +317,7 @@ export default function ShopPage() {
           </div>
 
           {/* ── Compare table ── */}
-          <div style={{ marginBottom:88 }}>
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
             <div style={{ textAlign:'center', marginBottom:32 }}>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>Feature Matrix</span>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Compare All Services</h2>
@@ -320,7 +355,7 @@ export default function ShopPage() {
           </div>
 
           {/* ── How It Works ── */}
-          <div style={{ marginBottom:88 }}>
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
             <div style={{ textAlign:'center', marginBottom:40 }}>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>Process</span>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>From Cart to Live in 4 Steps</h2>
@@ -339,7 +374,7 @@ export default function ShopPage() {
           </div>
 
           {/* ── FAQ ── */}
-          <div style={{ maxWidth:720, margin:'0 auto 88px' }}>
+          <div style={{ maxWidth:720, margin:`0 auto clamp(48px,7vw,88px)` }}>
             <div style={{ textAlign:'center', marginBottom:36 }}>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>FAQ</span>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Common Questions</h2>
@@ -364,7 +399,7 @@ export default function ShopPage() {
           </div>
 
           {/* ── Enterprise CTA ── */}
-          <div style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.07),rgba(59,130,246,0.05),rgba(139,92,246,0.06))', border:'1px solid rgba(255,255,255,0.08)', borderRadius:26, padding:'60px 44px', textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
+          <div className="cta-section" style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.07),rgba(59,130,246,0.05),rgba(139,92,246,0.06))', border:'1px solid rgba(255,255,255,0.08)', borderRadius:26, textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:560, height:300, borderRadius:'50%', background:'radial-gradient(ellipse,rgba(34,197,94,0.05) 0%,transparent 70%)', pointerEvents:'none' }} />
             <div style={{ position:'relative' }}>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase', display:'block', marginBottom:16 }}>Get Started Today</span>
@@ -375,7 +410,7 @@ export default function ShopPage() {
               <p style={{ color:'rgba(255,255,255,0.35)', fontSize:15, maxWidth:420, margin:'0 auto 34px', lineHeight:1.8 }}>
                 Every plan includes a free kick-off call, a fixed-scope contract, and an NDA. No surprises. Ever.
               </p>
-              <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:22 }}>
+              <div className="cta-btns" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:22 }}>
                 <button className="cta-btn" onClick={() => navigate('/contact')}
                   style={{ padding:'14px 34px', background:'#fff', color:'#000', border:'none', borderRadius:12, fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:15, letterSpacing:-0.3, cursor:'pointer', transition:'all 0.17s' }}>
                   Book a Free Call →
@@ -385,7 +420,7 @@ export default function ShopPage() {
                   See Our Work
                 </button>
               </div>
-              <div style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
+              <div className="trust-pills" style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
                 {['✓ No lock-in contracts','✓ NDA included by default','✓ Fixed-price quotes'].map((t,i) => (
                   <span key={i} style={{ fontSize:11, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
                 ))}
