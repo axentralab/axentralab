@@ -137,7 +137,6 @@ export default function ShopPage() {
   const [billing, setBilling]   = useState('all');
   const [openFaq, setOpenFaq]   = useState(null);
   const [cartAnim, setCartAnim] = useState(null);
-  const [bannerVisible, setBannerVisible] = useState(true);
   const { addToCart, cart }     = useCart();
   const { isAuthenticated }     = useAuth();
   const navigate                = useNavigate();
@@ -153,7 +152,6 @@ export default function ShopPage() {
 
   const handleBuy = (service, plan) => {
     if (!isAuthenticated) { navigate('/register'); return; }
-    // Pass discounted price to cart
     const discountedPlan = { ...plan, price: discountedPrice(plan.price), originalPrice: plan.price };
     addToCart(service, discountedPlan);
     setCartAnim(service._id + plan.name);
@@ -175,7 +173,6 @@ export default function ShopPage() {
         @keyframes slideUp  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
         @keyframes ticker   { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @keyframes pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 7px rgba(34,197,94,0)} }
-        @keyframes bannerGlow { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.0)} 50%{box-shadow:0 4px 32px rgba(251,191,36,0.18)} }
         @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
         @keyframes badgePop { 0%{transform:scale(0.8) rotate(-6deg);opacity:0} 70%{transform:scale(1.1) rotate(2deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
         @keyframes strikeThrough { from{width:0} to{width:100%} }
@@ -185,7 +182,6 @@ export default function ShopPage() {
         .how-card:hover  { border-color: rgba(255,255,255,0.15) !important; transform: translateY(-3px); }
         .faq-row:hover   { background: rgba(255,255,255,0.04) !important; }
         .cta-btn:hover   { filter: brightness(1.1); transform: translateY(-1px); }
-        .launch-banner:hover { animation: none !important; filter: brightness(1.05); }
 
         .old-price {
           position: relative;
@@ -214,7 +210,7 @@ export default function ShopPage() {
         .browse-hdr   { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
         .svc-hdr      { display:flex; align-items:flex-start; gap:18px; }
         .cta-section  { padding:60px 44px; }
-        .cart-sticky  { position:sticky; top:96px; }
+        .cart-sticky  { position:sticky; top:116px; }
         .stat-pills   { display:flex; gap:10px; flex-wrap:wrap; }
         .pill-scroll  { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
         .billing-bar  { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:4px; }
@@ -246,41 +242,8 @@ export default function ShopPage() {
         }
       `}</style>
 
-      <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:82 }}>
-
-        {/* ── LAUNCH DISCOUNT BANNER ── */}
-        {bannerVisible && (
-          <div
-            className="launch-banner"
-            style={{
-              position:'relative',
-              background:'linear-gradient(90deg, #92400e, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b, #d97706, #b45309, #92400e)',
-              backgroundSize:'200% 100%',
-              animation:'shimmer 3s linear infinite, bannerGlow 3s ease-in-out infinite',
-              padding:'11px 20px',
-              overflow:'hidden',
-            }}
-          >
-            {/* shimmer overlay */}
-            <div className="discount-shine" style={{ position:'absolute', inset:0, pointerEvents:'none' }} />
-            <div className="banner-inner" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, position:'relative', flexWrap:'wrap' }}>
-              <span style={{ fontSize:18 }}>🎉</span>
-              <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:14, color:'#000', letterSpacing:-0.3 }}>
-                New Agency Launch — <span style={{ fontSize:17 }}>50% OFF</span> All Plans
-              </span>
-              <span style={{ padding:'3px 11px', background:'rgba(0,0,0,0.18)', borderRadius:6, fontFamily:"'Space Mono',monospace", fontSize:10, color:'#000', letterSpacing:1.5, fontWeight:900 }}>
-                USE CODE: {DISCOUNT_BADGE}
-              </span>
-              <span style={{ fontSize:12, color:'rgba(0,0,0,0.6)', fontFamily:"'Space Mono',monospace" }}>
-                Limited time only · Auto-applied at checkout
-              </span>
-            </div>
-            <button
-              onClick={() => setBannerVisible(false)}
-              style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.15)', border:'none', color:'#000', width:24, height:24, borderRadius:'50%', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, fontWeight:900 }}
-            >×</button>
-          </div>
-        )}
+      {/* paddingTop: navbar(64) + promo banner(44) = 108 */}
+      <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:108 }}>
 
         {/* ── Ticker ── */}
         <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:'clamp(32px,5vw,64px)' }}>
@@ -451,7 +414,6 @@ export default function ShopPage() {
                       <span style={{ padding:'2px 9px', borderRadius:6, background:`${activeService.color}12`, color:activeService.color, fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>
                         {activeService.plans?.length} plans
                       </span>
-                      {/* Discount badge on service header */}
                       <span style={{ padding:'2px 9px', borderRadius:6, background:'rgba(251,191,36,0.12)', color:'#fbbf24', fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, fontWeight:900, border:'1px solid rgba(251,191,36,0.25)' }}>
                         🏷️ 50% OFF
                       </span>
@@ -515,7 +477,6 @@ export default function ShopPage() {
                         <div style={{ marginBottom:18, marginTop:isPopular ? 16 : 0 }}>
                           <div style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:900, color:'#fff', marginBottom:6 }}>{plan.name}</div>
 
-                          {/* Pricing: original crossed out + sale price */}
                           <div style={{ display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap', marginBottom:4 }}>
                             <span className="old-price" style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:700, letterSpacing:-0.5 }}>
                               ${plan.price.toLocaleString()}
@@ -528,7 +489,6 @@ export default function ShopPage() {
                             </span>
                           </div>
 
-                          {/* Savings callout */}
                           <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 9px', background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:6, marginBottom:4 }}>
                             <span style={{ fontSize:10, color:'#fbbf24', fontFamily:"'Space Mono',monospace", fontWeight:900 }}>
                               You save ${(plan.price - salePrice).toLocaleString()}
@@ -660,7 +620,6 @@ export default function ShopPage() {
           <div className="cta-section" style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.07),rgba(59,130,246,0.05),rgba(139,92,246,0.06))', border:'1px solid rgba(255,255,255,0.08)', borderRadius:26, textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:560, height:300, borderRadius:'50%', background:'radial-gradient(ellipse,rgba(34,197,94,0.05) 0%,transparent 70%)', pointerEvents:'none' }} />
 
-            {/* Launch discount CTA banner */}
             <div style={{
               position:'relative',
               margin:'0 0 28px',

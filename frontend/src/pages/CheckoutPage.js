@@ -1,26 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { useToast } from '../context/ToastContext';
+import api, { apiErrorMessage } from '../services/api';
 
 export default function CheckoutPage() {
   const { cart, total, clearCart } = useCart();
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const toast     = useToast();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
-  if (cart.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  useEffect(() => {
+    if (cart.length === 0) navigate('/cart', { replace: true });
+  }, [cart.length, navigate]);
+
+  if (cart.length === 0) return null;
 
   const handleCheckout = async () => {
     setLoading(true);
     setError('');
     try {
-      // 1. Create order in DB
       const orderRes = await api.post('/orders', {
         items: cart.map(item => ({
           service: item.serviceId,
@@ -34,18 +36,13 @@ export default function CheckoutPage() {
         paymentMethod: 'stripe',
       });
       const orderId = orderRes.data.data._id;
-
-      // 2. Create Stripe checkout session
-      const stripeRes = await api.post('/payments/checkout', {
-        items: cart,
-        orderId,
-      });
-
+      const stripeRes = await api.post('/payments/checkout', { items: cart, orderId });
       clearCart();
-      // Redirect to Stripe
       window.location.href = stripeRes.data.url;
     } catch (err) {
-      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
+      const msg = apiErrorMessage(err, 'Checkout failed. Please try again.');
+      setError(msg);
+      toast.error(msg);
       setLoading(false);
     }
   };
@@ -56,8 +53,9 @@ export default function CheckoutPage() {
         <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1, marginBottom: 40 }}>Checkout</h1>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28 }}>
-          {/* Left: Review */}
+          {/* Left */}
           <div>
+            {/* Customer details */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 28, marginBottom: 20 }}>
               <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Customer Details</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -70,43 +68,60 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 28 }}>
+            {/* Order items */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 28, marginBottom: 20 }}>
               <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Order Items</h3>
               {cart.map((item, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < cart.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', gap: 12, flexWrap: 'wrap' }}>
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 14, color: '#fff' }}>{item.serviceTitle}</div>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 3 }}>
-                      {item.plan} · {item.billing === 'monthly' ? 'Monthly' : item.billing === 'yearly' ? 'Yearly' : 'One-time payment'}
+                      {item.plan} · {item.billing === 'monthly' ? 'Monthly' : item.billing === 'yearly' ? 'Yearly' : 'One-time'} · ×{item.quantity || 1}
                     </div>
                   </div>
-                  <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, color: '#22C55E', fontSize: 16, flexShrink: 0 }}>${item.price.toLocaleString()}</span>
+                  <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, color: '#22C55E', fontSize: 16, flexShrink: 0 }}>
+                    ${(item.price * (item.quantity || 1)).toLocaleString()}
+                  </span>
                 </div>
               ))}
             </div>
+
+            {/* Email confirmation preview */}
+            <div style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>📧</span>
+              <div>
+                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', marginBottom: 4 }}>
+                  Confirmation email will be sent to {user?.email}
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+                  You'll receive an order summary and next steps within a few minutes of payment. Our team will follow up within 24 hours to kick off your project.
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right: Payment */}
+          {/* Right: Payment summary */}
           <div>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 28, position: 'sticky', top: 80 }}>
               <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Payment Summary</h3>
-
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
                 <span>Subtotal ({cart.length} item{cart.length > 1 ? 's' : ''})</span>
                 <span>${total.toLocaleString()}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20, fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
-                <span>Tax</span>
-                <span>Calculated at payment</span>
+                <span>Tax</span><span>Calculated at payment</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.08)', fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 900, color: '#fff' }}>
                 <span>Total</span>
                 <span style={{ color: '#22C55E' }}>${total.toLocaleString()}</span>
               </div>
 
-              {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#EF4444' }}>{error}</div>}
+              {error && (
+                <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#EF4444' }}>{error}</div>
+              )}
 
-              <button onClick={handleCheckout} disabled={loading} className="btn-primary" style={{ width: '100%', padding: '14px', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <button onClick={handleCheckout} disabled={loading} className="btn-primary"
+                style={{ width: '100%', padding: '14px', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 {loading ? <><span className="spinner" style={{ width: 16, height: 16 }} /> Redirecting...</> : '🔒 Pay with Stripe →'}
               </button>
 

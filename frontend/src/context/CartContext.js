@@ -26,13 +26,24 @@ export function CartProvider({ children }) {
     setCart(prev => prev.filter(i => !(i.serviceId === serviceId && i.plan === plan)));
   };
 
+  // নতুন: +/- quantity control এর জন্য
+  const updateQuantity = (serviceId, plan, delta) => {
+    setCart(prev =>
+      prev.map(i =>
+        i.serviceId === serviceId && i.plan === plan
+          ? { ...i, quantity: Math.max(1, i.quantity + delta) }
+          : i
+      )
+    );
+  };
+
   const clearCart = () => setCart([]);
 
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const count = cart.length;
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, total, count }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart, clearCart, total, count }}>
       {children}
     </CartContext.Provider>
   );

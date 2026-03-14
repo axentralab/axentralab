@@ -6,11 +6,15 @@ import { useCart } from '../../context/CartContext';
 export default function Navbar() {
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const { count } = useCart();
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [userMenu, setUserMenu]   = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [scrolled, setScrolled]       = useState(false);
+  const [menuOpen, setMenuOpen]       = useState(false);
+  const [userMenu, setUserMenu]       = useState(false);
+  const [promoBanner, setPromoBanner] = useState(true);
+  const navigate  = useNavigate();
+  const location  = useLocation();
+
+  const NAVBAR_H = 64;
+  const BANNER_H = promoBanner ? 44 : 0;
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
@@ -23,21 +27,111 @@ export default function Navbar() {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const navLinks = [
-    { to: '/services', label: 'Services' },
-    { to: '/products', label: 'Products' },
+    { to: '/services',  label: 'Services' },
+    { to: '/products',  label: 'Products' },
     { to: '/portfolio', label: 'Portfolio' },
-    { to: '/blog', label: 'Blog' },
-    { to: '/contact', label: 'Contact' },
-    { to: '/quote', label: '💰 Quote', highlight: true },
+    { to: '/blog',      label: 'Blog' },
+    { to: '/contact',   label: 'Contact' },
+    { to: '/quote',     label: '💰 Quote', highlight: true },
   ];
 
-  const active = (path) => location.pathname === path ? '#22C55E' : 'rgba(255,255,255,0.65)';
+  const active = (path) =>
+    location.pathname === path ? '#22C55E' : 'rgba(255,255,255,0.65)';
 
   return (
     <>
+      <style>{`
+        @keyframes navShimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position:  400px 0; }
+        }
+        @keyframes navPulse {
+          0%,100% { opacity:.5; transform:scale(1); }
+          50%      { opacity:1; transform:scale(1.08); }
+        }
+        .promo-shimmer-nav {
+          background: linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.15) 50%, transparent 100%);
+          background-size: 400px 100%;
+          animation: navShimmer 2.5s infinite linear;
+        }
+        .promo-dot { animation: navPulse 2s infinite; }
+        .promo-sep { display: inline-block; }
+        @media (max-width: 768px) { .promo-sep { display: none !important; } }
+        @media (min-width: 900px) { .mobile-nav  { display: none !important; } }
+        @media (max-width: 899px) { .desktop-nav { display: none !important; } }
+      `}</style>
+
+      {/* ── Promo Banner ── */}
+      {promoBanner && (
+        <div style={{
+          position: 'fixed',
+          top: NAVBAR_H,
+          left: 0, right: 0,
+          zIndex: 999,
+          height: BANNER_H,
+          background: 'linear-gradient(90deg,#78350f,#92400e,#b45309,#92400e,#78350f)',
+          borderBottom: '1px solid rgba(251,191,36,0.35)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 10,
+          padding: '0 48px 0 5%',
+          overflow: 'hidden',
+        }}>
+          {/* shimmer overlay */}
+          <div className="promo-shimmer-nav" style={{ position:'absolute', inset:0, pointerEvents:'none' }} />
+
+          {/* pulse dot */}
+          <span className="promo-dot" style={{ width:7, height:7, borderRadius:'50%', background:'#FCD34D', display:'inline-block', flexShrink:0, position:'relative' }} />
+
+          {/* text */}
+          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', justifyContent:'center', position:'relative' }}>
+            <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#FCD34D', letterSpacing:1.5, textTransform:'uppercase', fontWeight:700, whiteSpace:'nowrap' }}>
+              Limited Offer
+            </span>
+            <span className="promo-sep" style={{ width:3, height:3, borderRadius:'50%', background:'rgba(251,191,36,0.5)', display:'inline-block' }} />
+            <span style={{ fontFamily:"'Sora',sans-serif", fontSize:13, fontWeight:800, color:'#fff', whiteSpace:'nowrap' }}>
+              🎁 Get <span style={{ color:'#FCD34D' }}>50% OFF</span> your first project
+            </span>
+            <span className="promo-sep" style={{ width:3, height:3, borderRadius:'50%', background:'rgba(251,191,36,0.5)', display:'inline-block' }} />
+            <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(253,230,138,0.7)', whiteSpace:'nowrap' }}>
+              Code: <strong style={{ color:'#FCD34D', letterSpacing:1 }}>FIRST50</strong>
+            </span>
+          </div>
+
+          {/* CTA */}
+          <Link to="/contact" style={{
+            position: 'relative',
+            padding: '4px 14px',
+            background: '#F59E0B',
+            color: '#000',
+            borderRadius: 999,
+            fontSize: 11,
+            fontWeight: 800,
+            fontFamily: "'Sora',sans-serif",
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}>
+            Claim →
+          </Link>
+
+          {/* close */}
+          <button
+            onClick={() => setPromoBanner(false)}
+            aria-label="Dismiss"
+            style={{
+              position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+              background: 'none', border: 'none',
+              color: 'rgba(253,230,138,0.55)', fontSize: 18,
+              cursor: 'pointer', lineHeight: 1, padding: '4px 6px',
+            }}
+          >×</button>
+        </div>
+      )}
+
+      {/* ── Navbar ── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        height: 64, padding: '0 5%',
+        height: NAVBAR_H, padding: '0 5%',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         background: scrolled || menuOpen ? 'rgba(2,6,23,0.97)' : 'transparent',
         backdropFilter: 'blur(20px)',
@@ -50,18 +144,18 @@ export default function Navbar() {
           <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: -0.5 }}>Axentralab</span>
         </Link>
 
-        {/* Desktop */}
+        {/* Desktop nav */}
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }} className="desktop-nav">
           {navLinks.map(l => (
-            <Link key={l.to} to={l.to} style={{ 
-              padding: '6px 14px', 
-              borderRadius: 8, 
-              fontWeight: 500, 
-              fontSize: 14, 
+            <Link key={l.to} to={l.to} style={{
+              padding: '6px 14px',
+              borderRadius: 8,
+              fontWeight: 500,
+              fontSize: 14,
               color: l.highlight ? '#fff' : active(l.to),
               background: l.highlight ? 'rgba(34,197,94,0.15)' : 'transparent',
               border: l.highlight ? '1px solid rgba(34,197,94,0.3)' : 'none',
-              transition: 'all 0.2s' 
+              transition: 'all 0.2s',
             }}
               onMouseEnter={e => {
                 e.target.style.color = '#fff';
@@ -122,27 +216,39 @@ export default function Navbar() {
             </div>
           ) : (
             <div style={{ display: 'flex', gap: 8, marginLeft: 8 }}>
-              <Link to="/login" style={{ padding: '8px 16px', borderRadius: 8, fontWeight: 600, fontSize: 13, color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.12)' }}>Login</Link>
+              <Link to="/login"    style={{ padding: '8px 16px', borderRadius: 8, fontWeight: 600, fontSize: 13, color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.12)' }}>Login</Link>
               <Link to="/register" style={{ padding: '8px 16px', borderRadius: 8, background: '#22C55E', fontWeight: 700, fontSize: 13, color: '#000' }}>Sign Up</Link>
             </div>
           )}
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="mobile-nav">
           <Link to="/cart" style={{ position: 'relative', fontSize: 20 }}>
             🛒
             {count > 0 && <span style={{ position: 'absolute', top: -4, right: -4, width: 14, height: 14, background: '#22C55E', borderRadius: '50%', fontSize: 9, color: '#000', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{count}</span>}
           </Link>
           <button onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {[0,1,2].map(i => <div key={i} style={{ width: 22, height: 2, background: 'rgba(255,255,255,0.7)', borderRadius: 2, transition: 'all 0.25s', transform: menuOpen ? (i===0?'rotate(45deg) translate(5px,5px)':i===2?'rotate(-45deg) translate(5px,-5px)':'scaleX(0)') : 'none' }} />)}
+            {[0,1,2].map(i => (
+              <div key={i} style={{ width: 22, height: 2, background: 'rgba(255,255,255,0.7)', borderRadius: 2, transition: 'all 0.25s', transform: menuOpen ? (i===0?'rotate(45deg) translate(5px,5px)':i===2?'rotate(-45deg) translate(5px,-5px)':'scaleX(0)') : 'none' }} />
+            ))}
           </button>
         </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — opens below navbar + banner */}
       {menuOpen && (
-        <div style={{ position: 'fixed', top: 64, left: 0, right: 0, bottom: 0, zIndex: 999, background: 'rgba(2,6,23,0.98)', backdropFilter: 'blur(20px)', padding: '24px 6%', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{
+          position: 'fixed',
+          top: NAVBAR_H + BANNER_H,
+          left: 0, right: 0, bottom: 0,
+          zIndex: 999,
+          background: 'rgba(2,6,23,0.98)',
+          backdropFilter: 'blur(20px)',
+          padding: '24px 6%',
+          overflowY: 'auto',
+          display: 'flex', flexDirection: 'column', gap: 6,
+        }}>
           {navLinks.map(l => (
             <Link key={l.to} to={l.to} style={{ padding: '14px 20px', borderRadius: 12, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 17, color: 'rgba(255,255,255,0.8)', border: '1px solid transparent' }}>
               {l.label}
@@ -156,17 +262,12 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login" style={{ padding: '14px 20px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', fontWeight: 600, fontSize: 15, color: '#fff', textAlign: 'center' }}>Login</Link>
+              <Link to="/login"    style={{ padding: '14px 20px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', fontWeight: 600, fontSize: 15, color: '#fff', textAlign: 'center' }}>Login</Link>
               <Link to="/register" style={{ padding: '14px 20px', borderRadius: 12, background: '#22C55E', fontWeight: 700, fontSize: 15, color: '#000', textAlign: 'center' }}>Create Account</Link>
             </>
           )}
         </div>
       )}
-
-      <style>{`
-        @media (min-width: 900px) { .mobile-nav { display: none !important; } }
-        @media (max-width: 899px) { .desktop-nav { display: none !important; } }
-      `}</style>
     </>
   );
 }
