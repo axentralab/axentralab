@@ -15,6 +15,7 @@ import HomePage        from './pages/HomePage';
 import ShopPage        from './pages/ShopPage';
 import ProductsPage    from './pages/ProductsPage';
 import PortfolioPage   from './pages/PortfolioPage';
+import TeamPage        from './pages/TeamPage';
 import BlogPage        from './pages/BlogPage';
 import BlogPostPage    from './pages/BlogPostPage';
 import ContactPage     from './pages/ContactPage';
@@ -68,6 +69,7 @@ export default function App() {
                 <Route path="/services"  element={<PublicLayout><ShopPage /></PublicLayout>} />
                 <Route path="/products"  element={<PublicLayout><ProductsPage /></PublicLayout>} />
                 <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
+                <Route path="/team"      element={<PublicLayout><TeamPage /></PublicLayout>} />
                 <Route path="/blog"      element={<PublicLayout><BlogPage /></PublicLayout>} />
                 <Route path="/blog/:id"  element={<PublicLayout><BlogPostPage /></PublicLayout>} />
                 <Route path="/contact"   element={<PublicLayout><ContactPage /></PublicLayout>} />
