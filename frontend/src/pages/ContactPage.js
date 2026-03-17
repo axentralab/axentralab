@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import api from '../services/api';
-import SEO from '../components/SEO';
-// import { SEO_CONTACT } from '../constants/seoConfig';
+
+
 
 const SERVICES = ['AI Automation','Web Development','Cybersecurity','DevOps & Cloud','SaaS Development','IT Consulting','Other'];
 const BUDGETS  = ['Under $5k','$5k – $15k','$15k – $50k','$50k+','Let\'s discuss'];

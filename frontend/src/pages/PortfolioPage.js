@@ -2,8 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
-import SEO from '../components/SEO';
-// import { SEO_PRODUCTS } from '../constants/seoConfig';
+
 // demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
 
 const PRODUCTS = [

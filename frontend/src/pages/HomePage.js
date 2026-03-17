@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { TAG_COLORS } from '../constants/statusColors';
-import SEO from '../components/SEO';
-// import { SEO_HOME } from '../constants/seoConfig';
+
+
 
 const SERVICES = [
   { icon: '🌐', title: 'Web Development',       desc: 'Custom websites, SaaS platforms and high-performance applications built to scale.', color: '#3B82F6', link: '/services' },
@@ -32,8 +32,6 @@ const TESTIMONIALS = [
   { name: 'James Kowalski', role: 'VP Eng, Dataflow',  avatar: 'JK', color: '#A855F7', quote: 'The AI automation they built saves our team 200+ hours per month. ROI was visible within 30 days of go-live.' },
 ];
 
-// FIX: Static fallback for latest blog posts (used only if API fails)
-// Uses slugs/titles instead of hardcoded IDs that could change
 const BLOG_FALLBACK_HOME = [
   { _id: '5',  title: '10 Most Common WordPress Security Mistakes', category: 'Cybersecurity', createdAt: '2025-03-01' },
   { _id: '2',  title: 'Building AI Agents with LangChain and Node.js', category: 'AI Automation', createdAt: '2025-02-20' },
@@ -102,13 +100,12 @@ function Glow({ x, y, color = '#22C55E', size = 500 }) {
 export default function HomePage() {
   const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  // FIX: Fetch latest blog posts from API; fall back to static list if unavailable
   const [blogPosts, setBlogPosts] = useState(BLOG_FALLBACK_HOME);
 
   useEffect(() => {
     api.get('/blog?limit=3&sort=-createdAt')
       .then(r => { if (r.data.data?.length) setBlogPosts(r.data.data.slice(0, 3)); })
-      .catch(() => {}); // silently keep fallback
+      .catch(() => {});
   }, []);
 
   /* Auto-rotate testimonials */
@@ -119,7 +116,6 @@ export default function HomePage() {
 
   return (
     <div>
-      <SEO {...SEO_HOME} />
       <style>{`
         @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
         @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
@@ -133,7 +129,6 @@ export default function HomePage() {
         .fade-up-4 { animation: fadeUp 0.7s 0.55s ease both; }
         .section-pad { scroll-margin-top: 80px; }
 
-        /* ── Stats grid: 4 col → 2 col → 2 col on small ── */
         .stats-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -153,7 +148,6 @@ export default function HomePage() {
           }
         }
 
-        /* ── Hero: tighten padding on mobile ── */
         .hero-section {
           padding: 120px 5% 80px;
         }
@@ -169,7 +163,6 @@ export default function HomePage() {
           }
         }
 
-        /* ── Hero h1: reduce letter-spacing on mobile (looks odd at small sizes) ── */
         .hero-h1 {
           letter-spacing: -2.5px;
         }
@@ -177,7 +170,6 @@ export default function HomePage() {
           .hero-h1 { letter-spacing: -1px; }
         }
 
-        /* ── Testimonial card: reduce padding on mobile ── */
         .testimonial-card {
           padding: 40px 36px;
         }
@@ -187,14 +179,12 @@ export default function HomePage() {
           }
         }
 
-        /* ── CTA promo nudge: stack on very small screens ── */
         .cta-promo-nudge {
           flex-wrap: wrap;
           justify-content: center;
           text-align: center;
         }
 
-        /* ── Section padding: reduce on mobile ── */
         @media (max-width: 600px) {
           .section-mobile-pad {
             padding-top: 60px !important;
@@ -310,8 +300,8 @@ export default function HomePage() {
           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -1 }}>What Our Clients Say</h2>
         </div>
 
-          <div style={{ maxWidth: 720, margin: '0 auto 32px' }}>
-            <div className="testimonial-card" style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${TESTIMONIALS[activeTestimonial].color}30`, borderRadius: 24, transition: 'border-color 0.4s', position: 'relative' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto 32px' }}>
+          <div className="testimonial-card" style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${TESTIMONIALS[activeTestimonial].color}30`, borderRadius: 24, transition: 'border-color 0.4s', position: 'relative' }}>
             <div style={{ fontSize: 48, color: TESTIMONIALS[activeTestimonial].color, fontFamily: 'Georgia,serif', lineHeight: 1, marginBottom: 20, opacity: 0.5 }}>"</div>
             <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(15px,2vw,18px)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 28, fontStyle: 'italic' }}>{TESTIMONIALS[activeTestimonial].quote}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -323,8 +313,8 @@ export default function HomePage() {
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{TESTIMONIALS[activeTestimonial].role}</div>
               </div>
             </div>
-            </div>
           </div>
+        </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
           {TESTIMONIALS.map((_, i) => (
@@ -350,7 +340,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* LATEST BLOG — FIX: posts fetched from API, fall back to static only if API fails */}
+      {/* LATEST BLOG */}
       <section className="section-pad section-mobile-pad" style={{ padding: '80px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto 36px', flexWrap: 'wrap', gap: 12 }}>
           <div>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
-// import { SEO_TEAM } from '../constants/seoConfig';
+
 
 // ─── Team Data ────────────────────────────────────────────────────────────────
 // photo: public/images/team/ ফোল্ডারে রাখুন
