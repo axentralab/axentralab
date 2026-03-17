@@ -1,341 +1,451 @@
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
-// demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
-
-const PRODUCTS = [
-  // ── Existing 6 ──
-  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:19, billing:'monthly', color:'#22C55E', demoUrl:'https://wp-shield-pi.vercel.app/', demoPreview:'Scan your WordPress site for 1,000+ known vulnerabilities and get a full report in under 60 seconds.' },
-  { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6', demoUrl:'https://demo.axentralab.com/siteguard', demoPreview:'Watch SiteGuard detect and block a simulated brute-force attack in real time on a live staging environment.' },
-  { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444', demoUrl:'https://demo.axentralab.com/api-scanner', demoPreview:'Point API Scanner at a sample REST API and see broken auth, excessive data exposure, and rate-limit flaws flagged instantly.' },
-  { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7', demoUrl:'https://demo.axentralab.com/cloudarmor', demoPreview:'Connect a sandbox AWS account and CloudArmor surfaces open S3 buckets, over-privileged IAM roles, and CIS benchmark gaps in minutes.' },
-  { id:'p5', name:'PenBot', tag:'Automated Pentesting', desc:'Simulated attacker that runs automated penetration tests on your web apps continuously, not just once a year.', features:['Continuous attack simulation','OWASP Top 10 coverage','Session & auth bypass tests','Custom scan schedules','Executive + dev reports'], price:89, billing:'monthly', color:'#F97316', demoUrl:'https://demo.axentralab.com/penbot', demoPreview:'See PenBot run a full OWASP Top 10 attack simulation against a demo app — exploiting an auth bypass and generating an executive report.' },
-  { id:'p6', name:'DataVault', tag:'Data Privacy', desc:'Discover, classify, and protect sensitive data across databases, file stores, and SaaS platforms automatically.', features:['PII/PHI auto-discovery','GDPR & CCPA mapping','Data lineage tracking','Breach risk scoring','One-click redaction'], price:59, billing:'monthly', color:'#06B6D4', demoUrl:'https://demo.axentralab.com/datavault', demoPreview:'Watch DataVault scan a sample PostgreSQL database, auto-tag 14 PII fields, map them to GDPR articles, and generate a risk score.' },
-
-  // ── New 6 ──
-  { id:'p7', name:'PhishNet', tag:'Email Security', desc:'AI-powered phishing detection and email threat intelligence that protects your team inbox before the damage is done.', features:['Real-time phishing detection','Spoofed domain alerts','DMARC/DKIM/SPF analysis','Employee risk scoring','Automated quarantine'], price:29, billing:'monthly', color:'#EC4899', demoUrl:'https://demo.axentralab.com/phishnet', demoPreview:'Submit a suspicious email and PhishNet dissects headers, links, and sender reputation in seconds — flagging credential harvesting attempts live.' },
-  { id:'p8', name:'LogSentinel', tag:'Log Management', desc:'Centralised log aggregation, anomaly detection, and real-time SIEM-lite alerting for web apps and servers.', features:['Multi-source log ingestion','Anomaly & spike detection','Real-time alert rules','Log retention (90 days)','CSV / JSON export'], price:45, billing:'monthly', color:'#14B8A6', demoUrl:'https://demo.axentralab.com/logsentinel', demoPreview:'Pipe 500k log lines into LogSentinel and watch it surface 3 anomalous login patterns and an unusual outbound spike within 10 seconds.' },
-  { id:'p9', name:'AutoFlow AI', tag:'AI Automation', desc:'No-code AI workflow builder — connect your apps, trigger actions on events, and automate repetitive ops tasks with GPT-4 intelligence.', features:['Drag-and-drop workflow builder','200+ app integrations','GPT-4 decision nodes','Webhook & cron triggers','Run history & audit log'], price:55, billing:'monthly', color:'#8B5CF6', demoUrl:'https://demo.axentralab.com/autoflow', demoPreview:'Build a live workflow: new Typeform lead → GPT-4 scores it → Slack alert if high-value → HubSpot deal auto-created. All in under 4 minutes.' },
-  { id:'p10', name:'BotShield', tag:'Bot Protection', desc:'Distinguish real users from malicious bots in real time. Stop credential stuffing, scraping, and fake signups at the edge.', features:['Behavioural fingerprinting','Credential stuffing defence','Scraper & crawler blocking','CAPTCHA-free challenge mode','Analytics dashboard'], price:35, billing:'monthly', color:'#F59E0B', demoUrl:'https://demo.axentralab.com/botshield', demoPreview:'Run a simulated bot flood against a demo login page — BotShield fingerprints and blocks 98% of automated requests while real users pass through.' },
-  { id:'p11', name:'RankRadar', tag:'SEO Intelligence', desc:'AI-driven SEO auditor and keyword tracker that surfaces technical issues, monitors rankings, and suggests fixes automatically.', features:['Full technical SEO audit','Daily rank tracking','AI fix suggestions','Competitor gap analysis','Core Web Vitals monitor'], price:39, billing:'monthly', color:'#22D3EE', demoUrl:'https://demo.axentralab.com/rankradar', demoPreview:'Enter any URL and RankRadar returns a full technical SEO audit, top-10 ranking opportunities, and GPT-generated fix suggestions in 90 seconds.' },
-  { id:'p12', name:'InboxAI', tag:'AI Email Marketing', desc:'AI-powered email campaign builder that writes, tests, and sends personalised sequences — with deliverability monitoring built in.', features:['GPT-4 email copywriter','A/B test automation','Send-time optimisation','Spam score checker','Unsubscribe & bounce mgmt'], price:49, billing:'monthly', color:'#FB7185', demoUrl:'https://demo.axentralab.com/inboxai', demoPreview:'Watch InboxAI generate a 5-email onboarding sequence, auto-split-test subject lines, and predict the winning variant — all in under 2 minutes.' },
+// ── Project Data ──────────────────────────────────────────────────────────────
+// thumbnail: public/images/portfolio/ ফোল্ডারে রাখুন
+const PROJECTS = [
+  {
+    id: 'p1',
+    title: 'FinNova Dashboard',
+    tag: 'SaaS / Fintech',
+    category: 'Web App',
+    color: '#22C55E',
+    year: '2024',
+    thumbnail: '/images/portfolio/finnova.jpg',
+    desc: 'Real-time financial analytics dashboard with AI-powered anomaly detection and multi-currency support for a London-based fintech startup.',
+    stack: ['React', 'Node.js', 'PostgreSQL', 'AWS', 'Chart.js'],
+    results: ['3× faster reporting', '99.98% uptime', '40k MAU at launch'],
+    liveUrl: 'https://finnova.io',
+    featured: true,
+  },
+  {
+    id: 'p2',
+    title: 'SecureOps Platform',
+    tag: 'Cybersecurity',
+    category: 'Web App',
+    color: '#EF4444',
+    year: '2024',
+    thumbnail: '/images/portfolio/secureops.jpg',
+    desc: 'Enterprise security operations platform with automated threat hunting, incident response workflows, and SOC2-compliant audit trails.',
+    stack: ['Next.js', 'Python', 'MongoDB', 'Docker', 'Redis'],
+    results: ['18 CVEs patched pre-launch', 'SOC2 Type II certified', '200+ enterprise users'],
+    liveUrl: 'https://secureops.io',
+    featured: true,
+  },
+  {
+    id: 'p3',
+    title: 'NexaAI Automation',
+    tag: 'AI / Automation',
+    category: 'SaaS',
+    color: '#8B5CF6',
+    year: '2024',
+    thumbnail: '/images/portfolio/nexaai.jpg',
+    desc: 'No-code AI workflow automation platform that lets non-technical teams build GPT-4 powered business processes with drag-and-drop simplicity.',
+    stack: ['React', 'Node.js', 'LangChain', 'MongoDB', 'Vercel'],
+    results: ['200+ hr/mo saved per client', '6-week build to launch', '$2M ARR in year 1'],
+    liveUrl: 'https://nexaai.co',
+    featured: true,
+  },
+  {
+    id: 'p4',
+    title: 'CloudBridge Portal',
+    tag: 'Cloud / DevOps',
+    category: 'Web App',
+    color: '#3B82F6',
+    year: '2023',
+    thumbnail: '/images/portfolio/cloudbridge.jpg',
+    desc: 'Multi-cloud management portal for AWS, GCP, and Azure — unified cost monitoring, IAM governance, and one-click deployment pipelines.',
+    stack: ['React', 'Terraform', 'AWS', 'Docker', 'Kubernetes'],
+    results: ['35% infra cost reduction', 'Manages 400+ cloud resources', 'Zero-downtime deployments'],
+    liveUrl: 'https://cloudbridge.io',
+    featured: false,
+  },
+  {
+    id: 'p5',
+    title: 'BankCo Mobile App',
+    tag: 'Fintech / Mobile',
+    category: 'Mobile',
+    color: '#F59E0B',
+    year: '2023',
+    thumbnail: '/images/portfolio/bankco.jpg',
+    desc: 'Neobank mobile app with biometric auth, instant transfers, BNPL, and real-time spending insights. Built for a challenger bank in Southeast Asia.',
+    stack: ['React Native', 'Node.js', 'PostgreSQL', 'Stripe', 'AWS'],
+    results: ['4.8★ App Store rating', '80k downloads in 3 months', 'PCI-DSS compliant'],
+    liveUrl: '#',
+    featured: false,
+  },
+  {
+    id: 'p6',
+    title: 'Buildly SaaS',
+    tag: 'SaaS / Productivity',
+    category: 'SaaS',
+    color: '#06B6D4',
+    year: '2023',
+    thumbnail: '/images/portfolio/buildly.jpg',
+    desc: 'Project management SaaS for remote engineering teams — sprint planning, async standups, PR integrations, and burndown analytics in one place.',
+    stack: ['Next.js', 'Node.js', 'MongoDB', 'GitHub API', 'Tailwind'],
+    results: ['Used by 120+ engineering teams', '98% customer retention', 'Featured on Product Hunt'],
+    liveUrl: 'https://buildly.app',
+    featured: false,
+  },
+  {
+    id: 'p7',
+    title: 'Dataflow Analytics',
+    tag: 'Data / Analytics',
+    category: 'Web App',
+    color: '#A855F7',
+    year: '2023',
+    thumbnail: '/images/portfolio/dataflow.jpg',
+    desc: 'Self-serve analytics platform for e-commerce brands — cohort analysis, funnel visualisation, and LTV prediction powered by ML models.',
+    stack: ['React', 'Python', 'PostgreSQL', 'D3.js', 'FastAPI'],
+    results: ['Processes 50M events/day', '12× faster than previous solution', 'Series A secured post-launch'],
+    liveUrl: 'https://dataflow.io',
+    featured: false,
+  },
+  {
+    id: 'p8',
+    title: 'EcoTrack Platform',
+    tag: 'SaaS / ESG',
+    category: 'SaaS',
+    color: '#22D3EE',
+    year: '2022',
+    thumbnail: '/images/portfolio/ecotrack.jpg',
+    desc: 'Carbon footprint tracking and ESG reporting SaaS for mid-market companies — automated data ingestion, Scope 1/2/3 calculations, and board-ready reports.',
+    stack: ['React', 'Node.js', 'PostgreSQL', 'AWS', 'Recharts'],
+    results: ['ISO 14064 compliant', '60+ enterprise clients', 'Acquired in 2023'],
+    liveUrl: '#',
+    featured: false,
+  },
 ];
 
-const ENTERPRISE_FEATURES = [
-  { icon:'🏗️', title:'Custom Integrations', desc:'SSO, SAML, custom webhooks, and tailored API access for your internal toolchain.' },
-  { icon:'🛡️', title:'Dedicated SOC Analyst', desc:'A real human security expert reviews your findings and advises your team weekly.' },
-  { icon:'📊', title:'Unlimited Seats', desc:'No per-seat pricing. Add your entire engineering and security team at no extra cost.' },
-  { icon:'📝', title:'Compliance Reports', desc:'SOC 2, ISO 27001, PCI-DSS, and HIPAA report generation built right in.' },
-  { icon:'⚡', title:'Priority Response SLA', desc:'Critical findings triaged within 1 hour. P1 incidents have a guaranteed 15-min response.' },
-  { icon:'🔒', title:'Private Deployment', desc:'Deploy Axentralab tools in your own VPC or on-premise environment.' },
+const CATEGORIES = ['All', 'Web App', 'SaaS', 'Mobile'];
+
+const STATS = [
+  { value: '120+', label: 'Projects Shipped',    color: '#22C55E' },
+  { value: '98%',  label: 'Client Retention',    color: '#3B82F6' },
+  { value: '$50M+', label: 'Client Revenue Generated', color: '#A855F7' },
+  { value: '30+',  label: 'Industries Served',   color: '#F59E0B' },
 ];
 
 const TESTIMONIALS = [
-  { name:'Lena Park', role:'CTO, StackFlow Inc.', avatar:'LP', color:'#22C55E', quote:'WP Shield caught a supply-chain malware injection in one of our plugins within 3 minutes of deployment. It literally saved our SaaS business.' },
-  { name:'James Okonkwo', role:'Security Lead, Nexora', avatar:'JO', color:'#3B82F6', quote:'SiteGuard\'s auto IP-blocking stopped a credential stuffing attack at 2 AM while everyone was asleep. The Slack alert woke me up after the threat was already handled.' },
-  { name:'Sofia Reyes', role:'DevOps Engineer, Luminary', avatar:'SR', color:'#A855F7', quote:'CloudArmor found 14 open S3 buckets we didn\'t even know existed. The CIS benchmark report made our compliance audit a breeze.' },
-  { name:'Tobias Brandt', role:'Founder, Codewright', avatar:'TB', color:'#F97316', quote:'PenBot runs continuous pen tests against our staging env on every deploy. Found an auth bypass before it ever hit production. 10/10.' },
-  { name:'Priya Nair', role:'Head of Ops, Finberry', avatar:'PN', color:'#8B5CF6', quote:'AutoFlow AI replaced 3 Zapier workflows and an intern. Runs 200+ automations a day, never misses a beat, and costs 60% less.' },
-  { name:'Marc Dubois', role:'Marketing Lead, Clutch.io', avatar:'MD', color:'#22D3EE', quote:'RankRadar\'s AI fix suggestions bumped our organic traffic 38% in 6 weeks. The competitor gap report alone was worth every cent.' },
+  { name: 'Marcus Chen',   role: 'CTO, NovaTech',     avatar: 'MC', color: '#22C55E', quote: 'Axentralab built our entire SaaS platform in 8 weeks. The code quality, architecture decisions, and post-launch support were all exceptional.' },
+  { name: 'Sarah Okonkwo', role: 'Founder, Buildly',  avatar: 'SO', color: '#3B82F6', quote: 'They don\'t just write code — they think like product engineers. Every decision was optimised for our users, not just the brief.' },
+  { name: 'James Kowalski', role: 'VP Eng, Dataflow', avatar: 'JK', color: '#A855F7', quote: 'The AI automation they built saves us 200+ hours a month. ROI was visible within 30 days. Best technical investment we\'ve made.' },
 ];
 
-const FAQS = [
-  { q:'Is there a free trial available?', a:'Yes — every product includes a 14-day free trial with no credit card required. You get full access to all features during the trial period.' },
-  { q:'Can I cancel anytime?', a:'Absolutely. All plans are month-to-month with no lock-in contracts. Cancel from your dashboard with one click and you\'ll never be charged again.' },
-  { q:'Do you offer annual billing discounts?', a:'Yes, switching to annual billing saves you 20% across all plans. You can toggle this on your subscription settings page.' },
-  { q:'Is my data secure with Axentralab?', a:'We\'re SOC 2 Type II certified and all data is encrypted at rest (AES-256) and in transit (TLS 1.3). We never sell or share your data with third parties.' },
-  { q:'Can I use multiple products together?', a:'Yes, and they integrate natively. Add any products to your cart and manage everything from a single unified dashboard.' },
-  { q:'Do you support on-premise deployments?', a:'On-premise and private VPC deployments are available on the Enterprise plan. Contact our sales team for a custom quote.' },
-];
-
-const STATS = [
-  { value:'12M+', label:'Threats Blocked', color:'#22C55E' },
-  { value:'99.98%', label:'Uptime SLA', color:'#3B82F6' },
-  { value:'4,200+', label:'Customers', color:'#A855F7' },
-  { value:'< 3 min', label:'Avg Detection Time', color:'#F97316' },
-];
-
-const CATEGORIES = ['All', 'Cybersecurity', 'AI / Automation', 'SEO & Marketing'];
-const getCat = (tag) => {
-  if (['WordPress Security','Monitoring Platform','API Security','Cloud Security','Automated Pentesting','Data Privacy','Email Security','Log Management','Bot Protection'].includes(tag)) return 'Cybersecurity';
-  if (['AI Automation','AI Email Marketing'].includes(tag)) return 'AI / Automation';
-  if (['SEO Intelligence'].includes(tag)) return 'SEO & Marketing';
-  return 'Cybersecurity';
-};
-
-export default function ProductsPage() {
-  const { addToCart, cart } = useCart();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [openFaq, setOpenFaq] = useState(null);
-  const [activeCat, setActiveCat] = useState('All');
-
-  const isInCart = (id) => cart.some(i => i.serviceId === id);
-
-  const handleBuy = (p) => {
-    if (!isAuthenticated) { navigate('/register'); return; }
-    addToCart(
-      { _id: p.id, title: p.name },
-      { name: 'Monthly', price: p.price, billing: p.billing }
-    );
-    navigate('/cart');
-  };
-
-  const filtered = activeCat === 'All' ? PRODUCTS : PRODUCTS.filter(p => getCat(p.tag) === activeCat);
+// ── Project Card ──────────────────────────────────────────────────────────────
+function ProjectCard({ project, index }) {
+  const [imgErr, setImgErr] = useState(false);
 
   return (
-    <>
-      <SEO {...SEO_PRODUCTS} />
-      <div style={{ padding:'108px 5% 0', minHeight:'100vh' }}>
+    <div
+      style={{
+        background: 'rgba(255,255,255,0.025)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 20,
+        overflow: 'hidden',
+        transition: 'all 0.3s',
+        animation: `fadeUp 0.5s ${index * 0.07}s ease both`,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = `${project.color}40`;
+        e.currentTarget.style.transform = 'translateY(-6px)';
+        e.currentTarget.style.boxShadow = `0 20px 48px ${project.color}14`;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
+    >
+      {/* Top accent */}
+      <div style={{ height: 3, background: `linear-gradient(90deg,${project.color},transparent)` }} />
+
+      {/* Thumbnail */}
+      <div style={{ position: 'relative', height: 200, background: `linear-gradient(135deg,${project.color}18,${project.color}06)`, overflow: 'hidden', flexShrink: 0 }}>
+        {!imgErr ? (
+          <img
+            src={project.thumbnail}
+            alt={project.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            onError={() => setImgErr(true)}
+          />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 10 }}>
+            <div style={{ fontSize: 40, opacity: 0.35 }}>
+              {project.category === 'Mobile' ? '📱' : project.category === 'SaaS' ? '📦' : '🌐'}
+            </div>
+            <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: `${project.color}60`, letterSpacing: 2 }}>
+              {project.tag.toUpperCase()}
+            </span>
+          </div>
+        )}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(6,8,15,0.65) 100%)' }} />
+
+        {/* Year badge */}
+        <div style={{ position: 'absolute', top: 14, right: 14, padding: '3px 9px', background: 'rgba(6,8,15,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6 }}>
+          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1 }}>{project.year}</span>
+        </div>
+
+        {/* Featured badge */}
+        {project.featured && (
+          <div style={{ position: 'absolute', top: 14, left: 14, padding: '3px 9px', background: project.color, borderRadius: 6 }}>
+            <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: '#000', fontWeight: 900, letterSpacing: 1 }}>★ FEATURED</span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {/* Tag */}
+        <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 6, background: `${project.color}10`, border: `1px solid ${project.color}25`, color: project.color, fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: 600, marginBottom: 12, alignSelf: 'flex-start' }}>
+          {project.tag}
+        </span>
+
+        <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 18, fontWeight: 900, color: '#fff', margin: '0 0 10px', letterSpacing: -0.4 }}>
+          {project.title}
+        </h3>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, margin: '0 0 16px', flex: 1 }}>
+          {project.desc}
+        </p>
+
+        {/* Results */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
+          {project.results.map((r, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: project.color, fontSize: 11, fontWeight: 900 }}>↑</span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace" }}>{r}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Stack */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
+          {project.stack.map((s, i) => (
+            <span key={i} style={{ padding: '3px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace" }}>{s}</span>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {project.liveUrl !== '#' ? (
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+              style={{ flex: 1, padding: '10px', background: `${project.color}15`, border: `1px solid ${project.color}30`, borderRadius: 10, color: project.color, fontSize: 13, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', textAlign: 'center', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = `${project.color}25`; }}
+              onMouseLeave={e => { e.currentTarget.style.background = `${project.color}15`; }}>
+              View Live →
+            </a>
+          ) : (
+            <div style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, color: 'rgba(255,255,255,0.25)', fontSize: 13, fontFamily: "'Space Mono',monospace", textAlign: 'center' }}>
+              NDA Protected
+            </div>
+          )}
+          <Link to="/contact"
+            style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', textAlign: 'center', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; }}>
+            Similar?
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function PortfolioPage() {
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const filtered = activeCategory === 'All'
+    ? PROJECTS
+    : PROJECTS.filter(p => p.category === activeCategory);
+
+  return (
+    <div style={{ padding: '108px 5% 0', minHeight: '100vh' }}>
       <style>{`
-        @media (max-width: 640px) {
-          .cat-bar { flex-wrap: wrap !important; gap: 8px !important; }
-          .cat-bar button { flex: 1 1 calc(50% - 8px) !important; }
-          .prod-grid { grid-template-columns: 1fr !important; }
-          .ent-inner { padding: 36px 22px !important; }
-          .cta-inner  { padding: 40px 24px !important; }
-          .step-grid  { grid-template-columns: 1fr !important; border-radius: 16px !important; }
-          .step-grid > div { border-radius: 12px !important; border-left: 1px solid rgba(255,255,255,0.06) !important; margin-bottom: 1px; }
+        @keyframes fadeUp  { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+        @keyframes pulse   { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+        @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+        .portfolio-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 24px;
+          max-width: 1100px;
+          margin: 0 auto;
         }
-        @media (max-width: 900px) {
-          .ent-flex { flex-direction: column !important; }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          max-width: 900px;
+          margin: 0 auto;
+        }
+        .testimonials-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        .cat-bar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+        @media (max-width: 700px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .stats-grid > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.06); }
+          .stats-grid > div:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.06) !important; }
+        }
+        @media (max-width: 480px) {
+          .portfolio-grid { grid-template-columns: 1fr !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
       {/* ── Hero ── */}
-      <div style={{ textAlign:'center', marginBottom:48 }}>
-        <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #3B82F640', background:'#3B82F612', color:'#3B82F6', fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>SaaS Products</span>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(28px,5vw,58px)', fontWeight:900, color:'#fff', marginTop:16, letterSpacing:-1.5 }}>
-          Security Tools Built by<br /><span style={{ color:'#22C55E' }}>Axentralab</span>
+      <div style={{ textAlign: 'center', marginBottom: 64, animation: 'fadeUp 0.6s ease both' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 20 }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Selected Work</span>
+        </div>
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,5.5vw,68px)', fontWeight: 900, color: '#fff', margin: '0 0 18px', letterSpacing: -2.5, lineHeight: 1.04 }}>
+          Work That{' '}
+          <span style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.3)' }}>Speaks</span>
+          <br />
+          <span style={{ color: '#22C55E' }}>for Itself.</span>
         </h1>
-        <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:440, margin:'14px auto 0' }}>
-          Plug-and-play security, automation, and growth products — start in minutes.
+        <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(14px,1.8vw,17px)', color: 'rgba(255,255,255,0.42)', maxWidth: 500, margin: '0 auto 32px', lineHeight: 1.8 }}>
+          Real products, real results. Every project below was shipped on time, on budget, and built to scale.
         </p>
+        <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {['🔒 NDA available','📦 Full source code','🚀 Production-ready','⚡ On-time delivery'].map((v, i) => (
+            <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontFamily: "'Space Mono',monospace" }}>{v}</span>
+          ))}
+        </div>
       </div>
 
       {/* ── Stats Bar ── */}
-      <div style={{ maxWidth:1100, margin:'0 auto 56px', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:1, background:'rgba(255,255,255,0.06)', borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.07)' }}>
-        {STATS.map((s,i) => (
-          <div key={i} style={{ padding:'28px 24px', background:'rgba(10,10,15,0.9)', textAlign:'center' }}>
-            <div style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, color:s.color, letterSpacing:-1 }}>{s.value}</div>
-            <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', marginTop:4, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 72 }}>
+        <div className="stats-grid" style={{ background: 'rgba(255,255,255,0.01)' }}>
+          {STATS.map((s, i) => (
+            <div key={i} style={{ textAlign: 'center', padding: '28px 20px', borderRight: i < STATS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+              <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 32, fontWeight: 900, color: s.color, letterSpacing: -1, lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 6, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* ── Category Filter ── */}
-      <div className="cat-bar" style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:36, flexWrap:'wrap' }}>
+      <div className="cat-bar" style={{ marginBottom: 36 }}>
         {CATEGORIES.map(cat => (
-          <button key={cat} onClick={() => setActiveCat(cat)}
-            style={{ padding:'8px 20px', borderRadius:10, border: activeCat===cat ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCat===cat ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.45)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:13, cursor:'pointer', transition:'all 0.18s' }}>
+          <button key={cat} onClick={() => setActiveCategory(cat)}
+            style={{ padding: '8px 20px', borderRadius: 10, border: activeCategory === cat ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCategory === cat ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', color: activeCategory === cat ? '#22C55E' : 'rgba(255,255,255,0.45)', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, cursor: 'pointer', transition: 'all 0.18s' }}>
             {cat}
-            <span style={{ marginLeft:7, padding:'1px 7px', borderRadius:999, background: activeCat===cat ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)', fontSize:10, color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>
-              {cat === 'All' ? PRODUCTS.length : PRODUCTS.filter(p => getCat(p.tag) === cat).length}
+            <span style={{ marginLeft: 7, padding: '1px 7px', borderRadius: 999, background: activeCategory === cat ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)', fontSize: 10, color: activeCategory === cat ? '#22C55E' : 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace" }}>
+              {cat === 'All' ? PROJECTS.length : PROJECTS.filter(p => p.category === cat).length}
             </span>
           </button>
         ))}
       </div>
 
-      {/* ── Product Cards ── */}
-      <div className="prod-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))', gap:24, maxWidth:1100, margin:'0 auto' }}>
-        {filtered.map((p) => (
-          <div key={p.id}
-            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden', transition:'all 0.25s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor=`${p.color}35`; e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 16px 40px ${p.color}12`; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='none'; }}>
-            <div style={{ height:5, background:`linear-gradient(90deg,${p.color},transparent)` }} />
-            <div style={{ padding:28 }}>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10, flexWrap:'wrap', gap:8 }}>
-                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:999, border:`1px solid ${p.color}30`, background:`${p.color}10`, color:p.color, fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{p.tag}</span>
-                <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:22, color:p.color }}>${p.price}<span style={{ fontSize:12, fontWeight:500, color:'rgba(255,255,255,0.4)' }}>/mo</span></span>
-              </div>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', margin:'12px 0 10px', letterSpacing:-0.6 }}>{p.name}</h2>
-              <p style={{ fontSize:14, color:'rgba(255,255,255,0.5)', lineHeight:1.7, marginBottom:22 }}>{p.desc}</p>
-              <ul style={{ listStyle:'none', padding:0, margin:'0 0 26px' }}>
-                {p.features.map((f,j) => (
-                  <li key={j} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ color:p.color, fontSize:13 }}>✓</span>
-                    <span style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <div style={{ display:'flex', gap:10 }}>
-                <button onClick={() => handleBuy(p)} className="btn-primary" style={{ flex:1, padding:'12px', background:isInCart(p.id)?'rgba(34,197,94,0.15)':p.color, color:isInCart(p.id)?p.color:'#000', border:isInCart(p.id)?`1px solid ${p.color}40`:'none', fontSize:14 }}>
-                  {isInCart(p.id) ? '✓ Added to Cart' : isAuthenticated ? '🛒 Start Free Trial' : 'Get Started →'}
-                </button>
-                <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-outline"
-                  style={{ padding:'12px 16px', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  Demo
-                </a>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* ── Project Grid ── */}
+      <section style={{ marginBottom: 96 }}>
+        <div className="portfolio-grid">
+          {filtered.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
+          ))}
+        </div>
+      </section>
 
-      {/* ── Compare Table ── */}
-      <div style={{ maxWidth:1100, margin:'72px auto 0' }}>
-        <div style={{ textAlign:'center', marginBottom:32 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Feature Matrix</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Compare All Plans</h2>
-          <p style={{ fontSize:13, color:'rgba(255,255,255,0.3)', marginTop:8 }}>Security products only — scroll horizontally on mobile</p>
+      {/* ── Process Strip ── */}
+      <section style={{ maxWidth: 1100, margin: '0 auto 88px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 22, padding: 'clamp(32px,5vw,52px) clamp(24px,4vw,48px)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #3B82F640', background: '#3B82F612', color: '#3B82F6', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>How We Work</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3.5vw,36px)', fontWeight: 900, color: '#fff', marginTop: 12, letterSpacing: -0.8 }}>Every Project. Same Standard.</h2>
         </div>
-        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflow:'auto' }}>
-          <div style={{ minWidth:780 }}>
-            <div style={{ display:'grid', gridTemplateColumns:'2fr repeat(6,1fr)', padding:'14px 24px', background:'rgba(255,255,255,0.04)', borderBottom:'1px solid rgba(255,255,255,0.06)', gap:8 }}>
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.3)', letterSpacing:1 }}>FEATURE</span>
-              {PRODUCTS.slice(0,6).map(p => <span key={p.id} style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:p.color, letterSpacing:0.5, textAlign:'center' }}>{p.name.toUpperCase()}</span>)}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16 }}>
+          {[
+            { step: '01', icon: '🔍', title: 'Discovery Call',      desc: 'We scope the full project, agree on milestones, and sign an NDA before anything starts.' },
+            { step: '02', icon: '📐', title: 'Technical Blueprint', desc: 'Detailed architecture doc, tech stack decisions, and a fixed-price quote — no surprises.' },
+            { step: '03', icon: '⚙️', title: 'Sprint Delivery',     desc: 'Weekly demos on a live staging URL. You give feedback, we ship fast.' },
+            { step: '04', icon: '🚀', title: 'Launch & Handover',   desc: 'Full documentation, repo access, and optional retainer support post-launch.' },
+          ].map((s, i) => (
+            <div key={i} style={{ padding: '22px 18px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'none'; }}>
+              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.18)', letterSpacing: 2, marginBottom: 12 }}>{s.step}</div>
+              <div style={{ fontSize: 24, marginBottom: 10 }}>{s.icon}</div>
+              <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 7 }}>{s.title}</div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.65 }}>{s.desc}</div>
             </div>
-            {[
-              ['Real-time scanning',         true,  true,  true,  true,  true,  true ],
-              ['Auto remediation',           false, true,  false, false, true,  false],
-              ['API endpoint testing',       false, false, true,  false, true,  false],
-              ['Dashboard & reports',        true,  true,  true,  true,  true,  true ],
-              ['Slack / email alerts',       false, true,  true,  true,  true,  true ],
-              ['CI/CD integration',          false, false, true,  false, true,  false],
-              ['Cloud infra scanning',       false, false, false, true,  false, false],
-              ['PII/PHI data discovery',     false, false, false, false, false, true ],
-              ['Pen test simulation',        false, false, false, false, true,  false],
-              ['Compliance export',          false, false, false, true,  false, true ],
-              ['White-label option',         false, true,  false, false, false, false],
-            ].map(([label, ...vals], i, arr) => (
-              <div key={i} style={{ display:'grid', gridTemplateColumns:'2fr repeat(6,1fr)', padding:'12px 24px', borderBottom:i<arr.length-1?'1px solid rgba(255,255,255,0.04)':'none', background:i%2===0?'transparent':'rgba(255,255,255,0.01)', gap:8, alignItems:'center' }}>
-                <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)' }}>{label}</span>
-                {vals.map((v,j) => <span key={j} style={{ textAlign:'center', fontSize:15 }}>{v?'✅':'❌'}</span>)}
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-      </div>
-
-      {/* ── Enterprise Section ── */}
-      <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
-        <div className="ent-inner" style={{ background:'linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(59,130,246,0.06) 100%)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:24, padding:'56px 48px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-60, width:260, height:260, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:-40, left:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', pointerEvents:'none' }} />
-          <div className="ent-flex" style={{ display:'flex', flexWrap:'wrap', gap:40, alignItems:'flex-start', position:'relative' }}>
-            <div style={{ flex:'1 1 340px' }}>
-              <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #A855F740', background:'#A855F712', color:'#A855F7', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Enterprise</span>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(24px,4vw,38px)', fontWeight:900, color:'#fff', margin:'16px 0 14px', letterSpacing:-1 }}>Built for Teams<br />That Can't Afford<br /><span style={{ color:'#A855F7' }}>to Be Breached</span></h2>
-              <p style={{ color:'rgba(255,255,255,0.5)', fontSize:14, lineHeight:1.8, maxWidth:380, marginBottom:28 }}>Everything in all plans plus dedicated support, on-premise deployments, unlimited seats, and a named security engineer on your account.</p>
-              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
-                <button className="btn-primary" style={{ padding:'13px 28px', background:'#A855F7', color:'#fff', fontSize:14, border:'none' }}>Talk to Sales →</button>
-                <button className="btn-outline" style={{ padding:'13px 22px', fontSize:14 }}>View Case Studies</button>
-              </div>
-            </div>
-            <div style={{ flex:'1 1 340px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:16 }}>
-              {ENTERPRISE_FEATURES.map((f,i) => (
-                <div key={i} style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, padding:'18px 16px' }}>
-                  <div style={{ fontSize:24, marginBottom:10 }}>{f.icon}</div>
-                  <div style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:700, color:'#fff', marginBottom:6 }}>{f.title}</div>
-                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', lineHeight:1.6 }}>{f.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* ── Testimonials ── */}
-      <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
-        <div style={{ textAlign:'center', marginBottom:40 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Testimonials</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Trusted by Security-First Teams</h2>
+      <section style={{ marginBottom: 88 }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #ffffff15', background: '#ffffff08', color: 'rgba(255,255,255,0.5)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>Client Feedback</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3.5vw,36px)', fontWeight: 900, color: '#fff', marginTop: 12, letterSpacing: -0.8 }}>What Clients Say About the Work</h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))', gap:20 }}>
-          {TESTIMONIALS.map((t,i) => (
-            <div key={i} style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18, padding:28, transition:'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor=`${t.color}30`; e.currentTarget.style.transform='translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.07)'; e.currentTarget.style.transform='none'; }}>
-              <div style={{ fontSize:28, color:t.color, fontFamily:'Georgia,serif', lineHeight:1, marginBottom:14, opacity:0.7 }}>"</div>
-              <p style={{ fontSize:14, color:'rgba(255,255,255,0.65)', lineHeight:1.75, marginBottom:22 }}>{t.quote}</p>
-              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ width:38, height:38, borderRadius:'50%', background:`${t.color}20`, border:`1px solid ${t.color}40`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:12, color:t.color }}>{t.avatar}</div>
+        <div className="testimonials-grid">
+          {TESTIMONIALS.map((t, i) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 28, transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = `${t.color}30`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'none'; }}>
+              <div style={{ fontSize: 28, color: t.color, fontFamily: 'Georgia,serif', lineHeight: 1, marginBottom: 14, opacity: 0.7 }}>"</div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, marginBottom: 22 }}>{t.quote}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 38, height: 38, borderRadius: '50%', background: `${t.color}20`, border: `1px solid ${t.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 12, color: t.color }}>{t.avatar}</div>
                 <div>
-                  <div style={{ fontFamily:"'Sora',sans-serif", fontSize:13, fontWeight:700, color:'#fff' }}>{t.name}</div>
-                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:1 }}>{t.role}</div>
+                  <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: 700, color: '#fff' }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{t.role}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ── How It Works ── */}
-      <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
-        <div style={{ textAlign:'center', marginBottom:44 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Process</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Up & Running in 3 Steps</h2>
-        </div>
-        <div className="step-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative' }}>
-          {[
-            { step:'01', icon:'🛒', title:'Pick Your Plan',        desc:'Choose one or more products and add them to your cart. Bundle for maximum coverage.' },
-            { step:'02', icon:'⚙️', title:'Connect in Minutes',    desc:'Follow the guided setup wizard. Most integrations take under 5 minutes — no DevOps required.' },
-            { step:'03', icon:'🛡️', title:'Stay Protected 24/7',   desc:'Your dashboard goes live immediately. Get real-time alerts, weekly reports, and continuous scans.' },
-          ].map((s,i) => (
-            <div key={i} style={{ padding:'36px 32px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:i===0?'16px 0 0 16px':i===2?'0 16px 16px 0':'0', borderLeft:i>0?'none':undefined }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(255,255,255,0.2)', letterSpacing:2, marginBottom:16 }}>{s.step}</div>
-              <div style={{ fontSize:32, marginBottom:14 }}>{s.icon}</div>
-              <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:800, color:'#fff', marginBottom:10 }}>{s.title}</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{s.desc}</div>
-            </div>
+      {/* ── Tech Stack Marquee ── */}
+      <section style={{ padding: '36px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', marginBottom: 88 }}>
+        <div style={{ display: 'flex', gap: 48, animation: 'marquee 22s linear infinite', width: 'max-content' }}>
+          {[...['React','Next.js','Node.js','MongoDB','PostgreSQL','Docker','AWS','Python','TypeScript','Kubernetes','Redis','Terraform','Figma','LangChain','Stripe','GraphQL'], ...['React','Next.js','Node.js','MongoDB','PostgreSQL','Docker','AWS','Python','TypeScript','Kubernetes','Redis','Terraform','Figma','LangChain','Stripe','GraphQL']].map((t, i) => (
+            <span key={i} style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.13)', letterSpacing: 1, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{t}</span>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ── FAQ ── */}
-      <div style={{ maxWidth:720, margin:'80px auto 0' }}>
-        <div style={{ textAlign:'center', marginBottom:40 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>FAQ</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Frequently Asked Questions</h2>
-        </div>
-        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-          {FAQS.map((f,i) => (
-            <div key={i} style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, overflow:'hidden', transition:'border-color 0.2s', borderColor: openFaq===i ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.07)' }}>
-              <button onClick={() => setOpenFaq(openFaq===i ? null : i)}
-                style={{ width:'100%', padding:'18px 22px', background:'transparent', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12 }}>
-                <span style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:700, color:'#fff', textAlign:'left' }}>{f.q}</span>
-                <span style={{ color:'rgba(255,255,255,0.4)', fontSize:18, flexShrink:0, transition:'transform 0.2s', transform: openFaq===i ? 'rotate(45deg)' : 'none' }}>+</span>
-              </button>
-              {openFaq===i && (
-                <div style={{ padding:'0 22px 18px' }}>
-                  <p style={{ fontSize:14, color:'rgba(255,255,255,0.5)', lineHeight:1.8, margin:0 }}>{f.a}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Bottom CTA ── */}
-      <div style={{ maxWidth:1100, margin:'80px auto 0', paddingBottom:100 }}>
-        <div className="cta-inner" style={{ background:'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(59,130,246,0.08) 100%)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:24, padding:'64px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 65%)', pointerEvents:'none' }} />
-          <div style={{ position:'relative' }}>
-            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Get Protected Today</span>
-            <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,44px)', fontWeight:900, color:'#fff', margin:'20px auto 16px', letterSpacing:-1, maxWidth:600 }}>
-              Your Next Security Incident<br />Could Be Your Last
+      {/* ── CTA ── */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 100 }}>
+        <div style={{ position: 'relative', background: 'linear-gradient(135deg,rgba(34,197,94,0.09) 0%,rgba(59,130,246,0.06) 100%)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 24, padding: 'clamp(48px,6vw,80px) clamp(24px,5%,64px)', textAlign: 'center', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.07),transparent 65%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative' }}>
+            <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Start a Project</span>
+            <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4.5vw,52px)', fontWeight: 900, color: '#fff', margin: '18px auto 16px', letterSpacing: -1.5, lineHeight: 1.08, maxWidth: 580 }}>
+              Want Your Project<br /><span style={{ color: '#22C55E' }}>In This Portfolio?</span>
             </h2>
-            <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:480, margin:'0 auto 32px', lineHeight:1.7 }}>
-              14-day free trial. No credit card required. Cancel anytime. Join 4,200+ teams already protected by Axentralab.
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 460, margin: '0 auto 34px', lineHeight: 1.75 }}>
+              We build ambitious products for ambitious founders. Tell us what you're building and we'll respond within 24 hours with a proposal.
             </p>
-            <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-              <button className="btn-primary" style={{ padding:'15px 36px', background:'#22C55E', color:'#000', fontSize:15, border:'none', fontWeight:700 }}>Start Free Trial →</button>
-              <button className="btn-outline" style={{ padding:'15px 28px', fontSize:15 }}>Book a Demo</button>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
+              <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 700, borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
+                Start a Project →
+              </Link>
+              <Link to="/services" className="btn-outline" style={{ padding: '15px 28px', fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
+                Browse Services
+              </Link>
             </div>
-            <div style={{ marginTop:24, display:'flex', gap:28, justifyContent:'center', flexWrap:'wrap' }}>
-              {['✓ No credit card','✓ 14-day free trial','✓ Cancel anytime'].map((t,i) => (
-                <span key={i} style={{ fontSize:12, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
+            <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+              {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request'].map((t, i) => (
+                <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>{t}</span>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
     </div>
-  
-    </>
   );
 }

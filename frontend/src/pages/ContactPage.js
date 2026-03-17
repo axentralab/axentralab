@@ -63,7 +63,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <SEO {...SEO_CONTACT} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
         @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -343,8 +342,6 @@ export default function ContactPage() {
 
         </div>
       </div>
-
     </>
-    
   );
 }

@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 
-// ─── Team Data ────────────────────────────────────────────────────────────────
-// photo: public/images/team/ ফোল্ডারে রাখুন
 const TEAM = [
   {
     name:     'Arafat Hossain',
@@ -67,7 +65,6 @@ const TEAM = [
   },
 ];
 
-// ─── Company Stats ────────────────────────────────────────────────────────────
 const STATS = [
   { value: '6+',   label: 'Core Team Members',   color: '#22C55E' },
   { value: '120+', label: 'Projects Delivered',   color: '#3B82F6' },
@@ -75,7 +72,6 @@ const STATS = [
   { value: '98%',  label: 'Client Retention',     color: '#F59E0B' },
 ];
 
-// ─── Shared Expertise ─────────────────────────────────────────────────────────
 const EXPERTISE = [
   { area: 'Web Development',    tags: ['React', 'Next.js', 'Node.js', 'MERN', 'REST APIs'],                color: '#3B82F6' },
   { area: 'Cybersecurity',      tags: ['Pen Testing', 'OWASP Top 10', 'Server Hardening', 'Monitoring'],   color: '#EF4444' },
@@ -85,7 +81,6 @@ const EXPERTISE = [
   { area: 'Database & Backend', tags: ['PostgreSQL', 'MongoDB', 'Redis', 'GraphQL', 'Query Optimisation'], color: '#F59E0B' },
 ];
 
-// ─── Social Icons (SVG) ───────────────────────────────────────────────────────
 function GithubIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -108,7 +103,6 @@ function TwitterIcon() {
   );
 }
 
-// ─── Member Card ──────────────────────────────────────────────────────────────
 function MemberCard({ member, index }) {
   const [imgErr, setImgErr] = useState(false);
 
@@ -133,10 +127,7 @@ function MemberCard({ member, index }) {
         e.currentTarget.style.boxShadow   = 'none';
       }}
     >
-      {/* Top color bar */}
       <div style={{ height: 3, background: `linear-gradient(90deg,${member.color},transparent)` }} />
-
-      {/* Photo */}
       <div style={{ position: 'relative', height: 220, background: `${member.color}10`, overflow: 'hidden' }}>
         {!imgErr ? (
           <img
@@ -146,16 +137,13 @@ function MemberCard({ member, index }) {
             onError={() => setImgErr(true)}
           />
         ) : (
-          /* Fallback avatar when no photo */
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg,${member.color}20,${member.color}08)` }}>
             <div style={{ width: 80, height: 80, borderRadius: '50%', background: `${member.color}25`, border: `2px solid ${member.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 28, color: member.color }}>
               {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
           </div>
         )}
-        {/* Gradient overlay */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(6,8,15,0.7) 100%)' }} />
-        {/* Badge */}
         {member.badge && (
           <div style={{ position: 'absolute', top: 14, left: 14 }}>
             <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 6, background: member.color, color: ['#22C55E','#F59E0B'].includes(member.color) ? '#000' : '#fff', fontSize: 9, fontFamily: "'Space Mono',monospace", fontWeight: 900, letterSpacing: 1 }}>
@@ -165,22 +153,16 @@ function MemberCard({ member, index }) {
         )}
       </div>
 
-      {/* Content */}
       <div style={{ padding: '20px 22px 22px' }}>
-        {/* Name + Role */}
         <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 17, fontWeight: 900, color: '#fff', margin: '0 0 4px', letterSpacing: -0.3 }}>
           {member.name}
         </h3>
         <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: member.color, margin: '0 0 12px', fontWeight: 700, letterSpacing: 0.5 }}>
           {member.role}
         </p>
-
-        {/* Bio */}
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, margin: '0 0 16px' }}>
           {member.bio}
         </p>
-
-        {/* Skill tags */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
           {member.skills.map((skill, i) => (
             <span key={i} style={{ padding: '3px 9px', borderRadius: 6, background: `${member.color}10`, border: `1px solid ${member.color}25`, color: member.color, fontSize: 10, fontFamily: "'Space Mono',monospace", fontWeight: 600 }}>
@@ -188,8 +170,6 @@ function MemberCard({ member, index }) {
             </span>
           ))}
         </div>
-
-        {/* Social links */}
         <div style={{ display: 'flex', gap: 8, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {member.social.github && (
             <a href={member.social.github} target="_blank" rel="noopener noreferrer"
@@ -221,11 +201,9 @@ function MemberCard({ member, index }) {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function TeamPage() {
   return (
     <>
-      <SEO {...SEO_TEAM} />
       <div style={{ padding: '108px 5% 0', minHeight: '100vh' }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
@@ -263,9 +241,7 @@ export default function TeamPage() {
         }
       `}</style>
 
-      {/* ════════════════════════════════
-          HERO
-      ════════════════════════════════ */}
+      {/* HERO */}
       <div style={{ textAlign: 'center', marginBottom: 64, animation: 'fadeUp 0.6s ease both' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 24 }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'pulse 2s infinite' }} />
@@ -279,8 +255,6 @@ export default function TeamPage() {
         <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(14px,1.8vw,18px)', color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 32px', lineHeight: 1.75 }}>
           A tight-knit crew of engineers, security specialists and designers — united by one goal: shipping software that just works.
         </p>
-
-        {/* Values row */}
         <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
           {['🌏 Remote-first','⚡ Async by default','🔒 Security-obsessed','🚢 Ship fast, fix faster'].map((v, i) => (
             <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontFamily: "'Space Mono',monospace" }}>{v}</span>
@@ -288,9 +262,7 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* ════════════════════════════════
-          STATS BAR
-      ════════════════════════════════ */}
+      {/* STATS BAR */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 80 }}>
         <div className="stats-grid" style={{ background: 'rgba(255,255,255,0.01)' }}>
           {STATS.map((s, i) => (
@@ -302,9 +274,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════
-          TEAM MEMBER CARDS
-      ════════════════════════════════ */}
+      {/* TEAM MEMBER CARDS */}
       <section style={{ marginBottom: 96 }}>
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #3B82F640', background: '#3B82F612', color: '#3B82F6', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Our People</span>
@@ -320,9 +290,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════
-          SHARED EXPERTISE
-      ════════════════════════════════ */}
+      {/* SHARED EXPERTISE */}
       <section style={{ marginBottom: 96, padding: '72px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #8B5CF640', background: '#8B5CF612', color: '#8B5CF6', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Skills</span>
@@ -354,16 +322,11 @@ export default function TeamPage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════
-          HIRING / JOIN US CTA
-      ════════════════════════════════ */}
+      {/* HIRING CTA */}
       <section style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 100 }}>
         <div style={{ position: 'relative', background: 'linear-gradient(135deg,rgba(34,197,94,0.09) 0%,rgba(59,130,246,0.06) 100%)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 24, padding: 'clamp(40px,6vw,72px) clamp(24px,5%,64px)', overflow: 'hidden' }}>
-
-          {/* Glow blobs */}
           <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: '-20%', left: '10%',  width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle,rgba(59,130,246,0.07),transparent 65%)', pointerEvents: 'none' }} />
-
           <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 40, alignItems: 'center' }}>
             <div>
               <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 18 }}>
@@ -385,8 +348,6 @@ export default function TeamPage() {
                 </Link>
               </div>
             </div>
-
-            {/* Open roles */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 }}>Open Roles</div>
               {[
