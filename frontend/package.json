@@ -8,6 +8,7 @@
     "axios": "^1.6.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-helmet-async": "^3.0.0",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1"
@@ -18,7 +19,12 @@
     "postinstall": "chmod +x node_modules/.bin/react-scripts"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead"],
-    "development": ["last 1 chrome version"]
+    "production": [
+      ">0.2%",
+      "not dead"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
   }
 }

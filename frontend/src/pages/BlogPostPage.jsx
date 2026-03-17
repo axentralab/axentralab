@@ -4,22 +4,56 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Skeleton from '../components/Skeleton';
 import { TAG_COLORS } from '../constants/statusColors';
-
-function readingTime(text = '') {
-  return Math.max(1, Math.ceil(text.trim().split(/\s+/).length / 200));
-}
+// FIX: shared utility — removed local duplicate
+import { readingTime } from '../utils/readingTime';
 
 function generateBody(post) {
   return `${post.excerpt}\n\n## Overview\n\nThis article covers the essential aspects of ${post.title.toLowerCase()}. Whether you're a seasoned professional or just getting started, the insights here will help you make better decisions.\n\n## Key Takeaways\n\n- Understanding the core concepts is crucial before diving into implementation\n- Real-world examples provide context that documentation alone cannot offer\n- Continuous iteration and testing lead to better outcomes over time\n- Security and performance should never be afterthoughts\n\n## Deep Dive\n\nThe landscape of ${post.category} is evolving rapidly. At Axentralab, we've seen first-hand how the right approach can make or break a project.\n\n## Conclusion\n\nMastering ${post.category.toLowerCase()} is a journey, not a destination. Reach out if you need expert guidance.`;
 }
 
+// FIX: renderBody used to wrap everything in a <ul> which is invalid HTML.
+// <h2> and <p> are not valid children of <ul>. Now returns a Fragment with
+// proper semantic elements. Consecutive list items are grouped into a single <ul>.
 function renderBody(text) {
-  return text.split('\n').map((line, i) => {
-    if (line.startsWith('## ')) return <h2 key={i} style={{ fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 800, color: '#fff', margin: '32px 0 14px', letterSpacing: -0.3 }}>{line.slice(3)}</h2>;
-    if (line.startsWith('- '))  return <li key={i} style={{ color: 'rgba(255,255,255,0.65)', marginBottom: 8 }}>{line.slice(2)}</li>;
-    if (line.trim() === '')     return <div key={i} style={{ height: 12 }} />;
-    return <p key={i} style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 4 }}>{line}</p>;
+  const lines = text.split('\n');
+  const elements = [];
+  let listBuffer = [];
+
+  const flushList = () => {
+    if (listBuffer.length === 0) return;
+    elements.push(
+      <ul key={`ul-${elements.length}`} style={{ paddingLeft: 20, margin: '0 0 12px' }}>
+        {listBuffer.map((item, i) => (
+          <li key={i} style={{ color: 'rgba(255,255,255,0.65)', marginBottom: 8 }}>{item}</li>
+        ))}
+      </ul>
+    );
+    listBuffer = [];
+  };
+
+  lines.forEach((line, i) => {
+    if (line.startsWith('## ')) {
+      flushList();
+      elements.push(
+        <h2 key={i} style={{ fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 800, color: '#fff', margin: '32px 0 14px', letterSpacing: -0.3 }}>
+          {line.slice(3)}
+        </h2>
+      );
+    } else if (line.startsWith('- ')) {
+      listBuffer.push(line.slice(2));
+    } else if (line.trim() === '') {
+      flushList();
+      elements.push(<div key={i} style={{ height: 12 }} />);
+    } else {
+      flushList();
+      elements.push(
+        <p key={i} style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.85, marginBottom: 4 }}>{line}</p>
+      );
+    }
   });
+
+  flushList();
+  return elements;
 }
 
 export default function BlogPostPage() {
@@ -31,17 +65,24 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied]   = useState(false);
 
+  // FIX: AbortController prevents setState on unmounted component
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
     setPost(null);
-    api.get(`/blog/${id}`)
+
+    api.get(`/blog/${id}`, { signal: controller.signal })
       .then(r => {
         setPost(r.data.data);
         const all = r.data.allPosts || [];
         setRelated(all.filter(p => p.category === r.data.data.category && p._id !== id).slice(0, 3));
       })
-      .catch(() => setPost(null))
+      .catch(err => {
+        if (err.name !== 'CanceledError' && err.name !== 'AbortError') setPost(null);
+      })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, [id]);
 
   const handleCopyLink = async () => {
@@ -76,6 +117,7 @@ export default function BlogPostPage() {
   );
 
   const color   = TAG_COLORS[post.category] || '#06B6D4';
+  const hasRealBody = Boolean(post.body);
   const body    = post.body || generateBody(post);
   const minutes = readingTime(body);
 
@@ -108,8 +150,16 @@ export default function BlogPostPage() {
 
         <div style={{ height: 1, background: `linear-gradient(90deg,${color}40,transparent)`, marginBottom: 36 }} />
 
+        {/* FIX: was wrapping everything in <ul> — invalid HTML.
+            Now a plain <div> with proper semantic children. */}
+        {!hasRealBody && (
+          <div style={{ marginBottom: 20, padding: '10px 16px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 10, fontSize: 12, color: 'rgba(245,158,11,0.8)', fontFamily: "'Space Mono',monospace" }}>
+            ✏️ Full article coming soon — showing excerpt preview.
+          </div>
+        )}
+
         <div style={{ fontSize: 15, lineHeight: 1.85 }}>
-          <ul style={{ paddingLeft: 20, margin: 0 }}>{renderBody(body)}</ul>
+          {renderBody(body)}
         </div>
 
         {/* Share row */}
@@ -118,19 +168,16 @@ export default function BlogPostPage() {
             # {post.category}
           </span>
           <div style={{ display: 'flex', gap: 8 }}>
-            {/* X share */}
             <a href={`https://x.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}`}
               target="_blank" rel="noopener noreferrer"
               style={{ width: 34, height: 34, borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13, textDecoration: 'none', fontWeight: 700 }}>
               𝕏
             </a>
-            {/* LinkedIn share */}
             <a href={`https://linkedin.com/shareArticle?title=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}`}
               target="_blank" rel="noopener noreferrer"
               style={{ width: 34, height: 34, borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13, textDecoration: 'none', fontWeight: 700 }}>
               in
             </a>
-            {/* Copy link button */}
             <button onClick={handleCopyLink}
               style={{ height: 34, padding: '0 12px', borderRadius: 999, background: copied ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${copied ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)'}`, color: copied ? '#22C55E' : 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: "'Space Mono',monospace", cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
               {copied ? '✓ Copied' : '🔗 Copy link'}

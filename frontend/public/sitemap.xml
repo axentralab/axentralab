@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Priority 1.0 — homepage -->
+  <url>
+    <loc>https://axentralab.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Priority 0.9 — main conversion pages -->
+  <url>
+    <loc>https://axentralab.com/services</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://axentralab.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Priority 0.8 — supporting pages -->
+  <url>
+    <loc>https://axentralab.com/portfolio</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://axentralab.com/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://axentralab.com/products</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Priority 0.6 — informational pages -->
+  <url>
+    <loc>https://axentralab.com/team</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!--
+    Blog post URLs are dynamic — generate them server-side or
+    with a sitemap generation script using your /blog API endpoint.
+    Example:
+      <url>
+        <loc>https://axentralab.com/blog/{post._id}</loc>
+        <lastmod>{post.updatedAt}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+      </url>
+  -->
+
+</urlset>

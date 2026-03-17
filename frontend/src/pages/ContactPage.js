@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import api from '../services/api';
+import SEO from '../components/SEO';
+// import { SEO_CONTACT } from '../constants/seoConfig';
 
 const SERVICES = ['AI Automation','Web Development','Cybersecurity','DevOps & Cloud','SaaS Development','IT Consulting','Other'];
 const BUDGETS  = ['Under $5k','$5k – $15k','$15k – $50k','$50k+','Let\'s discuss'];
@@ -61,6 +63,7 @@ export default function ContactPage() {
 
   return (
     <>
+      <SEO {...SEO_CONTACT} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
         @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -342,5 +345,6 @@ export default function ContactPage() {
       </div>
 
     </>
+    
   );
 }

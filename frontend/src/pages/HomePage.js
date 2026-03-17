@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { TAG_COLORS } from '../constants/statusColors';
+import SEO from '../components/SEO';
+// import { SEO_HOME } from '../constants/seoConfig';
 
 const SERVICES = [
   { icon: '🌐', title: 'Web Development',       desc: 'Custom websites, SaaS platforms and high-performance applications built to scale.', color: '#3B82F6', link: '/services' },
@@ -117,6 +119,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <SEO {...SEO_HOME} />
       <style>{`
         @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
         @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }

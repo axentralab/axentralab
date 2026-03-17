@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useMatch } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api, { apiErrorMessage } from '../services/api';
@@ -7,14 +7,26 @@ import Sidebar from '../components/Sidebar';
 import AdminGuard from '../components/AdminGuard';
 import Skeleton, { SkeletonList } from '../components/Skeleton';
 import { STATUS_COLORS } from '../constants/statusColors';
+// FIX: use status constants instead of hardcoded strings
+import {
+  ORDER_STATUS_OPTIONS,
+  LEAD_STATUS_OPTIONS,
+} from '../constants/orderStatus';
 
 // CSV export helper
 function exportCSV(rows, filename) {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
+  // FIX: properly quote fields that contain commas or quotes
+  const escape = val => {
+    const str = String(val ?? '');
+    return str.includes(',') || str.includes('"') || str.includes('\n')
+      ? `"${str.replace(/"/g, '""')}"`
+      : str;
+  };
   const csv = [
     headers.join(','),
-    ...rows.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))
+    ...rows.map(r => headers.map(h => escape(r[h])).join(','))
   ].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url  = URL.createObjectURL(blob);
@@ -74,7 +86,13 @@ const LeadsTab = memo(function LeadsTab() {
   const toast = useToast();
 
   useEffect(() => {
-    api.get('/leads').then(r => setLeads(r.data.data)).catch(() => {}).finally(() => setLoading(false));
+    // FIX: AbortController prevents setState on unmounted component
+    const controller = new AbortController();
+    api.get('/leads', { signal: controller.signal })
+      .then(r => setLeads(r.data.data))
+      .catch(err => { if (err.name !== 'CanceledError' && err.name !== 'AbortError') {} })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, overflow: 'hidden' }}><SkeletonList count={5} variant="order-row" /></div>;
@@ -115,19 +133,41 @@ const LeadsTab = memo(function LeadsTab() {
               </div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>{lead.service || '—'}</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lead.budget || '—'}</div>
+
+              {/* FIX: async onChange with try/catch — server errors no longer silently update UI */}
               <select value={lead.status} onChange={async e => {
                 const newStatus = e.target.value;
-                await api.put(`/leads/${lead._id}`, { status: newStatus });
-                setLeads(leads.map(l => l._id === lead._id ? { ...l, status: newStatus } : l));
-                toast.success(`Lead status updated to ${newStatus}`);
+                try {
+                  await api.put(`/leads/${lead._id}`, { status: newStatus });
+                  setLeads(leads.map(l => l._id === lead._id ? { ...l, status: newStatus } : l));
+                  toast.success(`Lead status updated to ${newStatus}`);
+                } catch (err) {
+                  toast.error(apiErrorMessage(err, 'Failed to update lead status'));
+                }
               }} style={{ padding: '5px 8px', borderRadius: 6, background: `${STATUS_COLORS[lead.status]}15`, border: `1px solid ${STATUS_COLORS[lead.status]}30`, color: STATUS_COLORS[lead.status], fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", outline: 'none', cursor: 'pointer' }}>
-                {['new', 'contacted', 'qualified', 'closed'].map(s => <option key={s} value={s} style={{ background: '#0F172A', color: '#fff' }}>{s.toUpperCase()}</option>)}
+                {/* FIX: use status constants instead of hardcoded strings */}
+                {LEAD_STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ background: '#0F172A', color: '#fff' }}>{s.toUpperCase()}</option>)}
               </select>
+
               <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={async () => { try { await api.post(`/leads/${lead._id}/proposal`); toast.success(`Proposal sent to ${lead.name}`); } catch(e) { toast.error(apiErrorMessage(e)); } }}
-                  style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22C55E', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>Propose</button>
-                <button onClick={async () => { try { await api.post(`/leads/${lead._id}/followup`); toast.success(`Follow-up sent to ${lead.name}`); } catch(e) { toast.error(apiErrorMessage(e)); } }}
-                  style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#3B82F6', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>Follow-up</button>
+                {/* FIX: both action buttons now have error handling */}
+                <button onClick={async () => {
+                  try {
+                    await api.post(`/leads/${lead._id}/proposal`);
+                    toast.success(`Proposal sent to ${lead.name}`);
+                  } catch (e) {
+                    toast.error(apiErrorMessage(e, 'Failed to send proposal'));
+                  }
+                }} style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22C55E', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>Propose</button>
+
+                <button onClick={async () => {
+                  try {
+                    await api.post(`/leads/${lead._id}/followup`);
+                    toast.success(`Follow-up sent to ${lead.name}`);
+                  } catch (e) {
+                    toast.error(apiErrorMessage(e, 'Failed to send follow-up'));
+                  }
+                }} style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#3B82F6', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>Follow-up</button>
               </div>
             </div>
           );
@@ -145,7 +185,12 @@ const OrdersTab = memo(function OrdersTab() {
   const toast = useToast();
 
   useEffect(() => {
-    api.get('/orders').then(r => setOrders(r.data.data)).catch(() => {}).finally(() => setLoading(false));
+    const controller = new AbortController();
+    api.get('/orders', { signal: controller.signal })
+      .then(r => setOrders(r.data.data))
+      .catch(err => { if (err.name !== 'CanceledError' && err.name !== 'AbortError') {} })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   const handleExportCSV = () => {
@@ -181,13 +226,20 @@ const OrdersTab = memo(function OrdersTab() {
             <div><div style={{ fontWeight: 600, fontSize: 13, color: '#fff' }}>{order.user?.name}</div><div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{order.user?.email}</div></div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.items?.map(i => i.serviceTitle).join(', ')}</div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, color: '#22C55E', fontSize: 15 }}>${order.total?.toLocaleString()}</div>
+
+            {/* FIX: async onChange with try/catch */}
             <select value={order.status} onChange={async e => {
               const newStatus = e.target.value;
-              await api.put(`/orders/${order._id}/status`, { status: newStatus });
-              setOrders(orders.map(o => o._id === order._id ? { ...o, status: newStatus } : o));
-              toast.success('Order status updated');
+              try {
+                await api.put(`/orders/${order._id}/status`, { status: newStatus });
+                setOrders(orders.map(o => o._id === order._id ? { ...o, status: newStatus } : o));
+                toast.success('Order status updated');
+              } catch (err) {
+                toast.error(apiErrorMessage(err, 'Failed to update order status'));
+              }
             }} style={{ padding: '5px 8px', borderRadius: 8, background: `${STATUS_COLORS[order.status]}15`, border: `1px solid ${STATUS_COLORS[order.status]}30`, color: STATUS_COLORS[order.status], fontSize: 11, fontWeight: 700, fontFamily: "'Space Mono',monospace", outline: 'none', cursor: 'pointer' }}>
-              {['pending', 'paid', 'active', 'completed', 'cancelled'].map(s => <option key={s} value={s} style={{ background: '#0F172A', color: '#fff' }}>{s.toUpperCase()}</option>)}
+              {/* FIX: use status constants instead of hardcoded strings */}
+              {ORDER_STATUS_OPTIONS.map(s => <option key={s} value={s} style={{ background: '#0F172A', color: '#fff' }}>{s.toUpperCase()}</option>)}
             </select>
           </div>
         ))}
@@ -204,7 +256,12 @@ const UsersTab = memo(function UsersTab() {
   const toast = useToast();
 
   useEffect(() => {
-    api.get('/users').then(r => setUsers(r.data.data)).catch(() => {}).finally(() => setLoading(false));
+    const controller = new AbortController();
+    api.get('/users', { signal: controller.signal })
+      .then(r => setUsers(r.data.data))
+      .catch(err => { if (err.name !== 'CanceledError' && err.name !== 'AbortError') {} })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, overflow: 'hidden' }}><SkeletonList count={6} variant="order-row" /></div>;
@@ -222,10 +279,16 @@ const UsersTab = memo(function UsersTab() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: 11, padding: '2px 10px', borderRadius: 999, background: u.role === 'admin' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)', border: u.role === 'admin' ? '1px solid rgba(239,68,68,0.2)' : '1px solid rgba(34,197,94,0.2)', color: u.role === 'admin' ? '#EF4444' : '#22C55E', fontFamily: "'Space Mono',monospace" }}>{u.role.toUpperCase()}</span>
               <span style={{ fontSize: 11, padding: '2px 10px', borderRadius: 999, background: u.isActive ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', color: u.isActive ? '#22C55E' : '#EF4444', fontFamily: "'Space Mono',monospace" }}>{u.isActive ? 'ACTIVE' : 'SUSPENDED'}</span>
+
+              {/* FIX: toggle button with try/catch */}
               <button onClick={async () => {
-                await api.put(`/users/${u._id}/toggle`);
-                setUsers(users.map(us => us._id === u._id ? { ...us, isActive: !us.isActive } : us));
-                toast.info(`${u.name} ${u.isActive ? 'suspended' : 'activated'}`);
+                try {
+                  await api.put(`/users/${u._id}/toggle`);
+                  setUsers(users.map(us => us._id === u._id ? { ...us, isActive: !us.isActive } : us));
+                  toast.info(`${u.name} ${u.isActive ? 'suspended' : 'activated'}`);
+                } catch (err) {
+                  toast.error(apiErrorMessage(err, 'Failed to update user status'));
+                }
               }} style={{ padding: '6px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontSize: 12, cursor: 'pointer' }}>
                 {u.isActive ? 'Suspend' : 'Activate'}
               </button>
@@ -241,23 +304,31 @@ const UsersTab = memo(function UsersTab() {
 export default function AdminPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [stats, setStats]   = useState({ totalUsers: 0, totalOrders: 0, totalRevenue: 0 });
   const [recentLeads, setRecentLeads] = useState([]);
   const [overviewLoading, setOverviewLoading] = useState(true);
 
-  const tab = location.pathname.includes('leads')  ? 'leads'
-            : location.pathname.includes('orders') ? 'orders'
-            : location.pathname.includes('users')  ? 'users'
-            : 'overview';
+  // FIX: useMatch is route-aware and won't break on rename
+  const isLeads  = useMatch('/admin/leads');
+  const isOrders = useMatch('/admin/orders');
+  const isUsers  = useMatch('/admin/users');
+  const tab = isLeads ? 'leads' : isOrders ? 'orders' : isUsers ? 'users' : 'overview';
 
   useEffect(() => {
     if (tab !== 'overview') return;
+    const controller = new AbortController();
     setOverviewLoading(true);
-    Promise.all([api.get('/users/stats'), api.get('/leads')])
-      .then(([statsRes, leadsRes]) => { setStats(statsRes.data.data); setRecentLeads(leadsRes.data.data); })
-      .catch(() => {})
+    Promise.all([
+      api.get('/users/stats', { signal: controller.signal }),
+      api.get('/leads',       { signal: controller.signal }),
+    ])
+      .then(([statsRes, leadsRes]) => {
+        setStats(statsRes.data.data);
+        setRecentLeads(leadsRes.data.data);
+      })
+      .catch(err => { if (err.name !== 'CanceledError' && err.name !== 'AbortError') {} })
       .finally(() => setOverviewLoading(false));
+    return () => controller.abort();
   }, [tab]);
 
   const navItems = [

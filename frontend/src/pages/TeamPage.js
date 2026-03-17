@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+// import { SEO_TEAM } from '../constants/seoConfig';
 
 // ─── Team Data ────────────────────────────────────────────────────────────────
 // photo: public/images/team/ ফোল্ডারে রাখুন
@@ -223,7 +225,9 @@ function MemberCard({ member, index }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function TeamPage() {
   return (
-    <div style={{ padding: '108px 5% 0', minHeight: '100vh' }}>
+    <>
+      <SEO {...SEO_TEAM} />
+      <div style={{ padding: '108px 5% 0', minHeight: '100vh' }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
         @keyframes pulse  { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
@@ -410,5 +414,6 @@ export default function TeamPage() {
       </section>
 
     </div>
+    </>
   );
 }

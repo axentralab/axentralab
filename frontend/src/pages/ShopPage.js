@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import SEO from '../components/SEO';
+// import { SEO_SERVICES } from '../constants/seoConfig';
 
 const DISCOUNT_RATE = 0.5; // 50% off
 const DISCOUNT_LABEL = '🎉 New Agency Launch — 50% OFF';
@@ -168,6 +170,7 @@ export default function ShopPage() {
 
   return (
     <>
+      <SEO {...SEO_SERVICES} />
       <style>{`
         @keyframes popIn    { 0%{transform:scale(0.9);opacity:0} 60%{transform:scale(1.03)} 100%{transform:scale(1);opacity:1} }
         @keyframes slideUp  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }

@@ -1,237 +1,262 @@
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import SEO from '../components/SEO';
+// import { SEO_PRODUCTS } from '../constants/seoConfig';
+// demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
 
-const PROJECTS = [
-  { title:'FinTech Dashboard',         category:'Web Dev',       tech:['React','Node.js','MongoDB'],      result:'+340% performance',        color:'#22C55E', DemoURL:'https://fintech-seven-gamma.vercel.app/', desc:'Real-time financial analytics platform with live data streaming and custom charting.' },
-  { title:'E-Commerce AI Automation',  category:'AI Automation', tech:['Python','GPT-4','Zapier'],        result:'80% manual work cut',       color:'#3B82F6', DemoURL:'https://example.com/ecommerce',           desc:'End-to-end order processing automation that eliminated repetitive ops tasks entirely.' },
-  { title:'Security Audit – BankCo',   category:'Cybersecurity', tech:['Burp Suite','Metasploit'],        result:'0 breaches post-audit',     color:'#EF4444', DemoURL:'https://example.com/security',            desc:'Full red-team engagement uncovering 23 critical CVEs before the platform went live.' },
-  { title:'Cloud Migration – SaaS Co', category:'DevOps',        tech:['Docker','AWS','Terraform'],       result:'60% cost reduction',        color:'#8B5CF6', DemoURL:'https://example.com/cloud',               desc:'Migrated a monolith to containerised microservices, cutting infra spend by more than half.' },
-  { title:'Healthcare SaaS Platform',  category:'SaaS Dev',      tech:['Next.js','PostgreSQL','Redis'],   result:'10k+ users in 3 months',    color:'#F59E0B', DemoURL:'https://example.com/healthcare',          desc:'HIPAA-compliant patient management SaaS built and shipped from zero in 11 weeks.' },
-  { title:'AI CRM Integration',        category:'AI Automation', tech:['LangChain','HubSpot API'],        result:'3x lead conversion',        color:'#06B6D4', DemoURL:'https://example.com/crm',                 desc:'LLM-powered lead scoring and auto-follow-up sequences plugged directly into HubSpot.' },
-  { title:'API Threat Detection',      category:'Cybersecurity', tech:['Python','FastAPI','ML'],          result:'99.4% detection rate',      color:'#F43F5E', DemoURL:'https://example.com/api',                 desc:'Machine-learning model that flags anomalous API traffic patterns in under 80ms.' },
-  { title:'DevOps Pipeline Overhaul',  category:'DevOps',        tech:['GitHub Actions','K8s','ArgoCD'], result:'Deploy time: 45 min → 4 min', color:'#A855F7', DemoURL:'https://example.com/devops',             desc:'Rebuilt a legacy Jenkins pipeline into a fully declarative GitOps workflow.' },
-  { title:'Mobile Fintech App',        category:'Web Dev',       tech:['React Native','Plaid','Stripe'],  result:'4.9★ App Store rating',     color:'#10B981', DemoURL:'https://example.com/mobile',              desc:'Cross-platform personal finance app with bank-grade security and instant transfers.' },
-  { title:'E-Learning Platform',       category:'SaaS Dev',      tech:['Vue.js','Django','Celery'],       result:'50k+ enrolled learners',    color:'#F97316', DemoURL:'https://example.com/elearning',           desc:'Full LMS with live video, quizzes, certificates, and Stripe subscription billing.' },
-  { title:'Pentesting Automation',     category:'Cybersecurity', tech:['Nuclei','Playwright','Go'],       result:'10× faster scan cycles',    color:'#EF4444', DemoURL:'https://example.com/pentesting',          desc:'Custom scanner that chains recon, fuzzing, and exploit checks in a single pipeline.' },
-  { title:'Logistics AI Dispatcher',   category:'AI Automation', tech:['OR-Tools','GPT-4','Maps API'],   result:'31% fuel cost saved',       color:'#3B82F6', DemoURL:'https://example.com/logistics',           desc:'Route-optimisation engine that dynamically re-plans deliveries based on live traffic.' },
+const PRODUCTS = [
+  // ── Existing 6 ──
+  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:19, billing:'monthly', color:'#22C55E', demoUrl:'https://wp-shield-pi.vercel.app/', demoPreview:'Scan your WordPress site for 1,000+ known vulnerabilities and get a full report in under 60 seconds.' },
+  { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6', demoUrl:'https://demo.axentralab.com/siteguard', demoPreview:'Watch SiteGuard detect and block a simulated brute-force attack in real time on a live staging environment.' },
+  { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444', demoUrl:'https://demo.axentralab.com/api-scanner', demoPreview:'Point API Scanner at a sample REST API and see broken auth, excessive data exposure, and rate-limit flaws flagged instantly.' },
+  { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7', demoUrl:'https://demo.axentralab.com/cloudarmor', demoPreview:'Connect a sandbox AWS account and CloudArmor surfaces open S3 buckets, over-privileged IAM roles, and CIS benchmark gaps in minutes.' },
+  { id:'p5', name:'PenBot', tag:'Automated Pentesting', desc:'Simulated attacker that runs automated penetration tests on your web apps continuously, not just once a year.', features:['Continuous attack simulation','OWASP Top 10 coverage','Session & auth bypass tests','Custom scan schedules','Executive + dev reports'], price:89, billing:'monthly', color:'#F97316', demoUrl:'https://demo.axentralab.com/penbot', demoPreview:'See PenBot run a full OWASP Top 10 attack simulation against a demo app — exploiting an auth bypass and generating an executive report.' },
+  { id:'p6', name:'DataVault', tag:'Data Privacy', desc:'Discover, classify, and protect sensitive data across databases, file stores, and SaaS platforms automatically.', features:['PII/PHI auto-discovery','GDPR & CCPA mapping','Data lineage tracking','Breach risk scoring','One-click redaction'], price:59, billing:'monthly', color:'#06B6D4', demoUrl:'https://demo.axentralab.com/datavault', demoPreview:'Watch DataVault scan a sample PostgreSQL database, auto-tag 14 PII fields, map them to GDPR articles, and generate a risk score.' },
 
-  // ── নতুন Web Dev projects ──
-  { title:'Real Estate Listing Portal',   category:'Web Dev', tech:['Next.js','Mapbox','Prisma'],        result:'2.4M page views/month',    color:'#22C55E', DemoURL:'https://example.com/realestate',   desc:'Full-stack property marketplace with geo-search, mortgage calculator, and agent CRM.' },
-  { title:'SaaS Billing Dashboard',       category:'Web Dev', tech:['React','Stripe','GraphQL'],         result:'Zero billing errors',      color:'#3B82F6', DemoURL:'https://example.com/billing',      desc:'Subscription management UI with usage-based billing, invoice generation, and dunning flows.' },
-  { title:'Restaurant Ordering System',   category:'Web Dev', tech:['Next.js','Socket.io','Redis'],      result:'3× faster order fulfilment', color:'#F59E0B', DemoURL:'https://example.com/restaurant',  desc:'Real-time table management and online ordering platform for a 12-branch restaurant chain.' },
-  { title:'NFT Marketplace',             category:'Web Dev', tech:['React','Solidity','Ethers.js'],      result:'$1.2M traded in week 1',   color:'#A855F7', DemoURL:'https://example.com/nft',          desc:'Gas-optimised NFT marketplace with lazy minting, auction bidding, and wallet connect.' },
-  { title:'Job Board Platform',           category:'Web Dev', tech:['Next.js','Elasticsearch','AWS'],    result:'80k job listings live',    color:'#10B981', DemoURL:'https://example.com/jobboard',     desc:'Developer-focused job board with semantic search, salary filters, and one-click apply.' },
-  { title:'Multi-Vendor Marketplace',     category:'Web Dev', tech:['React','Node.js','Stripe Connect'], result:'500+ active vendors',      color:'#F97316', DemoURL:'https://example.com/marketplace',  desc:'Amazon-style marketplace with vendor onboarding, split payments, and inventory sync.' },
-  { title:'Booking & Scheduling App',     category:'Web Dev', tech:['Next.js','Calendly API','Twilio'],  result:'40% no-show reduction',    color:'#06B6D4', DemoURL:'https://example.com/booking',      desc:'Smart appointment scheduling with SMS reminders, calendar sync, and waitlist management.' },
-  { title:'News & Media Portal',          category:'Web Dev', tech:['Next.js','Sanity CMS','Algolia'],   result:'98 PageSpeed score',       color:'#EF4444', DemoURL:'https://example.com/news',         desc:'High-performance news site with SSR, infinite scroll, and full-text search at scale.' },
+  // ── New 6 ──
+  { id:'p7', name:'PhishNet', tag:'Email Security', desc:'AI-powered phishing detection and email threat intelligence that protects your team inbox before the damage is done.', features:['Real-time phishing detection','Spoofed domain alerts','DMARC/DKIM/SPF analysis','Employee risk scoring','Automated quarantine'], price:29, billing:'monthly', color:'#EC4899', demoUrl:'https://demo.axentralab.com/phishnet', demoPreview:'Submit a suspicious email and PhishNet dissects headers, links, and sender reputation in seconds — flagging credential harvesting attempts live.' },
+  { id:'p8', name:'LogSentinel', tag:'Log Management', desc:'Centralised log aggregation, anomaly detection, and real-time SIEM-lite alerting for web apps and servers.', features:['Multi-source log ingestion','Anomaly & spike detection','Real-time alert rules','Log retention (90 days)','CSV / JSON export'], price:45, billing:'monthly', color:'#14B8A6', demoUrl:'https://demo.axentralab.com/logsentinel', demoPreview:'Pipe 500k log lines into LogSentinel and watch it surface 3 anomalous login patterns and an unusual outbound spike within 10 seconds.' },
+  { id:'p9', name:'AutoFlow AI', tag:'AI Automation', desc:'No-code AI workflow builder — connect your apps, trigger actions on events, and automate repetitive ops tasks with GPT-4 intelligence.', features:['Drag-and-drop workflow builder','200+ app integrations','GPT-4 decision nodes','Webhook & cron triggers','Run history & audit log'], price:55, billing:'monthly', color:'#8B5CF6', demoUrl:'https://demo.axentralab.com/autoflow', demoPreview:'Build a live workflow: new Typeform lead → GPT-4 scores it → Slack alert if high-value → HubSpot deal auto-created. All in under 4 minutes.' },
+  { id:'p10', name:'BotShield', tag:'Bot Protection', desc:'Distinguish real users from malicious bots in real time. Stop credential stuffing, scraping, and fake signups at the edge.', features:['Behavioural fingerprinting','Credential stuffing defence','Scraper & crawler blocking','CAPTCHA-free challenge mode','Analytics dashboard'], price:35, billing:'monthly', color:'#F59E0B', demoUrl:'https://demo.axentralab.com/botshield', demoPreview:'Run a simulated bot flood against a demo login page — BotShield fingerprints and blocks 98% of automated requests while real users pass through.' },
+  { id:'p11', name:'RankRadar', tag:'SEO Intelligence', desc:'AI-driven SEO auditor and keyword tracker that surfaces technical issues, monitors rankings, and suggests fixes automatically.', features:['Full technical SEO audit','Daily rank tracking','AI fix suggestions','Competitor gap analysis','Core Web Vitals monitor'], price:39, billing:'monthly', color:'#22D3EE', demoUrl:'https://demo.axentralab.com/rankradar', demoPreview:'Enter any URL and RankRadar returns a full technical SEO audit, top-10 ranking opportunities, and GPT-generated fix suggestions in 90 seconds.' },
+  { id:'p12', name:'InboxAI', tag:'AI Email Marketing', desc:'AI-powered email campaign builder that writes, tests, and sends personalised sequences — with deliverability monitoring built in.', features:['GPT-4 email copywriter','A/B test automation','Send-time optimisation','Spam score checker','Unsubscribe & bounce mgmt'], price:49, billing:'monthly', color:'#FB7185', demoUrl:'https://demo.axentralab.com/inboxai', demoPreview:'Watch InboxAI generate a 5-email onboarding sequence, auto-split-test subject lines, and predict the winning variant — all in under 2 minutes.' },
 ];
 
-const CATS = ['All','Web Dev','AI Automation','Cybersecurity','DevOps','SaaS Dev'];
-
-const STATS = [
-  { value:'120+', label:'Projects Delivered', color:'#22C55E' },
-  { value:'98%',  label:'Client Retention',   color:'#3B82F6' },
-  { value:'$2M+', label:'Revenue Generated',  color:'#A855F7' },
-  { value:'4.9★', label:'Avg Client Rating',  color:'#F59E0B' },
-];
-
-const PROCESS = [
-  { step:'01', icon:'🔍', title:'Discovery Call',    desc:'We audit your current setup, understand your goals, and identify the highest-leverage opportunities.' },
-  { step:'02', icon:'🗺️', title:'Roadmap & Scope',   desc:'A detailed technical plan with milestones, deliverables, and a fixed or capped budget — no surprises.' },
-  { step:'03', icon:'⚙️', title:'Build & Iterate',   desc:'Weekly demos, async updates on Slack or Notion, and a staging environment you can access anytime.' },
-  { step:'04', icon:'🚀', title:'Launch & Handover', desc:'Full documentation, knowledge transfer, and optional retainer support post-launch.' },
+const ENTERPRISE_FEATURES = [
+  { icon:'🏗️', title:'Custom Integrations', desc:'SSO, SAML, custom webhooks, and tailored API access for your internal toolchain.' },
+  { icon:'🛡️', title:'Dedicated SOC Analyst', desc:'A real human security expert reviews your findings and advises your team weekly.' },
+  { icon:'📊', title:'Unlimited Seats', desc:'No per-seat pricing. Add your entire engineering and security team at no extra cost.' },
+  { icon:'📝', title:'Compliance Reports', desc:'SOC 2, ISO 27001, PCI-DSS, and HIPAA report generation built right in.' },
+  { icon:'⚡', title:'Priority Response SLA', desc:'Critical findings triaged within 1 hour. P1 incidents have a guaranteed 15-min response.' },
+  { icon:'🔒', title:'Private Deployment', desc:'Deploy Axentralab tools in your own VPC or on-premise environment.' },
 ];
 
 const TESTIMONIALS = [
-  { name:'Rachel Kim',   role:'CEO, FinNova',        avatar:'RK', color:'#22C55E', quote:'They rebuilt our dashboard from scratch in 6 weeks. Performance went up 340% and our users noticed immediately.' },
-  { name:'Marcus Webb',  role:'CTO, BankCo',         avatar:'MW', color:'#EF4444', quote:'The security audit was thorough and non-disruptive. They found issues our internal team had missed for two years.' },
-  { name:'Priya Nair',   role:'Founder, LearnLoop',  avatar:'PN', color:'#F97316', quote:'50,000 learners in six months. The platform has never gone down. These guys just ship and it works.' },
-  { name:'Diego Torres', role:'Head of Ops, Carrgo', avatar:'DT', color:'#3B82F6', quote:'The AI dispatcher saved us 31% on fuel in the first month alone. ROI was clear within two weeks of going live.' },
+  { name:'Lena Park', role:'CTO, StackFlow Inc.', avatar:'LP', color:'#22C55E', quote:'WP Shield caught a supply-chain malware injection in one of our plugins within 3 minutes of deployment. It literally saved our SaaS business.' },
+  { name:'James Okonkwo', role:'Security Lead, Nexora', avatar:'JO', color:'#3B82F6', quote:'SiteGuard\'s auto IP-blocking stopped a credential stuffing attack at 2 AM while everyone was asleep. The Slack alert woke me up after the threat was already handled.' },
+  { name:'Sofia Reyes', role:'DevOps Engineer, Luminary', avatar:'SR', color:'#A855F7', quote:'CloudArmor found 14 open S3 buckets we didn\'t even know existed. The CIS benchmark report made our compliance audit a breeze.' },
+  { name:'Tobias Brandt', role:'Founder, Codewright', avatar:'TB', color:'#F97316', quote:'PenBot runs continuous pen tests against our staging env on every deploy. Found an auth bypass before it ever hit production. 10/10.' },
+  { name:'Priya Nair', role:'Head of Ops, Finberry', avatar:'PN', color:'#8B5CF6', quote:'AutoFlow AI replaced 3 Zapier workflows and an intern. Runs 200+ automations a day, never misses a beat, and costs 60% less.' },
+  { name:'Marc Dubois', role:'Marketing Lead, Clutch.io', avatar:'MD', color:'#22D3EE', quote:'RankRadar\'s AI fix suggestions bumped our organic traffic 38% in 6 weeks. The competitor gap report alone was worth every cent.' },
 ];
 
-const CLIENTS = ['FinNova','BankCo','LearnLoop','Carrgo','NexoraSaaS','CloudStack','Medify','DataBridge','ShopForge','Vaultify'];
+const FAQS = [
+  { q:'Is there a free trial available?', a:'Yes — every product includes a 14-day free trial with no credit card required. You get full access to all features during the trial period.' },
+  { q:'Can I cancel anytime?', a:'Absolutely. All plans are month-to-month with no lock-in contracts. Cancel from your dashboard with one click and you\'ll never be charged again.' },
+  { q:'Do you offer annual billing discounts?', a:'Yes, switching to annual billing saves you 20% across all plans. You can toggle this on your subscription settings page.' },
+  { q:'Is my data secure with Axentralab?', a:'We\'re SOC 2 Type II certified and all data is encrypted at rest (AES-256) and in transit (TLS 1.3). We never sell or share your data with third parties.' },
+  { q:'Can I use multiple products together?', a:'Yes, and they integrate natively. Add any products to your cart and manage everything from a single unified dashboard.' },
+  { q:'Do you support on-premise deployments?', a:'On-premise and private VPC deployments are available on the Enterprise plan. Contact our sales team for a custom quote.' },
+];
 
-/* ── Demo Modal ── */
-function DemoModal({ project, onClose }) {
-  if (!project) return null;
-  const { title, category, desc, tech, result, color, DemoURL } = project;
-  const lightColor = ['#22C55E','#F59E0B','#F97316','#10B981'].includes(color);
+const STATS = [
+  { value:'12M+', label:'Threats Blocked', color:'#22C55E' },
+  { value:'99.98%', label:'Uptime SLA', color:'#3B82F6' },
+  { value:'4,200+', label:'Customers', color:'#A855F7' },
+  { value:'< 3 min', label:'Avg Detection Time', color:'#F97316' },
+];
 
-  return (
-    <div
-      onClick={onClose}
-      style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.82)', backdropFilter:'blur(10px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{ background:'#0e0e14', border:`1px solid ${color}35`, borderRadius:24, width:'100%', maxWidth:520, boxShadow:`0 40px 100px ${color}22`, overflow:'hidden' }}
-      >
-        <div style={{ height:4, background:`linear-gradient(90deg,${color},transparent)` }} />
-        <div style={{ padding:'28px 28px 0', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-          <div>
-            <span style={{ display:'inline-block', padding:'2px 10px', borderRadius:999, border:`1px solid ${color}30`, background:`${color}12`, color:color, fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{category}</span>
-            <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', margin:'10px 0 0', letterSpacing:-0.5 }}>{title}</h3>
-          </div>
-          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.5)', width:34, height:34, borderRadius:999, cursor:'pointer', fontSize:16, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
-        </div>
-        <div style={{ padding:'20px 28px 28px' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:999, background:`${color}14`, border:`1px solid ${color}30`, marginBottom:16 }}>
-            <span style={{ color:color, fontSize:15 }}>↗</span>
-            <span style={{ color:color, fontWeight:700, fontSize:13 }}>{result}</span>
-          </div>
-          <p style={{ fontSize:14, color:'rgba(255,255,255,0.55)', lineHeight:1.8, marginBottom:20 }}>{desc}</p>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:24 }}>
-            {tech.map((t,i) => (
-              <span key={i} style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(255,255,255,0.45)', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', padding:'4px 10px', borderRadius:6 }}>{t}</span>
-            ))}
-          </div>
-          <div style={{ height:1, background:'rgba(255,255,255,0.06)', marginBottom:24 }} />
-          <div style={{ display:'flex', gap:10 }}>
-            <a href={DemoURL} target="_blank" rel="noopener noreferrer"
-              style={{ flex:1, padding:'13px 0', background:color, color:lightColor?'#000':'#fff', borderRadius:12, fontSize:14, fontWeight:700, fontFamily:"'Sora',sans-serif", textAlign:'center', textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-              🚀 View Live Demo
-            </a>
-            <button onClick={onClose} style={{ padding:'13px 20px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, color:'rgba(255,255,255,0.5)', fontSize:13, cursor:'pointer', fontFamily:"'Sora',sans-serif" }}>
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const CATEGORIES = ['All', 'Cybersecurity', 'AI / Automation', 'SEO & Marketing'];
+const getCat = (tag) => {
+  if (['WordPress Security','Monitoring Platform','API Security','Cloud Security','Automated Pentesting','Data Privacy','Email Security','Log Management','Bot Protection'].includes(tag)) return 'Cybersecurity';
+  if (['AI Automation','AI Email Marketing'].includes(tag)) return 'AI / Automation';
+  if (['SEO Intelligence'].includes(tag)) return 'SEO & Marketing';
+  return 'Cybersecurity';
+};
 
-export default function PortfolioPage() {
-  const [filter, setFilter]      = useState('All');
-  const [hovered, setHovered]    = useState(null);
-  const [modalProject, setModal] = useState(null);
+export default function ProductsPage() {
+  const { addToCart, cart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [openFaq, setOpenFaq] = useState(null);
+  const [activeCat, setActiveCat] = useState('All');
 
-  const shown = filter === 'All' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
+  const isInCart = (id) => cart.some(i => i.serviceId === id);
+
+  const handleBuy = (p) => {
+    if (!isAuthenticated) { navigate('/register'); return; }
+    addToCart(
+      { _id: p.id, title: p.name },
+      { name: 'Monthly', price: p.price, billing: p.billing }
+    );
+    navigate('/cart');
+  };
+
+  const filtered = activeCat === 'All' ? PRODUCTS : PRODUCTS.filter(p => getCat(p.tag) === activeCat);
 
   return (
-    <div style={{ padding:'108px 5% 0', minHeight:'100vh' }}>
-
-      <DemoModal project={modalProject} onClose={() => setModal(null)} />
+    <>
+      <SEO {...SEO_PRODUCTS} />
+      <div style={{ padding:'108px 5% 0', minHeight:'100vh' }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .cat-bar { flex-wrap: wrap !important; gap: 8px !important; }
+          .cat-bar button { flex: 1 1 calc(50% - 8px) !important; }
+          .prod-grid { grid-template-columns: 1fr !important; }
+          .ent-inner { padding: 36px 22px !important; }
+          .cta-inner  { padding: 40px 24px !important; }
+          .step-grid  { grid-template-columns: 1fr !important; border-radius: 16px !important; }
+          .step-grid > div { border-radius: 12px !important; border-left: 1px solid rgba(255,255,255,0.06) !important; margin-bottom: 1px; }
+        }
+        @media (max-width: 900px) {
+          .ent-flex { flex-direction: column !important; }
+        }
+      `}</style>
 
       {/* ── Hero ── */}
-      <div style={{ textAlign:'center', marginBottom:52 }}>
-        <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #8B5CF640', background:'#8B5CF612', color:'#8B5CF6', fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Portfolio</span>
+      <div style={{ textAlign:'center', marginBottom:48 }}>
+        <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #3B82F640', background:'#3B82F612', color:'#3B82F6', fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>SaaS Products</span>
         <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(28px,5vw,58px)', fontWeight:900, color:'#fff', marginTop:16, letterSpacing:-1.5 }}>
-          Our Work<br /><span style={{ color:'#22C55E' }}>Speaks</span> for Itself
+          Security Tools Built by<br /><span style={{ color:'#22C55E' }}>Axentralab</span>
         </h1>
-        <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:420, margin:'12px auto 0' }}>Real projects, real results — delivered for clients worldwide.</p>
+        <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:440, margin:'14px auto 0' }}>
+          Plug-and-play security, automation, and growth products — start in minutes.
+        </p>
       </div>
 
       {/* ── Stats Bar ── */}
-      <div style={{ maxWidth:1100, margin:'0 auto 68px', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', background:'rgba(255,255,255,0.03)', borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ maxWidth:1100, margin:'0 auto 56px', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:1, background:'rgba(255,255,255,0.06)', borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.07)' }}>
         {STATS.map((s,i) => (
-          <div key={i} style={{ padding:'28px 20px', textAlign:'center', borderRight: i < STATS.length-1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+          <div key={i} style={{ padding:'28px 24px', background:'rgba(10,10,15,0.9)', textAlign:'center' }}>
             <div style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, color:s.color, letterSpacing:-1 }}>{s.value}</div>
-            <div style={{ fontSize:12, color:'rgba(255,255,255,0.35)', marginTop:5, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>{s.label}</div>
+            <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', marginTop:4, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* ── Filter ── */}
-      <div style={{ overflowX:'auto', marginBottom:36, paddingBottom:4 }}>
-        <div style={{ display:'flex', gap:8, justifyContent:'center', minWidth:'max-content', padding:'0 4px' }}>
-          {CATS.map(c => (
-            <button key={c} onClick={() => setFilter(c)}
-              style={{ padding:'8px 18px', borderRadius:999, background:filter===c?'#22C55E':'rgba(255,255,255,0.05)', border:filter===c?'none':'1px solid rgba(255,255,255,0.1)', color:filter===c?'#000':'rgba(255,255,255,0.6)', fontWeight:600, fontSize:13, cursor:'pointer', transition:'all 0.2s', whiteSpace:'nowrap' }}>
-              {c}
-              {c !== 'All' && (
-                <span style={{ marginLeft:6, fontSize:10, opacity:0.6 }}>
-                  ({PROJECTS.filter(p => p.category === c).length})
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+      {/* ── Category Filter ── */}
+      <div className="cat-bar" style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:36, flexWrap:'wrap' }}>
+        {CATEGORIES.map(cat => (
+          <button key={cat} onClick={() => setActiveCat(cat)}
+            style={{ padding:'8px 20px', borderRadius:10, border: activeCat===cat ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCat===cat ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.45)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:13, cursor:'pointer', transition:'all 0.18s' }}>
+            {cat}
+            <span style={{ marginLeft:7, padding:'1px 7px', borderRadius:999, background: activeCat===cat ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)', fontSize:10, color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>
+              {cat === 'All' ? PRODUCTS.length : PRODUCTS.filter(p => getCat(p.tag) === cat).length}
+            </span>
+          </button>
+        ))}
       </div>
 
-      {/* ── Project Grid ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:20, maxWidth:1100, margin:'0 auto' }}>
-        {shown.map((p,i) => (
-          <div key={`${filter}-${i}`}
-            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, transition:'all 0.25s', overflow:'hidden' }}
-            onMouseEnter={e => { setHovered(i); e.currentTarget.style.transform='translateY(-5px)'; e.currentTarget.style.borderColor=p.color+'40'; e.currentTarget.style.boxShadow=`0 16px 40px ${p.color}12`; }}
-            onMouseLeave={e => { setHovered(null); e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow='none'; }}
-          >
-            <div style={{ height:120, background:`linear-gradient(135deg,${p.color}20,${p.color}06)`, display:'flex', alignItems:'center', justifyContent:'center', borderBottom:'1px solid rgba(255,255,255,0.05)', position:'relative', overflow:'hidden' }}>
-              <span style={{ fontFamily:"'Sora',sans-serif", fontSize:44, fontWeight:900, color:`${p.color}40` }}>{p.title.slice(0,2)}</span>
-              <div style={{ position:'absolute', bottom:10, right:14 }}>
-                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:999, border:`1px solid ${p.color}30`, background:`${p.color}15`, color:p.color, fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{p.category}</span>
+      {/* ── Product Cards ── */}
+      <div className="prod-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))', gap:24, maxWidth:1100, margin:'0 auto' }}>
+        {filtered.map((p) => (
+          <div key={p.id}
+            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden', transition:'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor=`${p.color}35`; e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 16px 40px ${p.color}12`; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='none'; }}>
+            <div style={{ height:5, background:`linear-gradient(90deg,${p.color},transparent)` }} />
+            <div style={{ padding:28 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10, flexWrap:'wrap', gap:8 }}>
+                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:999, border:`1px solid ${p.color}30`, background:`${p.color}10`, color:p.color, fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{p.tag}</span>
+                <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:22, color:p.color }}>${p.price}<span style={{ fontSize:12, fontWeight:500, color:'rgba(255,255,255,0.4)' }}>/mo</span></span>
               </div>
-            </div>
-            <div style={{ padding:22 }}>
-              <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:800, color:'#fff', margin:'0 0 8px', letterSpacing:-0.3 }}>{p.title}</h3>
-              <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', lineHeight:1.65, marginBottom:14 }}>{p.desc}</p>
-              <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:14 }}>
-                {p.tech.map((t,j) => <span key={j} style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.35)', background:'rgba(255,255,255,0.05)', padding:'2px 7px', borderRadius:4 }}>{t}</span>)}
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', margin:'12px 0 10px', letterSpacing:-0.6 }}>{p.name}</h2>
+              <p style={{ fontSize:14, color:'rgba(255,255,255,0.5)', lineHeight:1.7, marginBottom:22 }}>{p.desc}</p>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 26px' }}>
+                {p.features.map((f,j) => (
+                  <li key={j} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ color:p.color, fontSize:13 }}>✓</span>
+                    <span style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <div style={{ display:'flex', gap:10 }}>
+                <button onClick={() => handleBuy(p)} className="btn-primary" style={{ flex:1, padding:'12px', background:isInCart(p.id)?'rgba(34,197,94,0.15)':p.color, color:isInCart(p.id)?p.color:'#000', border:isInCart(p.id)?`1px solid ${p.color}40`:'none', fontSize:14 }}>
+                  {isInCart(p.id) ? '✓ Added to Cart' : isAuthenticated ? '🛒 Start Free Trial' : 'Get Started →'}
+                </button>
+                <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-outline"
+                  style={{ padding:'12px 16px', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  Demo
+                </a>
               </div>
-              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:16 }}>
-                <span style={{ color:p.color, fontSize:14 }}>↗</span>
-                <span style={{ fontSize:13, color:p.color, fontWeight:700 }}>{p.result}</span>
-              </div>
-              <button
-                onClick={() => setModal(p)}
-                style={{ width:'100%', padding:'11px 0', background:`${p.color}14`, border:`1px solid ${p.color}35`, borderRadius:10, color:p.color, fontSize:13, fontWeight:700, fontFamily:"'Sora',sans-serif", cursor:'pointer', transition:'background 0.2s, border-color 0.2s', display:'flex', alignItems:'center', justifyContent:'center', gap:7 }}
-                onMouseEnter={e => { e.currentTarget.style.background=`${p.color}26`; e.currentTarget.style.borderColor=`${p.color}60`; }}
-                onMouseLeave={e => { e.currentTarget.style.background=`${p.color}14`; e.currentTarget.style.borderColor=`${p.color}35`; }}
-              >
-                <span>▶</span> View Demo
-              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── Client Logos ── */}
-      <div style={{ maxWidth:1100, margin:'76px auto 0', textAlign:'center' }}>
-        <p style={{ fontSize:11, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace", letterSpacing:2, textTransform:'uppercase', marginBottom:24 }}>Trusted by teams at</p>
-        <div style={{ display:'flex', flexWrap:'wrap', gap:12, justifyContent:'center' }}>
-          {CLIENTS.map((c,i) => (
-            <span key={i} style={{ padding:'7px 18px', borderRadius:999, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', fontFamily:"'Sora',sans-serif", fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.25)', letterSpacing:-0.3 }}>{c}</span>
-          ))}
+      {/* ── Compare Table ── */}
+      <div style={{ maxWidth:1100, margin:'72px auto 0' }}>
+        <div style={{ textAlign:'center', marginBottom:32 }}>
+          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Feature Matrix</span>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Compare All Plans</h2>
+          <p style={{ fontSize:13, color:'rgba(255,255,255,0.3)', marginTop:8 }}>Security products only — scroll horizontally on mobile</p>
+        </div>
+        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflow:'auto' }}>
+          <div style={{ minWidth:780 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'2fr repeat(6,1fr)', padding:'14px 24px', background:'rgba(255,255,255,0.04)', borderBottom:'1px solid rgba(255,255,255,0.06)', gap:8 }}>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.3)', letterSpacing:1 }}>FEATURE</span>
+              {PRODUCTS.slice(0,6).map(p => <span key={p.id} style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:p.color, letterSpacing:0.5, textAlign:'center' }}>{p.name.toUpperCase()}</span>)}
+            </div>
+            {[
+              ['Real-time scanning',         true,  true,  true,  true,  true,  true ],
+              ['Auto remediation',           false, true,  false, false, true,  false],
+              ['API endpoint testing',       false, false, true,  false, true,  false],
+              ['Dashboard & reports',        true,  true,  true,  true,  true,  true ],
+              ['Slack / email alerts',       false, true,  true,  true,  true,  true ],
+              ['CI/CD integration',          false, false, true,  false, true,  false],
+              ['Cloud infra scanning',       false, false, false, true,  false, false],
+              ['PII/PHI data discovery',     false, false, false, false, false, true ],
+              ['Pen test simulation',        false, false, false, false, true,  false],
+              ['Compliance export',          false, false, false, true,  false, true ],
+              ['White-label option',         false, true,  false, false, false, false],
+            ].map(([label, ...vals], i, arr) => (
+              <div key={i} style={{ display:'grid', gridTemplateColumns:'2fr repeat(6,1fr)', padding:'12px 24px', borderBottom:i<arr.length-1?'1px solid rgba(255,255,255,0.04)':'none', background:i%2===0?'transparent':'rgba(255,255,255,0.01)', gap:8, alignItems:'center' }}>
+                <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)' }}>{label}</span>
+                {vals.map((v,j) => <span key={j} style={{ textAlign:'center', fontSize:15 }}>{v?'✅':'❌'}</span>)}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Our Process ── */}
+      {/* ── Enterprise Section ── */}
       <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
-        <div style={{ textAlign:'center', marginBottom:44 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #3B82F640', background:'#3B82F612', color:'#3B82F6', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>How We Work</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>From First Call to Launch Day</h2>
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:16 }}>
-          {PROCESS.map((s,i) => (
-            <div key={i} style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18, padding:'28px 22px' }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.15)', letterSpacing:2, marginBottom:18 }}>{s.step}</div>
-              <div style={{ fontSize:28, marginBottom:14 }}>{s.icon}</div>
-              <div style={{ fontFamily:"'Sora',sans-serif", fontSize:16, fontWeight:800, color:'#fff', marginBottom:8 }}>{s.title}</div>
-              <div style={{ fontSize:13, color:'rgba(255,255,255,0.42)', lineHeight:1.7 }}>{s.desc}</div>
+        <div className="ent-inner" style={{ background:'linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(59,130,246,0.06) 100%)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:24, padding:'56px 48px', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:-60, right:-60, width:260, height:260, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', bottom:-40, left:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', pointerEvents:'none' }} />
+          <div className="ent-flex" style={{ display:'flex', flexWrap:'wrap', gap:40, alignItems:'flex-start', position:'relative' }}>
+            <div style={{ flex:'1 1 340px' }}>
+              <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #A855F740', background:'#A855F712', color:'#A855F7', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Enterprise</span>
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(24px,4vw,38px)', fontWeight:900, color:'#fff', margin:'16px 0 14px', letterSpacing:-1 }}>Built for Teams<br />That Can't Afford<br /><span style={{ color:'#A855F7' }}>to Be Breached</span></h2>
+              <p style={{ color:'rgba(255,255,255,0.5)', fontSize:14, lineHeight:1.8, maxWidth:380, marginBottom:28 }}>Everything in all plans plus dedicated support, on-premise deployments, unlimited seats, and a named security engineer on your account.</p>
+              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+                <button className="btn-primary" style={{ padding:'13px 28px', background:'#A855F7', color:'#fff', fontSize:14, border:'none' }}>Talk to Sales →</button>
+                <button className="btn-outline" style={{ padding:'13px 22px', fontSize:14 }}>View Case Studies</button>
+              </div>
             </div>
-          ))}
+            <div style={{ flex:'1 1 340px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:16 }}>
+              {ENTERPRISE_FEATURES.map((f,i) => (
+                <div key={i} style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, padding:'18px 16px' }}>
+                  <div style={{ fontSize:24, marginBottom:10 }}>{f.icon}</div>
+                  <div style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:700, color:'#fff', marginBottom:6 }}>{f.title}</div>
+                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', lineHeight:1.6 }}>{f.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* ── Testimonials ── */}
       <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
         <div style={{ textAlign:'center', marginBottom:40 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Client Stories</span>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>What Clients Say</h2>
+          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Testimonials</span>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Trusted by Security-First Teams</h2>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))', gap:20 }}>
           {TESTIMONIALS.map((t,i) => (
-            <div key={i}
-              style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18, padding:28, transition:'all 0.2s' }}
+            <div key={i} style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18, padding:28, transition:'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor=`${t.color}30`; e.currentTarget.style.transform='translateY(-3px)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.07)'; e.currentTarget.style.transform='none'; }}>
-              <div style={{ fontSize:28, color:t.color, fontFamily:'Georgia,serif', lineHeight:1, marginBottom:14, opacity:0.6 }}>"</div>
-              <p style={{ fontSize:14, color:'rgba(255,255,255,0.62)', lineHeight:1.75, marginBottom:22 }}>{t.quote}</p>
+              <div style={{ fontSize:28, color:t.color, fontFamily:'Georgia,serif', lineHeight:1, marginBottom:14, opacity:0.7 }}>"</div>
+              <p style={{ fontSize:14, color:'rgba(255,255,255,0.65)', lineHeight:1.75, marginBottom:22 }}>{t.quote}</p>
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ width:38, height:38, borderRadius:'50%', background:`${t.color}18`, border:`1px solid ${t.color}35`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:12, color:t.color }}>{t.avatar}</div>
+                <div style={{ width:38, height:38, borderRadius:'50%', background:`${t.color}20`, border:`1px solid ${t.color}40`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:12, color:t.color }}>{t.avatar}</div>
                 <div>
                   <div style={{ fontFamily:"'Sora',sans-serif", fontSize:13, fontWeight:700, color:'#fff' }}>{t.name}</div>
-                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.32)', marginTop:1 }}>{t.role}</div>
+                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:1 }}>{t.role}</div>
                 </div>
               </div>
             </div>
@@ -239,25 +264,71 @@ export default function PortfolioPage() {
         </div>
       </div>
 
-      {/* ── CTA ── */}
+      {/* ── How It Works ── */}
+      <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
+        <div style={{ textAlign:'center', marginBottom:44 }}>
+          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Process</span>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Up & Running in 3 Steps</h2>
+        </div>
+        <div className="step-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative' }}>
+          {[
+            { step:'01', icon:'🛒', title:'Pick Your Plan',        desc:'Choose one or more products and add them to your cart. Bundle for maximum coverage.' },
+            { step:'02', icon:'⚙️', title:'Connect in Minutes',    desc:'Follow the guided setup wizard. Most integrations take under 5 minutes — no DevOps required.' },
+            { step:'03', icon:'🛡️', title:'Stay Protected 24/7',   desc:'Your dashboard goes live immediately. Get real-time alerts, weekly reports, and continuous scans.' },
+          ].map((s,i) => (
+            <div key={i} style={{ padding:'36px 32px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:i===0?'16px 0 0 16px':i===2?'0 16px 16px 0':'0', borderLeft:i>0?'none':undefined }}>
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(255,255,255,0.2)', letterSpacing:2, marginBottom:16 }}>{s.step}</div>
+              <div style={{ fontSize:32, marginBottom:14 }}>{s.icon}</div>
+              <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:800, color:'#fff', marginBottom:10 }}>{s.title}</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── FAQ ── */}
+      <div style={{ maxWidth:720, margin:'80px auto 0' }}>
+        <div style={{ textAlign:'center', marginBottom:40 }}>
+          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>FAQ</span>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Frequently Asked Questions</h2>
+        </div>
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          {FAQS.map((f,i) => (
+            <div key={i} style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, overflow:'hidden', transition:'border-color 0.2s', borderColor: openFaq===i ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.07)' }}>
+              <button onClick={() => setOpenFaq(openFaq===i ? null : i)}
+                style={{ width:'100%', padding:'18px 22px', background:'transparent', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12 }}>
+                <span style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:700, color:'#fff', textAlign:'left' }}>{f.q}</span>
+                <span style={{ color:'rgba(255,255,255,0.4)', fontSize:18, flexShrink:0, transition:'transform 0.2s', transform: openFaq===i ? 'rotate(45deg)' : 'none' }}>+</span>
+              </button>
+              {openFaq===i && (
+                <div style={{ padding:'0 22px 18px' }}>
+                  <p style={{ fontSize:14, color:'rgba(255,255,255,0.5)', lineHeight:1.8, margin:0 }}>{f.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Bottom CTA ── */}
       <div style={{ maxWidth:1100, margin:'80px auto 0', paddingBottom:100 }}>
-        <div style={{ background:'linear-gradient(135deg,rgba(139,92,246,0.1) 0%,rgba(34,197,94,0.07) 100%)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:24, padding:'64px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
+        <div className="cta-inner" style={{ background:'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(59,130,246,0.08) 100%)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:24, padding:'64px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 65%)', pointerEvents:'none' }} />
           <div style={{ position:'relative' }}>
-            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #8B5CF640', background:'#8B5CF612', color:'#8B5CF6', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Start a Project</span>
-            <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(24px,4vw,42px)', fontWeight:900, color:'#fff', margin:'20px auto 16px', letterSpacing:-1, maxWidth:560 }}>
-              Ready to Build<br /><span style={{ color:'#8B5CF6' }}>Something Great?</span>
+            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Get Protected Today</span>
+            <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,44px)', fontWeight:900, color:'#fff', margin:'20px auto 16px', letterSpacing:-1, maxWidth:600 }}>
+              Your Next Security Incident<br />Could Be Your Last
             </h2>
-            <p style={{ color:'rgba(255,255,255,0.42)', fontSize:15, maxWidth:440, margin:'0 auto 32px', lineHeight:1.7 }}>
-              Tell us about your project and we'll respond within 24 hours with a tailored proposal.
+            <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:480, margin:'0 auto 32px', lineHeight:1.7 }}>
+              14-day free trial. No credit card required. Cancel anytime. Join 4,200+ teams already protected by Axentralab.
             </p>
             <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-              <button className="btn-primary" style={{ padding:'15px 36px', background:'#8B5CF6', color:'#fff', fontSize:15, border:'none', fontWeight:700 }}>Get a Free Proposal →</button>
-              <button className="btn-outline" style={{ padding:'15px 28px', fontSize:15 }}>View All Case Studies</button>
+              <button className="btn-primary" style={{ padding:'15px 36px', background:'#22C55E', color:'#000', fontSize:15, border:'none', fontWeight:700 }}>Start Free Trial →</button>
+              <button className="btn-outline" style={{ padding:'15px 28px', fontSize:15 }}>Book a Demo</button>
             </div>
-            <div style={{ marginTop:24, display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-              {['✓ 24hr response time','✓ Fixed-price quotes','✓ NDA on request'].map((t,i) => (
-                <span key={i} style={{ fontSize:12, color:'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
+            <div style={{ marginTop:24, display:'flex', gap:28, justifyContent:'center', flexWrap:'wrap' }}>
+              {['✓ No credit card','✓ 14-day free trial','✓ Cancel anytime'].map((t,i) => (
+                <span key={i} style={{ fontSize:12, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
               ))}
             </div>
           </div>
@@ -265,5 +336,7 @@ export default function PortfolioPage() {
       </div>
 
     </div>
+  
+    </>
   );
 }

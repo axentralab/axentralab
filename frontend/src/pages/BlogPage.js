@@ -3,15 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
 import { TAG_COLORS } from '../constants/statusColors';
+// FIX: shared utility — no longer duplicated here and in BlogPostPage
+import { readingTime } from '../utils/readingTime';
 
 const CATS = ['All', 'Cybersecurity', 'AI Automation', 'Web Dev', 'SaaS Dev', 'DevOps', 'General'];
 const PER_PAGE = 9;
-
-// Reading time: ~200 words per minute, use excerpt word count as proxy
-function readingTime(text = '') {
-  const words = text.trim().split(/\s+/).length;
-  return Math.max(1, Math.ceil(words / 200));
-}
 
 export default function BlogPage() {
   const [posts, setPosts]     = useState([]);
@@ -22,15 +18,23 @@ export default function BlogPage() {
   const [page, setPage]       = useState(1);
   const navigate              = useNavigate();
 
+  // FIX: AbortController prevents setState on unmounted component
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
-    api.get('/blog')
+    setError(false);
+
+    api.get('/blog', { signal: controller.signal })
       .then(r => {
         if (r.data.data?.length) setPosts(r.data.data);
         else setError(true);
       })
-      .catch(() => setError(true))
+      .catch(err => {
+        if (err.name !== 'CanceledError' && err.name !== 'AbortError') setError(true);
+      })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, []);
 
   useEffect(() => { setPage(1); }, [filter, search]);
@@ -92,7 +96,7 @@ export default function BlogPage() {
         </div>
       )}
 
-      {/* Error state — no hardcoded fallback */}
+      {/* Error state */}
       {!loading && error && (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>📡</div>
@@ -136,7 +140,6 @@ export default function BlogPage() {
                         <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
                           {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
-                        {/* Reading time */}
                         <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
                           {minutes} min read
                         </span>

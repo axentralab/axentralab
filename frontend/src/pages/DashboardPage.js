@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useMatch } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api, { apiErrorMessage } from '../services/api';
 import Sidebar from '../components/Sidebar';
 import Skeleton, { SkeletonList } from '../components/Skeleton';
 import { STATUS_COLORS } from '../constants/statusColors';
+// FIX: use status constants instead of hardcoded strings
+import { PAID_STATUSES } from '../constants/orderStatus';
 
 function StatCard({ icon, label, value, color = '#22C55E' }) {
   return (
@@ -61,7 +63,6 @@ function OrdersTab({ orders, loading }) {
     <div>
       <h2 style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 22, color: '#fff', marginBottom: 24 }}>My Orders</h2>
       {orders.length === 0 ? (
-        // Improved empty state
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '56px 32px', textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 16 }}>📦</div>
           <h3 style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 20, color: '#fff', marginBottom: 10 }}>No orders yet</h3>
@@ -87,8 +88,8 @@ function OrdersTab({ orders, loading }) {
                   <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, background: `${STATUS_COLORS[order.status]}15`, border: `1px solid ${STATUS_COLORS[order.status]}30`, color: STATUS_COLORS[order.status], fontSize: 11, fontWeight: 700, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5 }}>
                     {order.status?.toUpperCase()}
                   </span>
-                  {/* Invoice download for paid/completed orders */}
-                  {['paid', 'active', 'completed'].includes(order.status) && (
+                  {/* FIX: use PAID_STATUSES constant */}
+                  {PAID_STATUSES.includes(order.status) && (
                     <button onClick={() => { downloadInvoice(order); toast.success('Invoice downloaded!'); }}
                       style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontFamily: "'Space Mono',monospace" }}>
                       ↓ Invoice
@@ -111,7 +112,13 @@ function ProfileTab() {
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '' });
   const [fieldErrors, setFieldErrors] = useState({});
 
-  // Field-level validation
+  // FIX: sync form when user context updates (e.g. after a successful save)
+  useEffect(() => {
+    if (user) {
+      setForm({ name: user.name || '', company: user.company || '', phone: user.phone || '' });
+    }
+  }, [user]);
+
   const validateProfile = () => {
     const errs = {};
     if (!form.name.trim()) errs.name = 'Name is required';
@@ -201,22 +208,26 @@ function ProfileTab() {
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
 
+  // FIX: useMatch instead of pathname.includes() — route-aware, won't break on rename
+  const isOrders  = useMatch('/dashboard/orders');
+  const isProfile = useMatch('/dashboard/profile');
+  const tab = isOrders ? 'orders' : isProfile ? 'profile' : 'overview';
+
+  // FIX: AbortController prevents setState on unmounted component
   useEffect(() => {
-    api.get('/orders/mine')
+    const controller = new AbortController();
+    api.get('/orders/mine', { signal: controller.signal })
       .then(r => setOrders(r.data.data))
-      .catch(() => {})
+      .catch(err => { if (err.name !== 'CanceledError' && err.name !== 'AbortError') {} })
       .finally(() => setOrdersLoading(false));
+    return () => controller.abort();
   }, []);
 
-  const tab = location.pathname.includes('orders')  ? 'orders'
-            : location.pathname.includes('profile') ? 'profile'
-            : 'overview';
-
-  const paid      = orders.filter(o => ['paid', 'active', 'completed'].includes(o.status));
+  // FIX: use PAID_STATUSES constant
+  const paid       = orders.filter(o => PAID_STATUSES.includes(o.status));
   const totalSpent = paid.reduce((s, o) => s + (o.total || 0), 0);
 
   const navItems = [
@@ -237,7 +248,6 @@ export default function DashboardPage() {
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.45)', marginBottom: 36 }}>Here's an overview of your account activity.</p>
 
-            {/* Stat cards with skeleton */}
             {ordersLoading ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16, marginBottom: 40 }}>
                 <Skeleton variant="stat" /><Skeleton variant="stat" /><Skeleton variant="stat" />
