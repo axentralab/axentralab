@@ -1,41 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { TAG_COLORS } from '../constants/statusColors';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const SERVICES = [
-  { icon: '🌐', title: 'Web Development',       desc: 'Custom websites, SaaS platforms and high-performance applications built to scale.', color: '#3B82F6', link: '/services' },
-  { icon: '🛡️', title: 'Cybersecurity',          desc: 'Penetration testing, security audits and full vulnerability protection programs.',   color: '#EF4444', link: '/services' },
-  { icon: '🤖', title: 'AI Automation',          desc: 'Business automation, AI agents and intelligent integrations that cut manual work.',  color: '#22C55E', link: '/services' },
-  { icon: '☁️', title: 'Cloud & Infrastructure', desc: 'Secure deployment, hosting and resilient server architecture on AWS & beyond.',      color: '#8B5CF6', link: '/services' },
-];
 
 const STATS = [
   { value: 150, suffix: '+', label: 'Projects Delivered', color: '#22C55E' },
   { value: 80,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
   { value: 99,  suffix: '%', label: 'Uptime SLA',         color: '#A855F7' },
   { value: 30,  suffix: '+', label: 'Days Avg Delivery',  color: '#F59E0B' },
-];
-
-const PROCESS = [
-  { step: '01', icon: '🔍', title: 'Discovery',        desc: 'We audit your goals, stack and competitive landscape to find the highest-leverage opportunities.' },
-  { step: '02', icon: '🗺️', title: 'Strategy',          desc: 'A fixed-price technical plan with clear milestones — no scope creep, no surprises.' },
-  { step: '03', icon: '⚙️', title: 'Build & Iterate',  desc: 'Weekly demos, async Slack updates and a live staging environment you can access anytime.' },
-  { step: '04', icon: '🚀', title: 'Launch & Support', desc: 'Full docs, knowledge transfer and optional retainer support after go-live.' },
-];
-
-const TESTIMONIALS = [
-  { name: 'Marcus Chen',    role: 'CTO, NovaTech',    avatar: 'MC', color: '#22C55E', quote: 'Axentralab transformed our security posture completely. Found 18 critical CVEs before launch. Their team genuinely cares.' },
-  { name: 'Sarah Okonkwo',  role: 'Founder, Buildly', avatar: 'SO', color: '#3B82F6', quote: 'Our SaaS platform went live in 8 weeks. The MERN stack they chose was perfect for our scale — still running flawlessly.' },
-  { name: 'James Kowalski', role: 'VP Eng, Dataflow',  avatar: 'JK', color: '#A855F7', quote: 'The AI automation they built saves our team 200+ hours per month. ROI was visible within 30 days of go-live.' },
-];
-
-const BLOG_FALLBACK_HOME = [
-  { _id: '5',  title: '10 Most Common WordPress Security Mistakes', category: 'Cybersecurity', createdAt: '2025-03-01' },
-  { _id: '2',  title: 'Building AI Agents with LangChain and Node.js', category: 'AI Automation', createdAt: '2025-02-20' },
-  { _id: '10', title: 'Why MERN Stack is the Future of Scalable Web Apps', category: 'Web Dev', createdAt: '2025-03-06' },
 ];
 
 // Terminal lines shown in the floating code widget
@@ -665,26 +637,6 @@ function DashboardPreview() {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const [blogPosts, setBlogPosts] = useState(BLOG_FALLBACK_HOME);
-  const [heroVisible, setHeroVisible] = useState(false);
-
-  useEffect(() => {
-    // Hero entrance stagger
-    const t = setTimeout(() => setHeroVisible(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    api.get('/blog?limit=3&sort=-createdAt')
-      .then(r => { if (r.data.data?.length) setBlogPosts(r.data.data.slice(0, 3)); })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    const t = setInterval(() => setActiveTestimonial(v => (v + 1) % TESTIMONIALS.length), 4000);
-    return () => clearInterval(t);
-  }, []);
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -797,21 +749,6 @@ export default function HomePage() {
           {STATS.map(s => <StatCard key={s.label} stat={s} />)}
         </div>
       </section>
-
-      {/* ── CLIENT MARQUEE ────────────────────────────────────────────────── */}
-      <div style={{ padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(90deg,var(--bg,#0a0a0f),transparent)', zIndex: 1 }} />
-        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(270deg,var(--bg,#0a0a0f),transparent)', zIndex: 1 }} />
-        <div style={{ overflow: 'hidden' }}>
-          <div className="marquee-track">
-            {[...['NovaTech','Buildly','Dataflow','SecureOps','CloudBridge','NexaAI','FinNova','BankCo'], ...['NovaTech','Buildly','Dataflow','SecureOps','CloudBridge','NexaAI','FinNova','BankCo']].map((c, i) => (
-              <span key={i} style={{ fontFamily: "'Space Mono',monospace", fontSize: 12, color: 'rgba(255,255,255,0.2)', letterSpacing: 1.5, textTransform: 'uppercase', flexShrink: 0 }}>
-                ◆ {c}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* ── FREE AI TOOL ──────────────────────────────────────────────────── */}
       <FreeAITool />
@@ -983,103 +920,6 @@ export default function HomePage() {
 
       {/* ── DASHBOARD PREVIEW ─────────────────────────────────────────────── */}
       <DashboardPreview />
-
-      {/* ── PROCESS ──────────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>How We Work</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1, marginBottom: 14 }}>From idea to deployed</h2>
-        </div>
-        <div className="process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 20, maxWidth: 1000, margin: '0 auto' }}>
-          {PROCESS.map((p, i) => (
-            <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 26, position: 'relative' }}>
-              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 1.5, fontWeight: 700, marginBottom: 14 }}>{p.step}</div>
-              <div style={{ fontSize: 26, marginBottom: 12 }}>{p.icon}</div>
-              <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 10 }}>{p.title}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65 }}>{p.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Client Stories</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -1 }}>What Our Clients Say</h2>
-        </div>
-        <div style={{ maxWidth: 720, margin: '0 auto 32px' }}>
-          <div style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${TESTIMONIALS[activeTestimonial].color}30`, borderRadius: 24, padding: 36, transition: 'border-color 0.4s' }}>
-            <div style={{ fontSize: 48, color: TESTIMONIALS[activeTestimonial].color, fontFamily: 'Georgia,serif', lineHeight: 1, marginBottom: 20, opacity: 0.5 }}>"</div>
-            <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(15px,2vw,18px)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 28, fontStyle: 'italic' }}>{TESTIMONIALS[activeTestimonial].quote}</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${TESTIMONIALS[activeTestimonial].color}20`, border: `1px solid ${TESTIMONIALS[activeTestimonial].color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 13, color: TESTIMONIALS[activeTestimonial].color }}>
-                {TESTIMONIALS[activeTestimonial].avatar}
-              </div>
-              <div>
-                <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 14, fontWeight: 700, color: '#fff' }}>{TESTIMONIALS[activeTestimonial].name}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{TESTIMONIALS[activeTestimonial].role}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
-          {TESTIMONIALS.map((_, i) => (
-            <button key={i} onClick={() => setActiveTestimonial(i)} style={{ width: i === activeTestimonial ? 24 : 8, height: 8, borderRadius: 999, background: i === activeTestimonial ? '#22C55E' : 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', transition: 'all 0.3s' }} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── TECH STACK ───────────────────────────────────────────────────── */}
-      <section style={{ padding: '72px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>Our Stack</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, color: '#fff', marginTop: 12, letterSpacing: -0.5 }}>Technologies We Use</h2>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', maxWidth: 800, margin: '0 auto' }}>
-          {['React', 'Next.js', 'Node.js', 'MongoDB', 'PostgreSQL', 'Docker', 'AWS', 'Python', 'TypeScript', 'Kubernetes', 'Redis', 'Terraform'].map((t, i) => (
-            <span key={i} style={{ padding: '8px 18px', borderRadius: 999, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', fontFamily: "'Space Mono',monospace", fontSize: 12, color: 'rgba(255,255,255,0.5)', cursor: 'default', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}>
-              {t}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ── LATEST BLOG ──────────────────────────────────────────────────── */}
-      <section style={{ padding: '80px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto 36px', flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #06B6D440', background: '#06B6D412', color: '#06B6D4', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Insights</span>
-            <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, color: '#fff', marginTop: 10, letterSpacing: -0.5 }}>Latest from the Blog</h2>
-          </div>
-          <Link to="/blog" style={{ color: '#06B6D4', fontWeight: 700, textDecoration: 'none', fontSize: 14, fontFamily: "'Sora',sans-serif" }}>All articles →</Link>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
-          {blogPosts.map((post, i) => {
-            const color = TAG_COLORS[post.category] || '#06B6D4';
-            return (
-              <Link key={i} to={`/blog/${post._id}`} className="blog-card"
-                style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 0, textDecoration: 'none', transition: 'all 0.25s', overflow: 'hidden', display: 'block' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = `${color}35`; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; }}>
-                <div style={{ height: 4, background: `linear-gradient(90deg,${color},transparent)` }} />
-                <div style={{ padding: 24 }}>
-                  <span style={{ display: 'inline-block', padding: '2px 10px', borderRadius: 999, border: `1px solid ${color}30`, background: `${color}10`, color, fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: 600, marginBottom: 14 }}>{post.category}</span>
-                  <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.4, marginBottom: 16 }}>{post.title}</h3>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
-                      {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                    </span>
-                    <span style={{ fontSize: 12, color, fontWeight: 700 }}>Read →</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
 
       {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
       <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
