@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { TAG_COLORS } from '../constants/statusColors';
 
-
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const SERVICES = [
   { icon: '🌐', title: 'Web Development',       desc: 'Custom websites, SaaS platforms and high-performance applications built to scale.', color: '#3B82F6', link: '/services' },
@@ -38,15 +38,30 @@ const BLOG_FALLBACK_HOME = [
   { _id: '10', title: 'Why MERN Stack is the Future of Scalable Web Apps', category: 'Web Dev', createdAt: '2025-03-06' },
 ];
 
-const CLIENTS = ['NovaTech', 'Buildly', 'Dataflow', 'SecureOps', 'CloudBridge', 'NexaAI', 'FinNova', 'BankCo'];
-
-const FREE_OFFERS = [
-  { icon: '🔍', title: 'Free Website Audit',  desc: 'Comprehensive analysis of performance, SEO & security.', cta: 'Get Free Audit' },
-  { icon: '🛡️', title: 'Free Security Scan',  desc: 'Identify vulnerabilities and misconfigurations instantly.', cta: 'Start Scan' },
-  { icon: '💬', title: 'Free Consultation', desc: '30-min call with our senior engineers — no strings attached.', cta: 'Book Call' },
+// Terminal lines shown in the floating code widget
+const TERMINAL_LINES = [
+  { delay: 0,    color: '#22C55E', text: '$ axentralab init --project my-saas' },
+  { delay: 600,  color: '#94A3B8', text: '> Scanning codebase...' },
+  { delay: 1200, color: '#3B82F6', text: '> AI agent initialized ✓' },
+  { delay: 1800, color: '#94A3B8', text: '> Connecting to cloud infra...' },
+  { delay: 2400, color: '#A855F7', text: '> Security audit running...' },
+  { delay: 3000, color: '#22C55E', text: '✓ All systems go. Ready to build.' },
+  { delay: 3600, color: '#F59E0B', text: '> Deploy? [Y/n]: Y' },
+  { delay: 4200, color: '#22C55E', text: '🚀 Deployed to axentralab.app' },
 ];
 
-/* Animated counter hook */
+// AI Tool tab definitions
+const AI_TABS = [
+  { id: 'copy',  label: '✍️ Copywriter', icon: '✍️' },
+  { id: 'email', label: '📧 Email',      icon: '📧' },
+  { id: 'seo',   label: '🔍 SEO',        icon: '🔍' },
+];
+
+const TONES   = ['Professional', 'Casual', 'Bold', 'Friendly', 'Persuasive'];
+const LENGTHS = ['Short', 'Medium', 'Long'];
+
+// ─── Hooks ────────────────────────────────────────────────────────────────────
+
 function useCounter(target, duration = 1800) {
   const [val, setVal] = useState(0);
   const started = useRef(false);
@@ -73,6 +88,8 @@ function useCounter(target, duration = 1800) {
   return [val, ref];
 }
 
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
 function StatCard({ stat }) {
   const [val, ref] = useCounter(stat.value);
   return (
@@ -97,10 +114,566 @@ function Glow({ x, y, color = '#22C55E', size = 500 }) {
   );
 }
 
+// Animated headline that cycles through words
+function AnimatedHeadline() {
+  const words  = ['AI systems', 'SaaS platforms', 'trading bots', 'secure apps'];
+  const colors = ['#22C55E', '#3B82F6', '#F59E0B', '#A855F7'];
+  const [idx, setIdx]     = useState(0);
+  const [visible, setVis] = useState(true);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVis(false);
+      setTimeout(() => { setIdx(i => (i + 1) % words.length); setVis(true); }, 350);
+    }, 2600);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <span style={{
+      color: colors[idx],
+      display: 'inline-block',
+      transition: 'opacity 0.35s, transform 0.35s',
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'none' : 'translateY(10px)',
+    }}>
+      {words[idx]}
+    </span>
+  );
+}
+
+// Floating terminal widget
+function FloatingTerminal() {
+  const [visibleLines, setVisibleLines] = useState([]);
+
+  useEffect(() => {
+    const timers = TERMINAL_LINES.map((line, i) =>
+      setTimeout(() => setVisibleLines(prev => [...prev, i]), line.delay)
+    );
+    // loop: restart after all lines shown
+    const loopTimer = setTimeout(() => setVisibleLines([]), TERMINAL_LINES[TERMINAL_LINES.length - 1].delay + 2000);
+    return () => { timers.forEach(clearTimeout); clearTimeout(loopTimer); };
+  }, [visibleLines.length === 0 ? 0 : -1]); // re-trigger on reset
+
+  // re-run animation loop
+  useEffect(() => {
+    if (visibleLines.length === 0) {
+      const timers = TERMINAL_LINES.map((line, i) =>
+        setTimeout(() => setVisibleLines(prev => [...prev, i]), line.delay)
+      );
+      const loopTimer = setTimeout(() => setVisibleLines([]), TERMINAL_LINES[TERMINAL_LINES.length - 1].delay + 2200);
+      return () => { timers.forEach(clearTimeout); clearTimeout(loopTimer); };
+    }
+  }, [visibleLines]);
+
+  return (
+    <div style={{
+      background: '#0D1117',
+      border: '1px solid rgba(255,255,255,0.1)',
+      borderRadius: 16,
+      overflow: 'hidden',
+      boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)',
+      fontFamily: "'Space Mono',monospace",
+      fontSize: 13,
+      minHeight: 240,
+    }}>
+      {/* Title bar */}
+      <div style={{ padding: '12px 16px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#F59E0B', display: 'inline-block' }} />
+        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#22C55E', display: 'inline-block' }} />
+        <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: 0.5 }}>axentralab — terminal</span>
+      </div>
+      {/* Lines */}
+      <div style={{ padding: '18px 20px', minHeight: 200 }}>
+        {TERMINAL_LINES.map((line, i) => (
+          <div key={i} style={{
+            color: visibleLines.includes(i) ? line.color : 'transparent',
+            transition: 'color 0.3s, opacity 0.3s',
+            marginBottom: 6,
+            opacity: visibleLines.includes(i) ? 1 : 0,
+            lineHeight: 1.6,
+          }}>
+            {line.text}
+          </div>
+        ))}
+        {/* blinking cursor */}
+        <span style={{ display: 'inline-block', width: 8, height: 14, background: '#22C55E', verticalAlign: 'middle', animation: 'blink 1s step-end infinite', marginLeft: 2 }} />
+      </div>
+    </div>
+  );
+}
+
+// Scroll indicator arrow
+function ScrollIndicator() {
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY < 80);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <div style={{
+      position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)',
+      opacity: show ? 1 : 0, transition: 'opacity 0.4s',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      animation: 'bounceY 2s ease-in-out infinite',
+      pointerEvents: 'none',
+    }}>
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>scroll</span>
+      <div style={{ width: 1, height: 36, background: 'linear-gradient(#22C55E, transparent)' }} />
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E' }} />
+    </div>
+  );
+}
+
+// ─── Free AI Tool Section ──────────────────────────────────────────────────────
+
+function FreeAITool() {
+  const [tab, setTab]       = useState('copy');
+  const [tone, setTone]     = useState('Professional');
+  const [length, setLength] = useState('Medium');
+  const [topic, setTopic]   = useState('');
+  const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied]   = useState(false);
+  const [chars, setChars]     = useState(0);
+
+  const PROMPTS = {
+    copy: (t, tone, length) =>
+      `Write a compelling marketing copy for: "${t}". Tone: ${tone}. Length: ${length}. Return only the copy, no explanations.`,
+    email: (t, tone, length) =>
+      `Write a professional email about: "${t}". Tone: ${tone}. Length: ${length}. Include subject line. Return only the email.`,
+    seo: (t, tone, length) =>
+      `Write an SEO-optimised meta description and title tag for: "${t}". Tone: ${tone}. Length hint: ${length}. Format clearly.`,
+  };
+
+  const PLACEHOLDERS = {
+    copy: 'e.g. AI automation tool for small businesses',
+    email: 'e.g. Follow-up after a product demo',
+    seo:  'e.g. Cybersecurity services for startups',
+  };
+
+  const handleGenerate = async () => {
+    if (!topic.trim()) return;
+    setLoading(true);
+    setOutput('');
+    setCopied(false);
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: PROMPTS[tab](topic, tone, length) }],
+        }),
+      });
+      const data = await res.json();
+      const text = data.content?.map(b => b.text || '').join('') || 'No output.';
+      setOutput(text);
+      setChars(text.length);
+    } catch {
+      setOutput('⚠️ Something went wrong. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const handleCopy = async () => {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  return (
+    <section style={{ padding: '100px 5%', background: 'rgba(34,197,94,0.02)', borderTop: '1px solid rgba(34,197,94,0.08)', borderBottom: '1px solid rgba(34,197,94,0.08)', position: 'relative', overflow: 'hidden' }}>
+      {/* bg glow */}
+      <div style={{ position: 'absolute', top: '40%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.06), transparent 70%)', pointerEvents: 'none' }} />
+
+      <div style={{ maxWidth: 860, margin: '0 auto', position: 'relative' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
+            Free AI Tool — No login required
+          </span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, lineHeight: 1.1, marginBottom: 14 }}>
+            Generate content with AI<br />
+            <span style={{ color: '#22C55E' }}>in seconds.</span>
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
+            Powered by Claude. Pick a tool, set your tone, and generate.
+          </p>
+        </div>
+
+        {/* Tool card */}
+        <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.4)' }}>
+          {/* Tab bar */}
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.2)', padding: '0 4px' }}>
+            {AI_TABS.map(t => (
+              <button key={t.id} onClick={() => { setTab(t.id); setOutput(''); }}
+                style={{
+                  flex: 1, padding: '16px 0', background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13,
+                  color: tab === t.id ? '#22C55E' : 'rgba(255,255,255,0.3)',
+                  borderBottom: tab === t.id ? '2px solid #22C55E' : '2px solid transparent',
+                  transition: 'all 0.2s',
+                }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ padding: '28px 28px 32px' }}>
+            {/* Input */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>
+                Topic / Subject
+              </label>
+              <input
+                type="text"
+                value={topic}
+                onChange={e => setTopic(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleGenerate()}
+                placeholder={PLACEHOLDERS[tab]}
+                style={{
+                  width: '100%', background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+                  padding: '13px 18px', color: '#fff', fontSize: 14, outline: 'none',
+                  fontFamily: "'Sora',sans-serif", boxSizing: 'border-box',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={e => e.target.style.borderColor = 'rgba(34,197,94,0.5)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            {/* Selectors row */}
+            <div style={{ display: 'flex', gap: 20, marginBottom: 24, flexWrap: 'wrap' }}>
+              {/* Tone */}
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>Tone</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {TONES.map(t => (
+                    <button key={t} onClick={() => setTone(t)}
+                      style={{
+                        padding: '5px 12px', borderRadius: 8, border: tone === t ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.08)',
+                        background: tone === t ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.03)',
+                        color: tone === t ? '#22C55E' : 'rgba(255,255,255,0.4)',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                        fontFamily: "'Space Mono',monospace",
+                      }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Length */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>Length</div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {LENGTHS.map(l => (
+                    <button key={l} onClick={() => setLength(l)}
+                      style={{
+                        padding: '5px 14px', borderRadius: 8, border: length === l ? '1px solid rgba(59,130,246,0.5)' : '1px solid rgba(255,255,255,0.08)',
+                        background: length === l ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
+                        color: length === l ? '#3B82F6' : 'rgba(255,255,255,0.4)',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                        fontFamily: "'Space Mono',monospace",
+                      }}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Generate button */}
+            <button
+              onClick={handleGenerate}
+              disabled={loading || !topic.trim()}
+              style={{
+                width: '100%', padding: '14px', borderRadius: 12,
+                background: loading || !topic.trim() ? 'rgba(34,197,94,0.25)' : '#22C55E',
+                color: loading || !topic.trim() ? 'rgba(0,0,0,0.4)' : '#000',
+                border: 'none', fontSize: 15, fontWeight: 800, cursor: loading || !topic.trim() ? 'default' : 'pointer',
+                fontFamily: "'Sora',sans-serif", letterSpacing: -0.3,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                transition: 'all 0.2s',
+              }}>
+              {loading ? (
+                <>
+                  <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(0,0,0,0.3)', borderTopColor: '#000', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} />
+                  Generating…
+                </>
+              ) : '⚡ Generate with AI'}
+            </button>
+
+            {/* Output */}
+            {output && (
+              <div style={{ marginTop: 24, position: 'relative', animation: 'fadeUp 0.4s ease both' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5 }}>
+                    OUTPUT · {chars} chars
+                  </span>
+                  <button onClick={handleCopy}
+                    style={{
+                      padding: '4px 12px', borderRadius: 8,
+                      background: copied ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                      color: copied ? '#22C55E' : 'rgba(255,255,255,0.5)',
+                      fontSize: 11, fontFamily: "'Space Mono',monospace", cursor: 'pointer', transition: 'all 0.2s',
+                    }}>
+                    {copied ? '✓ Copied' : '⧉ Copy'}
+                  </button>
+                </div>
+                <div style={{
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 12, padding: '18px 20px',
+                  color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.8,
+                  whiteSpace: 'pre-wrap', maxHeight: 320, overflowY: 'auto',
+                  fontFamily: "'Sora',sans-serif",
+                }}>
+                  {output}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Nudge */}
+        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
+          Want custom AI tools for your business? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Let's talk →</Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ─── New Section Data ─────────────────────────────────────────────────────────
+
+const TOOLS_GRID = [
+  { icon: '🤖', name: 'AutoFlow AI',  tag: 'Workflow Builder',   desc: 'No-code AI workflow builder — connect apps, trigger on events, automate ops.', features: ['200+ integrations', 'GPT-4 nodes', 'Cron triggers'], price: 0,   tier: 'Free',  color: '#22C55E' },
+  { icon: '📈', name: 'RankRadar',    tag: 'SEO Intelligence',   desc: 'AI-driven SEO auditor that surfaces technical issues and tracks rankings daily.', features: ['Tech audit', 'Rank tracking', 'AI fixes'],       price: 39,  tier: 'Pro',   color: '#22D3EE' },
+  { icon: '📧', name: 'InboxAI',      tag: 'Email Marketing',    desc: 'AI-powered email builder that writes, tests and sends personalised sequences.', features: ['GPT-4 copy', 'A/B tests', 'Send-time AI'],         price: 49,  tier: 'Pro',   color: '#FB7185' },
+  { icon: '🛡️', name: 'WP Shield',    tag: 'WordPress Security', desc: 'Enterprise-grade WP security scanner with real-time threat detection built-in.', features: ['Malware scan', 'Plugin CVEs', 'Auto-fix'],        price: 0,   tier: 'Free',  color: '#EF4444' },
+  { icon: '🤖', name: 'BotShield',    tag: 'Bot Protection',     desc: 'Stop credential stuffing, scraping and fake signups at the edge in real time.', features: ['Fingerprinting', 'CAPTCHA-free', 'Analytics'],     price: 35,  tier: 'Pro',   color: '#F59E0B' },
+  { icon: '🔒', name: 'DataVault',    tag: 'Data Privacy',       desc: 'Auto-discover, classify and protect sensitive data across all your platforms.', features: ['PII detection', 'GDPR map', 'One-click redact'],   price: 0,   tier: 'Free',  color: '#06B6D4' },
+];
+
+const CORE_SERVICES = [
+  {
+    icon: '🤖', title: 'AI Automation', label: 'Save 200+ hrs/month',
+    color: '#22C55E', price: '$2,400',
+    desc: 'Custom AI agents and workflow automation that eliminate manual ops. We build GPT-powered systems that run 24/7 without you.',
+    features: ['GPT-4 decision agents', 'No-code + pro-code hybrid', '200+ app integrations', 'Run history & audit log', 'Slack / webhook triggers', 'Full handoff & documentation'],
+  },
+  {
+    icon: '🚀', title: 'SaaS Development', label: 'Ship in 6–8 weeks',
+    color: '#3B82F6', price: '$8,000',
+    desc: 'Full-stack MERN SaaS platforms — from landing page to payments to dashboard. Built to scale from day one.',
+    features: ['MERN stack architecture', 'Stripe payments + subscriptions', 'Auth, roles & permissions', 'Admin + user dashboards', 'CI/CD pipeline included', 'Post-launch support (30 days)'],
+  },
+  {
+    icon: '📊', title: 'Trading Bots', label: 'Algo-ready in 3 weeks',
+    color: '#F59E0B', price: '$3,500',
+    desc: 'Custom algorithmic trading bots for crypto and equities. Backtested strategies, live execution, real-time monitoring.',
+    features: ['Binance, Bybit, Alpaca APIs', 'Custom strategy logic', 'Backtesting framework', 'Risk management rules', 'Live P&L dashboard', 'Telegram / Discord alerts'],
+  },
+];
+
+const DIGITAL_PRODUCTS = [
+  {
+    icon: '⚙️', name: 'AI SaaS Boilerplate', tag: 'Starter Kit',
+    desc: 'Full MERN + Stripe + Auth + AI-ready starter — skip 3 weeks of setup and ship your SaaS today.',
+    includes: ['Auth system', 'Stripe billing', 'GPT-4 ready', 'Dark UI'],
+    price: 149, originalPrice: 299, badge: 'Popular', color: '#22C55E',
+  },
+  {
+    icon: '📊', name: 'Trading Bot Template', tag: 'Algo Trading',
+    desc: 'Python bot with Binance API, backtesting, stop-loss logic, and a React dashboard. Just plug in your strategy.',
+    includes: ['Binance API', 'Backtester', 'Risk engine', 'React UI'],
+    price: 99, originalPrice: null, badge: 'New', color: '#F59E0B',
+  },
+  {
+    icon: '🤖', name: 'GPT Workflow Pack', tag: 'Prompt Engineering',
+    desc: '50 production-ready GPT-4 prompt templates for customer support, content, SEO, and operations teams.',
+    includes: ['50 prompts', 'Notion export', 'Editable JSON', 'Use-case docs'],
+    price: 29, originalPrice: null, badge: null, color: '#A855F7',
+  },
+  {
+    icon: '🛡️', name: 'Security Audit Kit', tag: 'Cybersecurity',
+    desc: 'Bash + Python scripts to audit your VPS, WordPress site, and API endpoints — full report template included.',
+    includes: ['30+ scripts', 'Report template', 'Checklist PDF', 'OWASP coverage'],
+    price: 49, originalPrice: 79, badge: null, color: '#EF4444',
+  },
+];
+
+// ─── Dashboard Preview Component ──────────────────────────────────────────────
+
+const DASH_NAV = [
+  { icon: '📊', label: 'Overview',  active: true },
+  { icon: '🤖', label: 'Automations', active: false },
+  { icon: '📦', label: 'Orders',    active: false },
+  { icon: '🛡️', label: 'Security',  active: false },
+  { icon: '👤', label: 'Profile',   active: false },
+];
+
+const DASH_METRICS = [
+  { label: 'Tasks Automated', value: '2,418', delta: '+14%', color: '#22C55E' },
+  { label: 'Revenue MRR',     value: '$8,340', delta: '+8.2%', color: '#3B82F6' },
+  { label: 'Active Bots',     value: '7',      delta: '+2',    color: '#F59E0B' },
+  { label: 'Threats Blocked', value: '1,103',  delta: '↓ 3%',  color: '#EF4444' },
+];
+
+const DASH_TOOLS = [
+  { name: 'AutoFlow AI',  status: 'running', uptime: '99.9%',  color: '#22C55E', runs: '1,244 runs today' },
+  { name: 'RankRadar',    status: 'running', uptime: '100%',   color: '#22D3EE', runs: 'Crawling 8 URLs' },
+  { name: 'WP Shield',    status: 'idle',    uptime: '99.4%',  color: '#EF4444', runs: 'Last scan 2h ago' },
+  { name: 'BotShield',    status: 'running', uptime: '99.8%',  color: '#F59E0B', runs: '47 threats blocked' },
+];
+
+function DashboardPreview() {
+  const [activeNav, setActiveNav] = useState(0);
+  const [tick, setTick] = useState(0);
+
+  // simulate live metric updates
+  useEffect(() => {
+    const t = setInterval(() => setTick(n => n + 1), 2200);
+    return () => clearInterval(t);
+  }, []);
+
+  const liveMetrics = DASH_METRICS.map((m, i) => ({
+    ...m,
+    value: i === 0 ? `${(2418 + tick * 3).toLocaleString()}` :
+           i === 3 ? `${(1103 + tick).toLocaleString()}` : m.value,
+  }));
+
+  return (
+    <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
+            Live Dashboard Preview
+          </span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Your control center.</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 400, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything in one place — bots, metrics, security and orders. Real-time, always.</p>
+        </div>
+
+        {/* Browser chrome wrapper */}
+        <div style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.6)' }}>
+          {/* Browser bar */}
+          <div style={{ padding: '12px 18px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#EF4444' }} />
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#F59E0B' }} />
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#22C55E' }} />
+            <div style={{ flex: 1, margin: '0 16px', background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+              app.axentralab.com/dashboard
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {['🔒','⟳'].map((i, x) => <span key={x} style={{ fontSize: 12, opacity: 0.3 }}>{i}</span>)}
+            </div>
+          </div>
+
+          {/* Dashboard layout */}
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', minHeight: 480 }}>
+            {/* Sidebar */}
+            <div style={{ background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '20px 0' }}>
+              <div style={{ padding: '0 16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: 8 }}>
+                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 14, color: '#fff', letterSpacing: -0.3 }}>Axentralab</div>
+                <div style={{ fontSize: 10, color: '#22C55E', fontFamily: "'Space Mono',monospace", marginTop: 2 }}>● Pro Plan</div>
+              </div>
+              {DASH_NAV.map((n, i) => (
+                <button key={i} onClick={() => setActiveNav(i)}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: activeNav === i ? 'rgba(34,197,94,0.1)' : 'none', border: 'none', borderLeft: activeNav === i ? '2px solid #22C55E' : '2px solid transparent', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+                  <span style={{ fontSize: 14 }}>{n.icon}</span>
+                  <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: activeNav === i ? 700 : 500, color: activeNav === i ? '#22C55E' : 'rgba(255,255,255,0.45)' }}>{n.label}</span>
+                </button>
+              ))}
+              <div style={{ margin: '20px 16px 0', padding: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10 }}>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", marginBottom: 4 }}>STORAGE</div>
+                <div style={{ height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{ width: '62%', height: '100%', background: 'linear-gradient(90deg,#22C55E,#3B82F6)', borderRadius: 4 }} />
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4, fontFamily: "'Space Mono',monospace" }}>6.2 / 10 GB</div>
+              </div>
+            </div>
+
+            {/* Main content */}
+            <div style={{ padding: '24px 24px 28px', overflow: 'hidden' }}>
+              {/* Top row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
+                <div>
+                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Good morning, Alex 👋</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 3 }}>
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}>🔔</div>
+                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>A</div>
+                </div>
+              </div>
+
+              {/* Metric cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 22 }}>
+                {liveMetrics.map((m, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 14px 12px' }}>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.4, marginBottom: 8, textTransform: 'uppercase' }}>{m.label}</div>
+                    <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: m.color, letterSpacing: -0.5, transition: 'all 0.4s' }}>{m.value}</div>
+                    <div style={{ fontSize: 10, color: m.delta.startsWith('+') ? '#22C55E' : m.delta.startsWith('↓') ? '#EF4444' : 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 4 }}>{m.delta} this month</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Active tools */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 10 }}>Active Tools</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {DASH_TOOLS.map((t, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.status === 'running' ? '#22C55E' : '#F59E0B', flexShrink: 0, animation: t.status === 'running' ? 'pulse 2s infinite' : 'none' }} />
+                      <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', flex: 1 }}>{t.name}</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace' " }}>{t.runs}</span>
+                      <span style={{ fontSize: 11, color: t.color, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>{t.uptime}</span>
+                      <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", background: t.status === 'running' ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${t.status === 'running' ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`, color: t.status === 'running' ? '#22C55E' : '#F59E0B' }}>
+                        {t.status.toUpperCase()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
+          Ready to see the real thing? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Book a live demo →</Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [blogPosts, setBlogPosts] = useState(BLOG_FALLBACK_HOME);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  useEffect(() => {
+    // Hero entrance stagger
+    const t = setTimeout(() => setHeroVisible(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     api.get('/blog?limit=3&sort=-createdAt')
@@ -108,200 +681,335 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  /* Auto-rotate testimonials */
   useEffect(() => {
     const t = setInterval(() => setActiveTestimonial(v => (v + 1) % TESTIMONIALS.length), 4000);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <div>
+    <div style={{ overflowX: 'hidden' }}>
       <style>{`
-        @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
-        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
-        @keyframes pulse    { 0%,100% { opacity:.5; transform:scale(1); } 50% { opacity:1; transform:scale(1.04); } }
-        @keyframes marquee  { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-        @keyframes blink    { 0%,100% { opacity:1; } 50% { opacity:0; } }
-        @keyframes shimmer  { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-        .fade-up-1 { animation: fadeUp 0.7s 0.1s ease both; }
-        .fade-up-2 { animation: fadeUp 0.7s 0.25s ease both; }
-        .fade-up-3 { animation: fadeUp 0.7s 0.4s ease both; }
-        .fade-up-4 { animation: fadeUp 0.7s 0.55s ease both; }
-        .section-pad { scroll-margin-top: 80px; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes spin  { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+        @keyframes bounceY { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(10px)} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+        @keyframes slideInLeft  { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:none} }
+        @keyframes slideInRight { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:none} }
+        @keyframes scrollMarquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          max-width: 900px;
-          margin: 0 auto;
-        }
-        @media (max-width: 700px) {
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .stats-grid > div {
-            border-right: none !important;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-          }
-          .stats-grid > div:nth-child(odd) {
-            border-right: 1px solid rgba(255,255,255,0.06) !important;
-          }
-        }
+        .hero-left  { animation: slideInLeft  0.7s 0.1s ease both; }
+        .hero-right { animation: slideInRight 0.7s 0.2s ease both; }
+        .hero-badge { animation: fadeUp 0.6s 0s ease both; }
+        .hero-h1    { animation: fadeUp 0.6s 0.15s ease both; }
+        .hero-sub   { animation: fadeUp 0.6s 0.25s ease both; }
+        .hero-ctas  { animation: fadeUp 0.6s 0.35s ease both; }
+        .hero-trust { animation: fadeUp 0.6s 0.45s ease both; }
 
-        .hero-section {
-          padding: 120px 5% 80px;
-        }
+        .service-card:hover { transform:translateY(-6px) !important; }
+        .blog-card:hover    { transform:translateY(-4px) !important; }
+
+        .marquee-track { display:flex; gap:48px; animation:scrollMarquee 22s linear infinite; white-space:nowrap; }
+
         @media (max-width: 768px) {
-          .hero-section {
-            padding: 100px 5% 60px;
-            min-height: auto !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .hero-section {
-            padding: 90px 20px 50px;
-          }
-        }
-
-        .hero-h1 {
-          letter-spacing: -2.5px;
-        }
-        @media (max-width: 480px) {
-          .hero-h1 { letter-spacing: -1px; }
-        }
-
-        .testimonial-card {
-          padding: 40px 36px;
-        }
-        @media (max-width: 600px) {
-          .testimonial-card {
-            padding: 28px 20px;
-          }
-        }
-
-        .cta-promo-nudge {
-          flex-wrap: wrap;
-          justify-content: center;
-          text-align: center;
-        }
-
-        @media (max-width: 600px) {
-          .section-mobile-pad {
-            padding-top: 60px !important;
-            padding-bottom: 60px !important;
-          }
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-right { display: none !important; }
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .process-grid { grid-template-columns: 1fr !important; }
+          .service-grid { grid-template-columns: 1fr !important; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .fade-up-1, .fade-up-2, .fade-up-3, .fade-up-4 { animation: none; }
+          *, *::before, *::after { animation: none !important; transition: none !important; }
         }
       `}</style>
 
-      {/* HERO */}
-      <section className="hero-section" style={{ position: 'relative', overflow: 'hidden', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
-        <Glow x="60%" y="30%" color="#22C55E" size={600} />
-        <Glow x="20%" y="70%" color="#3B82F6" size={400} />
-        <div style={{ position: 'relative', maxWidth: 800 }}>
-          <div className="fade-up-1" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', marginBottom: 24 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 1 }}>NOW ACCEPTING NEW CLIENTS</span>
-          </div>
-          <h1 className="fade-up-2 hero-h1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(36px,6vw,80px)', fontWeight: 900, color: '#fff', lineHeight: 1.05, marginBottom: 24 }}>
-            We build secure,<br /><span style={{ color: '#22C55E' }}>scalable software</span><br />for ambitious teams.
-          </h1>
-          <p className="fade-up-3" style={{ fontSize: 'clamp(15px,1.8vw,18px)', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, maxWidth: 520, marginBottom: 36 }}>
-            Full-stack development, cybersecurity, AI automation and cloud infrastructure — delivered by engineers who ship fast and build to last.
-          </p>
-          <div className="fade-up-4" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', fontSize: 15, textDecoration: 'none' }}>Start a Project →</Link>
-            <Link to="/services" className="btn-outline" style={{ padding: '15px 28px', fontSize: 15, textDecoration: 'none' }}>Browse Services</Link>
-          </div>
-        </div>
-      </section>
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      <section style={{ padding: '120px 5% 80px', minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+        <Glow x="15%"  y="30%"  color="#22C55E" size={600} />
+        <Glow x="70%"  y="20%"  color="#3B82F6" size={400} />
+        <Glow x="90%"  y="70%"  color="#A855F7" size={350} />
 
-      {/* STATS */}
-      <section style={{ borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="stats-grid">
-          {STATS.map(stat => <StatCard key={stat.label} stat={stat} />)}
-        </div>
-      </section>
+        {/* Subtle grid */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px)', backgroundSize: '60px 60px', pointerEvents: 'none' }} />
 
-      {/* SERVICES */}
-      <section className="section-pad section-mobile-pad" style={{ padding: '96px 5%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>What We Do</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,48px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -1 }}>Our Services</h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
-          {SERVICES.map((s, i) => (
-            <Link key={i} to={s.link} style={{ textDecoration: 'none' }}>
-              <div className="card" style={{ padding: 28, transition: 'all 0.25s', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = `${s.color}35`; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 16px 40px ${s.color}12`; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
-                <div style={{ fontSize: 32, marginBottom: 16 }}>{s.icon}</div>
-                <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 10, letterSpacing: -0.3 }}>{s.title}</h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.65 }}>{s.desc}</p>
-                <div style={{ marginTop: 20, fontSize: 13, color: s.color, fontWeight: 700 }}>Learn more →</div>
+        <div style={{ width: '100%', maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+          <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+
+            {/* Left */}
+            <div className="hero-left">
+              <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 24 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite', display: 'inline-block' }} />
+                <span style={{ fontSize: 12, fontFamily: "'Space Mono',monospace", color: '#22C55E', fontWeight: 600, letterSpacing: 0.5 }}>Available for new projects</span>
               </div>
-            </Link>
-          ))}
+
+              <h1 className="hero-h1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(34px,5.5vw,66px)', fontWeight: 900, color: '#fff', letterSpacing: -2, lineHeight: 1.06, margin: '0 0 22px' }}>
+                We build<br />
+                <AnimatedHeadline /><br />
+                that work<br />
+                <span style={{ color: 'rgba(255,255,255,0.35)' }}>while you sleep.</span>
+              </h1>
+
+              <p className="hero-sub" style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: 36, maxWidth: 420 }}>
+                Axentralab builds AI-powered automation, SaaS platforms, and cybersecurity systems for developers, traders &amp; startups.
+              </p>
+
+              <div className="hero-ctas" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
+                <Link to="/contact" className="btn-primary"
+                  style={{ padding: '15px 32px', background: '#22C55E', color: '#000', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  🚀 Start Free
+                </Link>
+                <Link to="/contact"
+                  style={{ padding: '15px 28px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}>
+                  📞 Book Demo
+                </Link>
+              </div>
+
+              <div className="hero-trust" style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request'].map((t, i) => (
+                  <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Terminal */}
+            <div className="hero-right" style={{ position: 'relative' }}>
+              {/* floating badge */}
+              <div style={{ position: 'absolute', top: -18, right: 0, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 12, padding: '8px 16px', fontFamily: "'Space Mono',monospace", fontSize: 12, color: '#22C55E', fontWeight: 700, zIndex: 2, backdropFilter: 'blur(8px)' }}>
+                ⚡ Live Preview
+              </div>
+              <div style={{ position: 'absolute', bottom: -14, left: -10, background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 12, padding: '8px 16px', fontFamily: "'Space Mono',monospace", fontSize: 12, color: '#3B82F6', fontWeight: 700, zIndex: 2, backdropFilter: 'blur(8px)' }}>
+                🛡️ Secured
+              </div>
+              <FloatingTerminal />
+            </div>
+          </div>
+        </div>
+
+        <ScrollIndicator />
+      </section>
+
+      {/* ── STATS BAR ─────────────────────────────────────────────────────── */}
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
+        <div className="stats-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
+          {STATS.map(s => <StatCard key={s.label} stat={s} />)}
         </div>
       </section>
 
-      {/* FREE OFFERS */}
-      <section className="section-mobile-pad" style={{ padding: '72px 5%', background: 'rgba(34,197,94,0.03)', borderTop: '1px solid rgba(34,197,94,0.08)', borderBottom: '1px solid rgba(34,197,94,0.08)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3.5vw,40px)', fontWeight: 900, color: '#fff', letterSpacing: -0.8 }}>Try Us — For Free</h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginTop: 10 }}>Three ways to get started at zero cost.</p>
+      {/* ── CLIENT MARQUEE ────────────────────────────────────────────────── */}
+      <div style={{ padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(90deg,var(--bg,#0a0a0f),transparent)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 80, background: 'linear-gradient(270deg,var(--bg,#0a0a0f),transparent)', zIndex: 1 }} />
+        <div style={{ overflow: 'hidden' }}>
+          <div className="marquee-track">
+            {[...['NovaTech','Buildly','Dataflow','SecureOps','CloudBridge','NexaAI','FinNova','BankCo'], ...['NovaTech','Buildly','Dataflow','SecureOps','CloudBridge','NexaAI','FinNova','BankCo']].map((c, i) => (
+              <span key={i} style={{ fontFamily: "'Space Mono',monospace", fontSize: 12, color: 'rgba(255,255,255,0.2)', letterSpacing: 1.5, textTransform: 'uppercase', flexShrink: 0 }}>
+                ◆ {c}
+              </span>
+            ))}
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20, maxWidth: 900, margin: '0 auto' }}>
-          {FREE_OFFERS.map((o, i) => (
-            <div key={i} className="card" style={{ padding: 28, textAlign: 'center' }}>
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{o.icon}</div>
-              <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 8 }}>{o.title}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: 20 }}>{o.desc}</p>
-              <Link to="/contact" className="btn-primary" style={{ padding: '10px 22px', fontSize: 13, textDecoration: 'none' }}>{o.cta}</Link>
+      </div>
+
+      {/* ── FREE AI TOOL ──────────────────────────────────────────────────── */}
+      <FreeAITool />
+
+      {/* ── TOOLS GRID ───────────────────────────────────────────────────── */}
+      <section style={{ padding: '100px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 52 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #A855F740', background: '#A855F710', color: '#A855F7', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>SaaS Toolkit</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>6 tools. One platform.</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Production-ready SaaS tools built by Axentralab — use free or unlock pro features instantly.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 18, maxWidth: 1100, margin: '0 auto' }}>
+          {TOOLS_GRID.map((tool, i) => (
+            <div key={i}
+              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '24px 24px 20px', cursor: 'pointer', transition: 'all 0.25s', position: 'relative', overflow: 'hidden' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = `${tool.color}40`; e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = `0 16px 48px ${tool.color}14`; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
+              {/* color stripe */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${tool.color},${tool.color}50,transparent)` }} />
+              {/* header row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${tool.color}15`, border: `1px solid ${tool.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{tool.icon}</div>
+                  <div>
+                    <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: -0.2 }}>{tool.name}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", marginTop: 1 }}>{tool.tag}</div>
+                  </div>
+                </div>
+                <span style={{
+                  padding: '3px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5,
+                  background: tool.tier === 'Free' ? 'rgba(34,197,94,0.12)' : 'rgba(251,191,36,0.12)',
+                  border: tool.tier === 'Free' ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(251,191,36,0.3)',
+                  color: tool.tier === 'Free' ? '#22C55E' : '#FCD34D',
+                }}>
+                  {tool.tier === 'Free' ? '⊙ FREE' : '★ PRO'}
+                </span>
+              </div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.65, marginBottom: 16 }}>{tool.desc}</p>
+              {/* feature pills */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+                {tool.features.map((f, fi) => (
+                  <span key={fi} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 6, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace" }}>{f}</span>
+                ))}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 15, fontWeight: 900, color: tool.color }}>
+                  {tool.price === 0 ? 'Free forever' : `$${tool.price}/mo`}
+                </span>
+                <button style={{ padding: '7px 16px', borderRadius: 9, background: `${tool.color}18`, border: `1px solid ${tool.color}35`, color: tool.color, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Space Mono',monospace", transition: 'all 0.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = `${tool.color}30`; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = `${tool.color}18`; }}>
+                  {tool.tier === 'Free' ? 'Try Free →' : 'Get Pro →'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <Link to="/services" style={{ fontSize: 14, color: '#A855F7', fontWeight: 700, textDecoration: 'none', fontFamily: "'Space Mono',monospace" }}>View all products →</Link>
+        </div>
+      </section>
+
+      {/* ── SERVICES (3-card focused) ─────────────────────────────────────── */}
+      <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 52 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>Core Services</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Built to grow your revenue</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 440, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Three flagship services. Every one custom-built, production-ready, and ROI-positive.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(310px,1fr))', gap: 22, maxWidth: 1080, margin: '0 auto' }}>
+          {CORE_SERVICES.map((s, i) => (
+            <div key={i}
+              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 22, padding: '30px 28px 26px', transition: 'all 0.25s', position: 'relative', overflow: 'hidden' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = `${s.color}45`; e.currentTarget.style.boxShadow = `0 20px 60px ${s.color}12`; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}>
+              {/* bg glow */}
+              <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle,${s.color}10,transparent 70%)`, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,${s.color},transparent)` }} />
+              {/* icon + label */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+                <div style={{ width: 50, height: 50, borderRadius: 14, background: `${s.color}15`, border: `1px solid ${s.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{s.icon}</div>
+                <div>
+                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 17, color: '#fff', letterSpacing: -0.3 }}>{s.title}</div>
+                  <div style={{ fontSize: 11, color: s.color, fontFamily: "'Space Mono',monospace", fontWeight: 600, marginTop: 2 }}>{s.label}</div>
+                </div>
+              </div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 20 }}>{s.desc}</p>
+              {/* feature list */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {s.features.map((f, fi) => (
+                  <li key={fi} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                    <span style={{ width: 16, height: 16, borderRadius: '50%', background: `${s.color}20`, border: `1px solid ${s.color}40`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: s.color, flexShrink: 0 }}>✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              {/* pricing + CTA */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div>
+                  <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>Starting at</div>
+                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: s.color }}>{s.price}</div>
+                </div>
+                <Link to="/contact" style={{ padding: '11px 22px', borderRadius: 11, background: s.color, color: ['#22C55E','#F59E0B'].includes(s.color) ? '#000' : '#fff', fontSize: 13, fontWeight: 800, fontFamily: "'Sora',sans-serif", textDecoration: 'none', transition: 'opacity 0.15s', display: 'inline-block' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                  Get Started →
+                </Link>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* PROCESS */}
-      <section className="section-pad section-mobile-pad" style={{ padding: '96px 5%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>How It Works</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,48px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -1 }}>Our Process</h2>
+      {/* ── PRODUCTS (4 digital products) ────────────────────────────────── */}
+      <section style={{ padding: '100px 5%', position: 'relative', overflow: 'hidden' }}>
+        <Glow x="80%" y="50%" color="#3B82F6" size={400} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #3B82F640', background: '#3B82F610', color: '#3B82F6', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 14 }}>Digital Products</span>
+              <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, margin: 0, lineHeight: 1.1 }}>Buy once.<br />Deploy forever.</h2>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, maxWidth: 300, lineHeight: 1.7, margin: 0 }}>One-time purchase. Lifetime access. No subscriptions on these — they're yours.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 18 }}>
+            {DIGITAL_PRODUCTS.map((p, i) => (
+              <div key={i}
+                style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', transition: 'all 0.25s', display: 'flex', flexDirection: 'column' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}40`; e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = `0 18px 50px ${p.color}14`; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
+                {/* product thumbnail band */}
+                <div style={{ height: 80, background: `linear-gradient(135deg,${p.color}20,${p.color}05)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', borderBottom: `1px solid ${p.color}15` }}>
+                  <span style={{ fontSize: 36 }}>{p.icon}</span>
+                  {p.badge && (
+                    <span style={{ position: 'absolute', top: 10, right: 10, padding: '2px 8px', borderRadius: 6, background: p.badge === 'Popular' ? '#F59E0B20' : '#22C55E20', border: `1px solid ${p.badge === 'Popular' ? '#F59E0B40' : '#22C55E40'}`, color: p.badge === 'Popular' ? '#F59E0B' : '#22C55E', fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace" }}>
+                      {p.badge === 'Popular' ? '🔥 Popular' : '⭐ New'}
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: '20px 20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: p.color, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>{p.tag}</div>
+                  <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: -0.2 }}>{p.name}</h3>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: 16, flex: 1 }}>{p.desc}</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
+                    {p.includes.map((item, ii) => (
+                      <span key={ii} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', fontFamily: "'Space Mono',monospace" }}>✓ {item}</span>
+                    ))}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                    <div>
+                      {p.originalPrice && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through', fontFamily: "'Space Mono',monospace" }}>${p.originalPrice}</div>}
+                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: p.color }}>${p.price}</div>
+                    </div>
+                    <button style={{ padding: '9px 16px', borderRadius: 10, background: p.color, color: ['#22C55E','#F59E0B','#22D3EE'].includes(p.color) ? '#000' : '#fff', border: 'none', fontSize: 12, fontWeight: 800, fontFamily: "'Sora',sans-serif", cursor: 'pointer', transition: 'opacity 0.15s', whiteSpace: 'nowrap' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                      Buy Now →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 28, textAlign: 'center' }}>
+            <Link to="/services" style={{ fontSize: 14, color: '#3B82F6', fontWeight: 700, textDecoration: 'none', fontFamily: "'Space Mono',monospace" }}>Browse all products →</Link>
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
+      </section>
+
+      {/* ── DASHBOARD PREVIEW ─────────────────────────────────────────────── */}
+      <DashboardPreview />
+
+      {/* ── PROCESS ──────────────────────────────────────────────────────── */}
+      <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 52 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>How We Work</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1, marginBottom: 14 }}>From idea to deployed</h2>
+        </div>
+        <div className="process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 20, maxWidth: 1000, margin: '0 auto' }}>
           {PROCESS.map((p, i) => (
-            <div key={i} className="card" style={{ padding: 28 }}>
-              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 2, marginBottom: 12 }}>{p.step}</div>
-              <div style={{ fontSize: 28, marginBottom: 14 }}>{p.icon}</div>
-              <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 10 }}>{p.title}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>{p.desc}</p>
+            <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 26, position: 'relative' }}>
+              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 1.5, fontWeight: 700, marginBottom: 14 }}>{p.step}</div>
+              <div style={{ fontSize: 26, marginBottom: 12 }}>{p.icon}</div>
+              <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 10 }}>{p.title}</h3>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65 }}>{p.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CLIENT MARQUEE */}
-      <section style={{ padding: '40px 0', borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', gap: 48, animation: 'marquee 20s linear infinite', width: 'max-content' }}>
-          {[...CLIENTS, ...CLIENTS].map((c, i) => (
-            <span key={i} style={{ fontFamily: "'Sora',sans-serif", fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.15)', letterSpacing: 1, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{c}</span>
-          ))}
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section className="section-pad section-mobile-pad" style={{ padding: '96px 5%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>Social Proof</span>
+      {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
+      <section style={{ padding: '100px 5%' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>Client Stories</span>
           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -1 }}>What Our Clients Say</h2>
         </div>
-
         <div style={{ maxWidth: 720, margin: '0 auto 32px' }}>
-          <div className="testimonial-card" style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${TESTIMONIALS[activeTestimonial].color}30`, borderRadius: 24, transition: 'border-color 0.4s', position: 'relative' }}>
+          <div style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${TESTIMONIALS[activeTestimonial].color}30`, borderRadius: 24, padding: 36, transition: 'border-color 0.4s' }}>
             <div style={{ fontSize: 48, color: TESTIMONIALS[activeTestimonial].color, fontFamily: 'Georgia,serif', lineHeight: 1, marginBottom: 20, opacity: 0.5 }}>"</div>
             <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(15px,2vw,18px)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 28, fontStyle: 'italic' }}>{TESTIMONIALS[activeTestimonial].quote}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -315,7 +1023,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
           {TESTIMONIALS.map((_, i) => (
             <button key={i} onClick={() => setActiveTestimonial(i)} style={{ width: i === activeTestimonial ? 24 : 8, height: 8, borderRadius: 999, background: i === activeTestimonial ? '#22C55E' : 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', transition: 'all 0.3s' }} />
@@ -323,8 +1030,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* TECH STACK */}
-      <section style={{ padding: '72px 5%' }}>
+      {/* ── TECH STACK ───────────────────────────────────────────────────── */}
+      <section style={{ padding: '72px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>Our Stack</span>
           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, color: '#fff', marginTop: 12, letterSpacing: -0.5 }}>Technologies We Use</h2>
@@ -340,22 +1047,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* LATEST BLOG */}
-      <section className="section-pad section-mobile-pad" style={{ padding: '80px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      {/* ── LATEST BLOG ──────────────────────────────────────────────────── */}
+      <section style={{ padding: '80px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto 36px', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #06B6D440', background: '#06B6D412', color: '#06B6D4', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Insights</span>
             <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, color: '#fff', marginTop: 10, letterSpacing: -0.5 }}>Latest from the Blog</h2>
           </div>
-          <Link to="/blog" style={{ color: '#06B6D4', fontWeight: 700, textDecoration: 'none', fontSize: 14, fontFamily: "'Sora',sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
-            All articles →
-          </Link>
+          <Link to="/blog" style={{ color: '#06B6D4', fontWeight: 700, textDecoration: 'none', fontSize: 14, fontFamily: "'Sora',sans-serif" }}>All articles →</Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
           {blogPosts.map((post, i) => {
             const color = TAG_COLORS[post.category] || '#06B6D4';
             return (
-              <Link key={i} to={`/blog/${post._id}`} className="blog-card" style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 0, textDecoration: 'none', transition: 'all 0.25s', overflow: 'hidden', display: 'block' }}
+              <Link key={i} to={`/blog/${post._id}`} className="blog-card"
+                style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 0, textDecoration: 'none', transition: 'all 0.25s', overflow: 'hidden', display: 'block' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = `${color}35`; e.currentTarget.style.transform = 'translateY(-4px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; }}>
                 <div style={{ height: 4, background: `linear-gradient(90deg,${color},transparent)` }} />
@@ -375,8 +1081,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MAIN CTA */}
-      <section className="section-pad section-mobile-pad" style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
+      <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', maxWidth: 620, margin: '0 auto' }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Get Started</span>
@@ -384,18 +1090,16 @@ export default function HomePage() {
             Ready to build<br /><span style={{ color: '#22C55E' }}>your next project?</span>
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 20, lineHeight: 1.7 }}>Tell us what you're building — we'll respond within 24 hours with a tailored proposal.</p>
-
-          <div className="cta-promo-nudge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 12, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.07)', marginBottom: 28 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 12, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.07)', marginBottom: 28 }}>
             <span style={{ fontSize: 14 }}>🎁</span>
             <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, color: '#FCD34D', fontWeight: 700 }}>New clients get 50% off their first project</span>
             <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(253,230,138,0.55)' }}>· Code: FIRST50</span>
           </div>
-
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 12, textDecoration: 'none' }}>
               Start a Project →
             </Link>
-            <Link to="/contact" className="btn-outline" style={{ padding: '15px 28px', fontSize: 15, borderRadius: 12, textDecoration: 'none' }}>
+            <Link to="/contact" style={{ padding: '15px 28px', fontSize: 15, borderRadius: 12, textDecoration: 'none', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700 }}>
               Schedule a Call
             </Link>
           </div>
