@@ -1,950 +1,713 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+const DISCOUNT_RATE = 0.5; // 50% off
+const DISCOUNT_LABEL = '🎉 New Agency Launch — 50% OFF';
+const DISCOUNT_BADGE = 'LAUNCH50';
 
-const STATS = [
-  { value: 150, suffix: '+', label: 'Projects Delivered', color: '#22C55E' },
-  { value: 80,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
-  { value: 99,  suffix: '%', label: 'Uptime SLA',         color: '#A855F7' },
-  { value: 30,  suffix: '+', label: 'Days Avg Delivery',  color: '#F59E0B' },
+const FALLBACK = [
+  {
+    _id:'1', title:'Web Development', icon:'🌐', color:'#3B82F6',
+    description:'Business websites, landing pages, web apps, and SaaS platforms built with React, Next.js & Node.js.',
+    features:['React / Next.js','Node.js & Express','MongoDB','REST API','Tailwind CSS'],
+    subServices:['Business / Corporate Website','Landing Page Design','Portfolio Website','Web Application','SaaS Platform','MERN Stack Development','API Development & Integration'],
+    plans:[
+      { name:'Landing Page',   price:250,  billing:'one-time', bdt:'৳25,000',  features:['Responsive design','Up to 5 sections','Basic SEO','1 month support','Source code included'] },
+      { name:'Business Site',  price:600,  billing:'one-time', bdt:'৳60,000',  features:['Multi-page site','Contact form','SEO ready','CMS integration','3 months support'] },
+      { name:'Custom Web App', price:3000, billing:'one-time', bdt:'৳3,00,000', features:['Full MERN stack','Auth system','Dashboard','REST API','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'2', title:'E-Commerce', icon:'🛒', color:'#F97316',
+    description:'Online stores with Shopify, WooCommerce, or fully custom — including payment gateways and subscriptions.',
+    features:['Shopify / WooCommerce','Custom store','Payment gateway','Subscription system','Product management'],
+    subServices:['Shopify Store Development','WooCommerce Store Development','Custom E-commerce Website','Payment Gateway Integration','Subscription / Membership System'],
+    plans:[
+      { name:'Shopify Starter', price:300, billing:'one-time', bdt:'৳30,000', features:['Up to 50 products','Payment gateway','Responsive','Basic SEO','2 weeks delivery'] },
+      { name:'WooCommerce Pro', price:500, billing:'one-time', bdt:'৳50,000', features:['Unlimited products','Custom theme','Payment + shipping','Coupons & offers','2 months support'] },
+      { name:'Custom Store',    price:2500,billing:'one-time', bdt:'৳2,50,000',features:['Fully custom build','Subscription billing','Admin panel','Analytics','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'3', title:'Cybersecurity', icon:'🛡️', color:'#EF4444',
+    description:'Security audits, malware removal, penetration testing, and server hardening for web apps and servers.',
+    features:['Security audit','Malware removal','Penetration testing','Server hardening','24/7 monitoring'],
+    subServices:['Website Security Audit','Malware Removal','WordPress Security Hardening','Vulnerability Scanning','Penetration Testing (Web Apps)','Server Security Hardening','Incident Response'],
+    plans:[
+      { name:'Basic Audit',       price:80,  billing:'one-time', bdt:'৳8,000',  features:['Surface vulnerability scan','Written report','Fix recommendations','PDF delivery'] },
+      { name:'Full Pentest',      price:800, billing:'one-time', bdt:'৳80,000', features:['Deep penetration test','OWASP Top 10 coverage','Exploit PoC','Detailed report','Fix support'] },
+      { name:'Security Monitor',  price:99,  billing:'monthly',  bdt:'৳10,000/mo', features:['24/7 monitoring','Instant breach alerts','Monthly security report','Incident response','Server hardening check'] },
+    ],
+  },
+  {
+    _id:'4', title:'Website Optimization', icon:'⚡', color:'#F59E0B',
+    description:'Speed up slow websites, fix Core Web Vitals, optimize databases, and set up CDN for peak performance.',
+    features:['Speed optimization','Core Web Vitals','DB optimization','Image & asset opt','CDN setup'],
+    subServices:['Website Speed Optimization','Core Web Vitals Optimization','Database Optimization','Image & Asset Optimization','CDN Setup','Performance Audit'],
+    plans:[
+      { name:'Speed Fix',       price:50,  billing:'one-time', bdt:'৳5,000',  features:['Image compression','Caching setup','Basic JS/CSS minify','Performance report'] },
+      { name:'Advanced Boost',  price:200, billing:'one-time', bdt:'৳20,000', features:['Core Web Vitals fix','DB query optimization','CDN integration','Lazy loading','Before/after report'] },
+      { name:'Full Audit+Fix',  price:300, billing:'one-time', bdt:'৳30,000', features:['Full performance audit','All above fixes','Server-side optimizations','3-month monitoring','Written SLA'] },
+    ],
+  },
+  {
+    _id:'5', title:'Hosting & DevOps', icon:'☁️', color:'#8B5CF6',
+    description:'VPS setup, cloud deployment on AWS/DigitalOcean, CI/CD pipelines, Docker, and disaster recovery.',
+    features:['VPS setup','AWS / Vercel / DO','CI/CD pipeline','Docker deployment','Backup & recovery'],
+    subServices:['VPS Setup & Management','Cloud Deployment (AWS / Vercel / DigitalOcean)','CI/CD Pipeline Setup','Docker Deployment','Server Monitoring','Backup & Disaster Recovery'],
+    plans:[
+      { name:'VPS Setup',      price:120, billing:'one-time', bdt:'৳12,000', features:['Server provisioning','Nginx / Apache config','SSL setup','Basic monitoring','Docs handover'] },
+      { name:'Full DevOps',    price:250, billing:'one-time', bdt:'৳25,000', features:['Cloud deployment','CI/CD pipeline','Docker + K8s','Auto-scaling','Runbooks'] },
+      { name:'Managed Server', price:150, billing:'monthly',  bdt:'৳15,000/mo', features:['24/7 monitoring','Auto backups','Incident response','Security patches','Monthly report'] },
+    ],
+  },
+  {
+    _id:'6', title:'SaaS & Custom Software', icon:'📦', color:'#22C55E',
+    description:'End-to-end SaaS product development — CRM dashboards, fintech tools, admin panels, and business automation.',
+    features:['SaaS product dev','CRM / Fintech dashboard','Analytics panel','Admin tools','Multi-tenant'],
+    subServices:['SaaS Product Development','CRM Dashboard','Fintech Dashboard','Analytics Dashboard','Admin Panels','Internal Business Tools'],
+    plans:[
+      { name:'MVP',       price:1500, billing:'one-time', bdt:'৳1,50,000', features:['Core features','Auth & billing','Basic analytics','3 months support','Source code'] },
+      { name:'Full SaaS', price:8000, billing:'one-time', bdt:'৳8,00,000', features:['All features','Multi-tenant','Admin dashboard','Advanced analytics','6 months support','Dedicated PM'] },
+    ],
+  },
+  {
+    _id:'7', title:'UI/UX Design', icon:'🎨', color:'#EC4899',
+    description:'Beautiful, conversion-focused UI designs for websites, SaaS dashboards, and mobile apps using Figma.',
+    features:['Website UI','Mobile app UI','SaaS dashboard UI','Wireframe & prototype','Design system'],
+    subServices:['Website UI Design','Mobile App UI','SaaS Dashboard UI','Wireframe & Prototype','Design System'],
+    plans:[
+      { name:'Landing Page UI', price:120, billing:'one-time', bdt:'৳12,000', features:['1-page design','Desktop + mobile','Figma source file','2 revision rounds','3-day delivery'] },
+      { name:'Website UI',      price:400, billing:'one-time', bdt:'৳40,000', features:['Up to 8 pages','Component library','Figma + handoff','3 revision rounds','1 week delivery'] },
+      { name:'SaaS Dashboard',  price:600, billing:'one-time', bdt:'৳60,000', features:['Full dashboard UI','Design system','Interactive prototype','Unlimited revisions','Dev handoff notes'] },
+    ],
+  },
+  {
+    _id:'8', title:'Maintenance & Support', icon:'🛠️', color:'#06B6D4',
+    description:'Ongoing website maintenance, bug fixing, security monitoring, and performance upkeep after launch.',
+    features:['Bug fixing','Security monitoring','Performance check','Content updates','Monthly reports'],
+    subServices:['Website Maintenance','Security Monitoring','Bug Fixing','Performance Monitoring','Monthly Support Plans'],
+    plans:[
+      { name:'Basic',    price:30,  billing:'monthly', bdt:'৳3,000/mo',  features:['Monthly backup','Bug fixes (2hrs)','Uptime monitoring','Email support'] },
+      { name:'Standard', price:60,  billing:'monthly', bdt:'৳6,000/mo',  features:['Weekly backup','Bug fixes (5hrs)','Security scan','Performance check','Priority support'] },
+      { name:'Premium',  price:120, billing:'monthly', bdt:'৳12,000/mo', features:['Daily backup','Unlimited bug fixes','24/7 monitoring','Monthly report','Dedicated engineer','SLA guarantee'] },
+    ],
+  },
 ];
 
-// Terminal lines shown in the floating code widget
-const TERMINAL_LINES = [
-  { delay: 0,    color: '#22C55E', text: '$ axentralab init --project my-saas' },
-  { delay: 600,  color: '#94A3B8', text: '> Scanning codebase...' },
-  { delay: 1200, color: '#3B82F6', text: '> AI agent initialized ✓' },
-  { delay: 1800, color: '#94A3B8', text: '> Connecting to cloud infra...' },
-  { delay: 2400, color: '#A855F7', text: '> Security audit running...' },
-  { delay: 3000, color: '#22C55E', text: '✓ All systems go. Ready to build.' },
-  { delay: 3600, color: '#F59E0B', text: '> Deploy? [Y/n]: Y' },
-  { delay: 4200, color: '#22C55E', text: '🚀 Deployed to axentralab.app' },
+const FAQS = [
+  { q:'Do I need to pay upfront?',          a:'For one-time projects we take 50% upfront and 50% on delivery. Monthly plans are billed at the start of each billing cycle.' },
+  { q:'Can I mix services in one order?',    a:'Yes — add multiple services and plans to your cart and check out together. We\'ll coordinate all deliverables under one PM.' },
+  { q:'What if I\'m not satisfied?',         a:'We offer a free revision round on every deliverable. If we miss the agreed scope, we\'ll refund the relevant milestone.' },
+  { q:'How fast do you start?',              a:'Most services kick off within 24 hours of payment. Enterprise projects get a scoping call booked the same day.' },
+  { q:'Do you sign NDAs?',                   a:'Always. An NDA is included in every contract by default at no extra cost.' },
+  { q:'Can I upgrade my plan later?',        a:'Yes. You pay only the difference when upgrading. Downgrades take effect at the next billing cycle.' },
+  { q:'Is the 50% launch discount permanent?', a:'No — this is a limited-time offer for our agency launch. Once the launch period ends, prices return to normal. Lock in your rate now.' },
 ];
 
-// AI Tool tab definitions
-const AI_TABS = [
-  { id: 'copy',  label: '✍️ Copywriter', icon: '✍️' },
-  { id: 'email', label: '📧 Email',      icon: '📧' },
-  { id: 'seo',   label: '🔍 SEO',        icon: '🔍' },
+const COMPARE_ROWS = [
+  { label:'Source code included',  vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Dedicated PM',          vals:[false,false,false,false,false,true, false,false] },
+  { label:'Monthly retainer opt',  vals:[false,false,true, false,true, false,false,true]  },
+  { label:'SLA guarantee',         vals:[false,false,true, false,true, false,false,true]  },
+  { label:'NDA included',          vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Post-delivery support', vals:[true, true, true, true, true, true, true, true]  },
+  { label:'Design (Figma) files',  vals:[false,false,false,false,false,false,true,false]  },
+  { label:'24/7 monitoring',       vals:[false,false,true, false,true, false,false,true]  },
 ];
 
-const TONES   = ['Professional', 'Casual', 'Bold', 'Friendly', 'Persuasive'];
-const LENGTHS = ['Short', 'Medium', 'Long'];
+const HOW_IT_WORKS = [
+  { n:'01', icon:'🛒', title:'Add to Cart',       desc:'Pick any plan. Mix services. One unified checkout — our PM coordinates everything.' },
+  { n:'02', icon:'📋', title:'Scope & Sign',       desc:'Detailed scope doc + NDA within 2 hours. E-sign in one click. No back-and-forth.' },
+  { n:'03', icon:'⚙️', title:'Build & Review',     desc:'Weekly sprint demos with staging access. You give feedback; we iterate.' },
+  { n:'04', icon:'🚀', title:'Launch & Handover',  desc:'Full docs, repo transfer, and optional retainer. You own everything — forever.' },
+];
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
+const STACK_BADGES = ['React','Next.js','Node.js','MongoDB','Express','Tailwind','Shopify','WooCommerce','Docker','AWS','DigitalOcean','Vercel','Figma','Adobe XD','Burp Suite','OWASP','Nginx','PostgreSQL','Redis','CI/CD'];
 
-function useCounter(target, duration = 1800) {
-  const [val, setVal] = useState(0);
-  const started = useRef(false);
-  const ref = useRef(null);
+// Helper: apply discount
+const discountedPrice = (price) => Math.round(price * (1 - DISCOUNT_RATE));
+
+export default function ShopPage() {
+  const [services, setServices] = useState(FALLBACK);
+  const [selected, setSelected] = useState('1');
+  const [billing, setBilling]   = useState('all');
+  const [openFaq, setOpenFaq]   = useState(null);
+  const [cartAnim, setCartAnim] = useState(null);
+  const [bannerVisible, setBannerVisible] = useState(true);
+  const { addToCart, cart }     = useCart();
+  const { isAuthenticated }     = useAuth();
+  const navigate                = useNavigate();
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !started.current) {
-        started.current = true;
-        const steps = 60;
-        let i = 0;
-        const tick = setInterval(() => {
-          i++;
-          const ease = 1 - Math.pow(1 - i / steps, 3);
-          setVal(Math.floor(target * ease));
-          if (i >= steps) { setVal(target); clearInterval(tick); }
-        }, duration / steps);
-      }
-    }, { threshold: 0.3 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target, duration]);
-
-  return [val, ref];
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function StatCard({ stat }) {
-  const [val, ref] = useCounter(stat.value);
-  return (
-    <div ref={ref} style={{ textAlign: 'center', padding: '28px 20px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 36, fontWeight: 900, color: stat.color, letterSpacing: -1, lineHeight: 1 }}>
-        {val}{stat.suffix}
-      </div>
-      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 6, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase' }}>{stat.label}</div>
-    </div>
-  );
-}
-
-function Glow({ x, y, color = '#22C55E', size = 500 }) {
-  return (
-    <div style={{
-      position: 'absolute', left: x, top: y,
-      width: size, height: size,
-      background: `radial-gradient(circle,${color}15 0%,transparent 70%)`,
-      borderRadius: '50%', pointerEvents: 'none',
-      transform: 'translate(-50%,-50%)', filter: 'blur(40px)',
-    }} />
-  );
-}
-
-// Animated headline that cycles through words
-function AnimatedHeadline() {
-  const words  = ['AI systems', 'SaaS platforms', 'trading bots', 'secure apps'];
-  const colors = ['#22C55E', '#3B82F6', '#F59E0B', '#A855F7'];
-  const [idx, setIdx]     = useState(0);
-  const [visible, setVis] = useState(true);
-
-  useEffect(() => {
-    const t = setInterval(() => {
-      setVis(false);
-      setTimeout(() => { setIdx(i => (i + 1) % words.length); setVis(true); }, 350);
-    }, 2600);
-    return () => clearInterval(t);
+    api.get('/services')
+      .then(r => { if (r.data.data?.length) setServices(r.data.data); })
+      .catch(() => {});
   }, []);
 
-  return (
-    <span style={{
-      color: colors[idx],
-      display: 'inline-block',
-      transition: 'opacity 0.35s, transform 0.35s',
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'none' : 'translateY(10px)',
-    }}>
-      {words[idx]}
-    </span>
-  );
-}
+  const isInCart = (serviceId, planName) =>
+    cart.some(i => i.serviceId === serviceId && i.plan === planName);
 
-// Floating terminal widget
-function FloatingTerminal() {
-  const [visibleLines, setVisibleLines] = useState([]);
+  const handleBuy = (service, plan) => {
+    if (!isAuthenticated) { navigate('/register'); return; }
+    // Pass discounted price to cart
+    const discountedPlan = { ...plan, price: discountedPrice(plan.price), originalPrice: plan.price };
+    addToCart(service, discountedPlan);
+    setCartAnim(service._id + plan.name);
+    setTimeout(() => setCartAnim(null), 900);
+    navigate('/cart');
+  };
 
-  useEffect(() => {
-    const timers = TERMINAL_LINES.map((line, i) =>
-      setTimeout(() => setVisibleLines(prev => [...prev, i]), line.delay)
-    );
-    // loop: restart after all lines shown
-    const loopTimer = setTimeout(() => setVisibleLines([]), TERMINAL_LINES[TERMINAL_LINES.length - 1].delay + 2000);
-    return () => { timers.forEach(clearTimeout); clearTimeout(loopTimer); };
-  }, [visibleLines.length === 0 ? 0 : -1]); // re-trigger on reset
+  const activeService = services.find(s => s._id === selected) || services[0];
+  const filteredPlans = billing === 'all'
+    ? activeService?.plans
+    : activeService?.plans?.filter(p => p.billing === billing);
 
-  // re-run animation loop
-  useEffect(() => {
-    if (visibleLines.length === 0) {
-      const timers = TERMINAL_LINES.map((line, i) =>
-        setTimeout(() => setVisibleLines(prev => [...prev, i]), line.delay)
-      );
-      const loopTimer = setTimeout(() => setVisibleLines([]), TERMINAL_LINES[TERMINAL_LINES.length - 1].delay + 2200);
-      return () => { timers.forEach(clearTimeout); clearTimeout(loopTimer); };
-    }
-  }, [visibleLines]);
+  const cartTotal = cart.reduce((a, i) => a + (i.price || 0), 0);
 
   return (
-    <div style={{
-      background: '#0D1117',
-      border: '1px solid rgba(255,255,255,0.1)',
-      borderRadius: 16,
-      overflow: 'hidden',
-      boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)',
-      fontFamily: "'Space Mono',monospace",
-      fontSize: 13,
-      minHeight: 240,
-    }}>
-      {/* Title bar */}
-      <div style={{ padding: '12px 16px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
-        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#F59E0B', display: 'inline-block' }} />
-        <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#22C55E', display: 'inline-block' }} />
-        <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: 0.5 }}>axentralab — terminal</span>
-      </div>
-      {/* Lines */}
-      <div style={{ padding: '18px 20px', minHeight: 200 }}>
-        {TERMINAL_LINES.map((line, i) => (
-          <div key={i} style={{
-            color: visibleLines.includes(i) ? line.color : 'transparent',
-            transition: 'color 0.3s, opacity 0.3s',
-            marginBottom: 6,
-            opacity: visibleLines.includes(i) ? 1 : 0,
-            lineHeight: 1.6,
-          }}>
-            {line.text}
+    <>
+      <style>{`
+        @keyframes popIn    { 0%{transform:scale(0.9);opacity:0} 60%{transform:scale(1.03)} 100%{transform:scale(1);opacity:1} }
+        @keyframes slideUp  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+        @keyframes ticker   { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 7px rgba(34,197,94,0)} }
+        @keyframes bannerGlow { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.0)} 50%{box-shadow:0 4px 32px rgba(251,191,36,0.18)} }
+        @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+        @keyframes badgePop { 0%{transform:scale(0.8) rotate(-6deg);opacity:0} 70%{transform:scale(1.1) rotate(2deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+        @keyframes strikeThrough { from{width:0} to{width:100%} }
+
+        .srv-pill:hover  { opacity:1 !important; background: rgba(255,255,255,0.07) !important; }
+        .plan-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important; }
+        .how-card:hover  { border-color: rgba(255,255,255,0.15) !important; transform: translateY(-3px); }
+        .faq-row:hover   { background: rgba(255,255,255,0.04) !important; }
+        .cta-btn:hover   { filter: brightness(1.1); transform: translateY(-1px); }
+        .launch-banner:hover { animation: none !important; filter: brightness(1.05); }
+
+        .old-price {
+          position: relative;
+          display: inline-block;
+          color: rgba(255,255,255,0.3);
+        }
+        .old-price::after {
+          content: '';
+          position: absolute;
+          left: 0; top: 50%;
+          height: 2px;
+          width: 100%;
+          background: #EF4444;
+          border-radius: 2px;
+          animation: strikeThrough 0.4s ease forwards;
+        }
+
+        .discount-shine {
+          background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+          background-size: 400px 100%;
+          animation: shimmer 2.5s infinite;
+        }
+
+        /* ── RESPONSIVE ── */
+        .hero-grid    { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; margin-bottom:88px; }
+        .browse-hdr   { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
+        .svc-hdr      { display:flex; align-items:flex-start; gap:18px; }
+        .cta-section  { padding:60px 44px; }
+        .cart-sticky  { position:sticky; top:96px; }
+        .stat-pills   { display:flex; gap:10px; flex-wrap:wrap; }
+        .pill-scroll  { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
+        .billing-bar  { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:4px; }
+
+        @media (max-width: 900px) {
+          .hero-grid { grid-template-columns:1fr !important; gap:32px !important; margin-bottom:56px !important; }
+          .cart-sticky { position:static !important; top:unset !important; }
+        }
+
+        @media (max-width: 640px) {
+          .hero-grid    { margin-bottom:40px !important; }
+          .cta-section  { padding:36px 22px !important; }
+          .svc-hdr      { flex-wrap:wrap !important; }
+          .browse-hdr   { flex-direction:column !important; align-items:flex-start !important; }
+          .billing-bar  { width:100%; justify-content:space-between; }
+          .billing-bar button { flex:1; }
+          .stat-pills   { gap:8px; }
+          .stat-pills > div { flex:1 1 calc(50% - 8px); min-width:80px; }
+          .pill-scroll  { overflow-x:auto; flex-wrap:nowrap !important; padding-bottom:6px; }
+          .pill-scroll::-webkit-scrollbar { display:none; }
+        }
+
+        @media (max-width: 420px) {
+          .cta-btns { flex-direction:column !important; }
+          .cta-btns button { width:100% !important; }
+          .trust-pills { flex-direction:column !important; }
+          .trust-pills span { text-align:center; }
+          .banner-inner { flex-direction:column !important; gap:8px !important; text-align:center; }
+        }
+      `}</style>
+
+      <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:82 }}>
+
+        {/* ── LAUNCH DISCOUNT BANNER ── */}
+        {bannerVisible && (
+          <div
+            className="launch-banner"
+            style={{
+              position:'relative',
+              background:'linear-gradient(90deg, #92400e, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b, #d97706, #b45309, #92400e)',
+              backgroundSize:'200% 100%',
+              animation:'shimmer 3s linear infinite, bannerGlow 3s ease-in-out infinite',
+              padding:'11px 20px',
+              overflow:'hidden',
+            }}
+          >
+            {/* shimmer overlay */}
+            <div className="discount-shine" style={{ position:'absolute', inset:0, pointerEvents:'none' }} />
+            <div className="banner-inner" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, position:'relative', flexWrap:'wrap' }}>
+              <span style={{ fontSize:18 }}>🎉</span>
+              <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:14, color:'#000', letterSpacing:-0.3 }}>
+                New Agency Launch — <span style={{ fontSize:17 }}>50% OFF</span> All Plans
+              </span>
+              <span style={{ padding:'3px 11px', background:'rgba(0,0,0,0.18)', borderRadius:6, fontFamily:"'Space Mono',monospace", fontSize:10, color:'#000', letterSpacing:1.5, fontWeight:900 }}>
+                USE CODE: {DISCOUNT_BADGE}
+              </span>
+              <span style={{ fontSize:12, color:'rgba(0,0,0,0.6)', fontFamily:"'Space Mono',monospace" }}>
+                Limited time only · Auto-applied at checkout
+              </span>
+            </div>
+            <button
+              onClick={() => setBannerVisible(false)}
+              style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.15)', border:'none', color:'#000', width:24, height:24, borderRadius:'50%', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, fontWeight:900 }}
+            >×</button>
           </div>
-        ))}
-        {/* blinking cursor */}
-        <span style={{ display: 'inline-block', width: 8, height: 14, background: '#22C55E', verticalAlign: 'middle', animation: 'blink 1s step-end infinite', marginLeft: 2 }} />
-      </div>
-    </div>
-  );
-}
+        )}
 
-// Scroll indicator arrow
-function ScrollIndicator() {
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    const onScroll = () => setShow(window.scrollY < 80);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  return (
-    <div style={{
-      position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)',
-      opacity: show ? 1 : 0, transition: 'opacity 0.4s',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-      animation: 'bounceY 2s ease-in-out infinite',
-      pointerEvents: 'none',
-    }}>
-      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>scroll</span>
-      <div style={{ width: 1, height: 36, background: 'linear-gradient(#22C55E, transparent)' }} />
-      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E' }} />
-    </div>
-  );
-}
-
-// ─── Free AI Tool Section ──────────────────────────────────────────────────────
-
-function FreeAITool() {
-  const [tab, setTab]       = useState('copy');
-  const [tone, setTone]     = useState('Professional');
-  const [length, setLength] = useState('Medium');
-  const [topic, setTopic]   = useState('');
-  const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [copied, setCopied]   = useState(false);
-  const [chars, setChars]     = useState(0);
-
-  const PROMPTS = {
-    copy: (t, tone, length) =>
-      `Write a compelling marketing copy for: "${t}". Tone: ${tone}. Length: ${length}. Return only the copy, no explanations.`,
-    email: (t, tone, length) =>
-      `Write a professional email about: "${t}". Tone: ${tone}. Length: ${length}. Include subject line. Return only the email.`,
-    seo: (t, tone, length) =>
-      `Write an SEO-optimised meta description and title tag for: "${t}". Tone: ${tone}. Length hint: ${length}. Format clearly.`,
-  };
-
-  const PLACEHOLDERS = {
-    copy: 'e.g. AI automation tool for small businesses',
-    email: 'e.g. Follow-up after a product demo',
-    seo:  'e.g. Cybersecurity services for startups',
-  };
-
-  const handleGenerate = async () => {
-    if (!topic.trim()) return;
-    setLoading(true);
-    setOutput('');
-    setCopied(false);
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: PROMPTS[tab](topic, tone, length) }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.map(b => b.text || '').join('') || 'No output.';
-      setOutput(text);
-      setChars(text.length);
-    } catch {
-      setOutput('⚠️ Something went wrong. Please try again.');
-    }
-    setLoading(false);
-  };
-
-  const handleCopy = async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
-
-  return (
-    <section style={{ padding: '100px 5%', background: 'rgba(34,197,94,0.02)', borderTop: '1px solid rgba(34,197,94,0.08)', borderBottom: '1px solid rgba(34,197,94,0.08)', position: 'relative', overflow: 'hidden' }}>
-      {/* bg glow */}
-      <div style={{ position: 'absolute', top: '40%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.06), transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: 860, margin: '0 auto', position: 'relative' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
-            Free AI Tool — No login required
-          </span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, lineHeight: 1.1, marginBottom: 14 }}>
-            Generate content with AI<br />
-            <span style={{ color: '#22C55E' }}>in seconds.</span>
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
-            Powered by Claude. Pick a tool, set your tone, and generate.
-          </p>
-        </div>
-
-        {/* Tool card */}
-        <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.4)' }}>
-          {/* Tab bar */}
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.2)', padding: '0 4px' }}>
-            {AI_TABS.map(t => (
-              <button key={t.id} onClick={() => { setTab(t.id); setOutput(''); }}
-                style={{
-                  flex: 1, padding: '16px 0', background: 'none', border: 'none', cursor: 'pointer',
-                  fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13,
-                  color: tab === t.id ? '#22C55E' : 'rgba(255,255,255,0.3)',
-                  borderBottom: tab === t.id ? '2px solid #22C55E' : '2px solid transparent',
-                  transition: 'all 0.2s',
-                }}>
-                {t.label}
-              </button>
+        {/* ── Ticker ── */}
+        <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:'clamp(32px,5vw,64px)' }}>
+          <div style={{ display:'flex', animation:'ticker 30s linear infinite', width:'max-content' }}>
+            {[...STACK_BADGES,...STACK_BADGES].map((b,i) => (
+              <span key={i} style={{ padding:'0 24px', fontSize:11, color:'rgba(255,255,255,0.18)', fontFamily:"'Space Mono',monospace", whiteSpace:'nowrap' }}>
+                {b} <span style={{ color:'rgba(255,255,255,0.07)' }}>·</span>
+              </span>
             ))}
           </div>
+        </div>
 
-          <div style={{ padding: '28px 28px 32px' }}>
-            {/* Input */}
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>
-                Topic / Subject
-              </label>
-              <input
-                type="text"
-                value={topic}
-                onChange={e => setTopic(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleGenerate()}
-                placeholder={PLACEHOLDERS[tab]}
-                style={{
-                  width: '100%', background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
-                  padding: '13px 18px', color: '#fff', fontSize: 14, outline: 'none',
-                  fontFamily: "'Sora',sans-serif", boxSizing: 'border-box',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={e => e.target.style.borderColor = 'rgba(34,197,94,0.5)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-              />
-            </div>
+        <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 clamp(16px,5%,5%)' }}>
 
-            {/* Selectors row */}
-            <div style={{ display: 'flex', gap: 20, marginBottom: 24, flexWrap: 'wrap' }}>
-              {/* Tone */}
-              <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>Tone</div>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {TONES.map(t => (
-                    <button key={t} onClick={() => setTone(t)}
-                      style={{
-                        padding: '5px 12px', borderRadius: 8, border: tone === t ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.08)',
-                        background: tone === t ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.03)',
-                        color: tone === t ? '#22C55E' : 'rgba(255,255,255,0.4)',
-                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
-                        fontFamily: "'Space Mono',monospace",
-                      }}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* ── Hero split ── */}
+          <div className="hero-grid">
 
-              {/* Length */}
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>Length</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {LENGTHS.map(l => (
-                    <button key={l} onClick={() => setLength(l)}
-                      style={{
-                        padding: '5px 14px', borderRadius: 8, border: length === l ? '1px solid rgba(59,130,246,0.5)' : '1px solid rgba(255,255,255,0.08)',
-                        background: length === l ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
-                        color: length === l ? '#3B82F6' : 'rgba(255,255,255,0.4)',
-                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
-                        fontFamily: "'Space Mono',monospace",
-                      }}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Generate button */}
-            <button
-              onClick={handleGenerate}
-              disabled={loading || !topic.trim()}
-              style={{
-                width: '100%', padding: '14px', borderRadius: 12,
-                background: loading || !topic.trim() ? 'rgba(34,197,94,0.25)' : '#22C55E',
-                color: loading || !topic.trim() ? 'rgba(0,0,0,0.4)' : '#000',
-                border: 'none', fontSize: 15, fontWeight: 800, cursor: loading || !topic.trim() ? 'default' : 'pointer',
-                fontFamily: "'Sora',sans-serif", letterSpacing: -0.3,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                transition: 'all 0.2s',
+            <div>
+              {/* Launch discount badge */}
+              <div style={{
+                display:'inline-flex', alignItems:'center', gap:8,
+                padding:'5px 14px', borderRadius:6,
+                background:'linear-gradient(90deg,rgba(251,191,36,0.12),rgba(245,158,11,0.08))',
+                border:'1px solid rgba(251,191,36,0.35)',
+                marginBottom:14,
+                animation:'badgePop 0.5s ease 0.3s both',
               }}>
-              {loading ? (
-                <>
-                  <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(0,0,0,0.3)', borderTopColor: '#000', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} />
-                  Generating…
-                </>
-              ) : '⚡ Generate with AI'}
-            </button>
+                <span style={{ fontSize:14 }}>🏷️</span>
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#fbbf24', letterSpacing:1.2, textTransform:'uppercase', fontWeight:900 }}>
+                  50% OFF — New Agency Launch
+                </span>
+              </div>
 
-            {/* Output */}
-            {output && (
-              <div style={{ marginTop: 24, position: 'relative', animation: 'fadeUp 0.4s ease both' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5 }}>
-                    OUTPUT · {chars} chars
-                  </span>
-                  <button onClick={handleCopy}
-                    style={{
-                      padding: '4px 12px', borderRadius: 8,
-                      background: copied ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
-                      border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                      color: copied ? '#22C55E' : 'rgba(255,255,255,0.5)',
-                      fontSize: 11, fontFamily: "'Space Mono',monospace", cursor: 'pointer', transition: 'all 0.2s',
-                    }}>
-                    {copied ? '✓ Copied' : '⧉ Copy'}
-                  </button>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:6, background:'rgba(34,197,94,0.07)', border:'1px solid rgba(34,197,94,0.18)', marginBottom:22, marginLeft:8 }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E', display:'inline-block', animation:'pulse 2s infinite' }} />
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#22C55E', letterSpacing:1.5, textTransform:'uppercase' }}>Live Pricing</span>
+              </div>
+
+              <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(34px,5vw,64px)', fontWeight:900, lineHeight:1.02, letterSpacing:-2.5, color:'#fff', margin:'0 0 18px' }}>
+                Services &<br />
+                <span style={{ color:'transparent', WebkitTextStroke:'1.5px rgba(255,255,255,0.25)' }}>Transparent</span><br />
+                <span style={{ color:'#22C55E' }}>Pricing.</span>
+              </h1>
+              <p style={{ fontSize:15, color:'rgba(255,255,255,0.37)', lineHeight:1.8, maxWidth:420, margin:'0 0 32px' }}>
+                No discovery fees. No hidden costs. Pick a plan, add to cart, and we kick off within 24 hours.<br />
+                <span style={{ color:'#fbbf24', fontWeight:700 }}>🎉 Launch special: All plans are 50% off — limited time.</span>
+              </p>
+              <div className="stat-pills">
+                {[['120+','Projects'],['98%','Retention'],['24hr','Kickoff'],['50%','OFF NOW']].map(([v,l],i) => (
+                  <div key={i} style={{
+                    padding:'10px 16px',
+                    background: i===3 ? 'rgba(251,191,36,0.08)' : 'rgba(255,255,255,0.035)',
+                    border: i===3 ? '1px solid rgba(251,191,36,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                    borderRadius:10
+                  }}>
+                    <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:900, color: i===3 ? '#fbbf24' : '#fff', letterSpacing:-0.5 }}>{v}</div>
+                    <div style={{ fontSize:10, color: i===3 ? 'rgba(251,191,36,0.55)' : 'rgba(255,255,255,0.28)', marginTop:2, fontFamily:"'Space Mono',monospace" }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Live cart summary */}
+            <div className="cart-sticky" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden' }}>
+              {/* Discount strip on cart */}
+              <div style={{ background:'linear-gradient(90deg,#92400e,#d97706,#92400e)', padding:'7px 16px', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+                <span style={{ fontSize:12 }}>🏷️</span>
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#000', letterSpacing:1.5, fontWeight:900 }}>50% OFF APPLIED — {DISCOUNT_BADGE}</span>
+              </div>
+              <div style={{ padding:'16px 22px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, color:'#fff' }}>🛒 Your Cart</span>
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.22)', letterSpacing:1 }}>{cart.length} ITEM{cart.length!==1?'S':''}</span>
+              </div>
+              <div style={{ padding:'16px 22px' }}>
+                {cart.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'24px 0', color:'rgba(255,255,255,0.2)', fontSize:13, lineHeight:2 }}>
+                    <div style={{ fontSize:28, marginBottom:8, opacity:0.4 }}>🛒</div>
+                    Cart is empty.<br />Pick a plan below.
+                    <div style={{ marginTop:12, padding:'8px 12px', background:'rgba(251,191,36,0.07)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:8, fontSize:11, color:'#fbbf24' }}>
+                      🏷️ 50% discount auto-applied
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
+                      {cart.slice(0,4).map((item,i) => (
+                        <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                          <div>
+                            <div style={{ fontSize:13, color:'rgba(255,255,255,0.7)', fontWeight:700 }}>{item.serviceTitle}</div>
+                            <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)', marginTop:1, fontFamily:"'Space Mono',monospace" }}>{item.plan}</div>
+                          </div>
+                          <div style={{ textAlign:'right' }}>
+                            {item.originalPrice && (
+                              <div className="old-price" style={{ fontSize:10, display:'block', marginBottom:2 }}>
+                                ${item.originalPrice?.toLocaleString()}
+                              </div>
+                            )}
+                            <div style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:900, color:'#22C55E' }}>${item.price?.toLocaleString()}</div>
+                          </div>
+                        </div>
+                      ))}
+                      {cart.length > 4 && <div style={{ fontSize:11, color:'rgba(255,255,255,0.22)', textAlign:'center' }}>+{cart.length-4} more</div>}
+                    </div>
+                    <div style={{ display:'flex', justifyContent:'space-between', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.07)', marginBottom:8 }}>
+                      <span style={{ fontSize:12, color:'rgba(255,255,255,0.35)' }}>Total</span>
+                      <span style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff' }}>${cartTotal.toLocaleString()}</span>
+                    </div>
+                    <div style={{ padding:'6px 10px', background:'rgba(251,191,36,0.07)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:8, marginBottom:14, display:'flex', alignItems:'center', gap:6 }}>
+                      <span style={{ fontSize:11 }}>🏷️</span>
+                      <span style={{ fontSize:11, color:'#fbbf24', fontFamily:"'Space Mono',monospace" }}>50% LAUNCH DISCOUNT SAVED!</span>
+                    </div>
+                    <button onClick={() => navigate('/cart')} style={{ width:'100%', padding:'12px', background:'#22C55E', color:'#000', border:'none', borderRadius:11, fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, cursor:'pointer', letterSpacing:-0.3, transition:'all 0.17s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='#16a34a'}
+                      onMouseLeave={e => e.currentTarget.style.background='#22C55E'}>
+                      Checkout →
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Browse Services ── */}
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
+            <div className="browse-hdr">
+              <div>
+                <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', letterSpacing:-0.5, margin:'0 0 4px' }}>Browse Services</h2>
+                <div style={{ fontSize:12, color:'#fbbf24', fontFamily:"'Space Mono',monospace", fontWeight:700 }}>
+                  🏷️ All plans 50% off — Launch discount auto-applied
                 </div>
-                <div style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 12, padding: '18px 20px',
-                  color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.8,
-                  whiteSpace: 'pre-wrap', maxHeight: 320, overflowY: 'auto',
-                  fontFamily: "'Sora',sans-serif",
-                }}>
-                  {output}
+              </div>
+              <div className="billing-bar">
+                {[['all','All'],['one-time','One-time'],['monthly','Monthly']].map(([val,label]) => (
+                  <button key={val} onClick={() => setBilling(val)}
+                    style={{ padding:'6px 14px', borderRadius:7, border:'none', background: billing===val ? 'rgba(255,255,255,0.1)' : 'transparent', color: billing===val ? '#fff' : 'rgba(255,255,255,0.3)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:12, cursor:'pointer', transition:'all 0.15s' }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Service pills */}
+            <div className="pill-scroll">
+              {services.map(s => (
+                <button key={s._id} className="srv-pill"
+                  onClick={() => setSelected(s._id)}
+                  style={{ display:'flex', alignItems:'center', gap:9, padding:'10px 18px', borderRadius:12, border: selected===s._id ? `1px solid ${s.color}55` : '1px solid rgba(255,255,255,0.07)', background: selected===s._id ? `${s.color}10` : 'rgba(255,255,255,0.025)', cursor:'pointer', transition:'all 0.17s', opacity: selected===s._id ? 1 : 0.7 }}>
+                  <span style={{ fontSize:17 }}>{s.icon}</span>
+                  <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:13, color: selected===s._id ? '#fff' : 'rgba(255,255,255,0.6)' }}>{s.title}</span>
+                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color: selected===s._id ? '#fbbf24' : 'rgba(255,255,255,0.2)', textDecoration:'line-through', opacity:0.6 }}>
+                    ${Math.min(...s.plans.map(p=>p.price)).toLocaleString()}
+                  </span>
+                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#fbbf24', fontWeight:900 }}>
+                    from ${Math.min(...s.plans.map(p=>discountedPrice(p.price))).toLocaleString()}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Active service */}
+            {activeService && (
+              <div key={selected} style={{ animation:'slideUp 0.22s ease' }}>
+                <div className="svc-hdr" style={{ padding:'22px 26px', background:`linear-gradient(120deg,${activeService.color}08,rgba(255,255,255,0.02))`, border:`1px solid ${activeService.color}20`, borderRadius:18, marginBottom:22 }}>
+                  <div style={{ width:54, height:54, borderRadius:15, background:`${activeService.color}14`, border:`1px solid ${activeService.color}28`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{activeService.icon}</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:5 }}>
+                      <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff', letterSpacing:-0.4, margin:0 }}>{activeService.title}</h2>
+                      <span style={{ padding:'2px 9px', borderRadius:6, background:`${activeService.color}12`, color:activeService.color, fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>
+                        {activeService.plans?.length} plans
+                      </span>
+                      {/* Discount badge on service header */}
+                      <span style={{ padding:'2px 9px', borderRadius:6, background:'rgba(251,191,36,0.12)', color:'#fbbf24', fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, fontWeight:900, border:'1px solid rgba(251,191,36,0.25)' }}>
+                        🏷️ 50% OFF
+                      </span>
+                    </div>
+                    <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'0 0 12px', lineHeight:1.6 }}>{activeService.description}</p>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: activeService.subServices ? 12 : 0 }}>
+                      {(activeService.features||[]).map((f,i) => (
+                        <span key={i} style={{ padding:'3px 9px', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:6, fontSize:10, color:'rgba(255,255,255,0.45)', fontFamily:"'Space Mono',monospace" }}>{f}</span>
+                      ))}
+                    </div>
+                    {activeService.subServices && (
+                      <div style={{ marginTop:10, paddingTop:10, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ fontSize:9, fontFamily:"'Space Mono',monospace", color:'rgba(255,255,255,0.2)', letterSpacing:1.5, textTransform:'uppercase', marginBottom:8 }}>Includes</div>
+                        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                          {activeService.subServices.map((s,i) => (
+                            <span key={i} style={{ padding:'3px 9px', background:`${activeService.color}08`, border:`1px solid ${activeService.color}20`, borderRadius:6, fontSize:11, color:`${activeService.color}cc` }}>{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Plan cards */}
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(250px,1fr))', gap:16 }}>
+                  {(filteredPlans||[]).length === 0 ? (
+                    <div style={{ gridColumn:'1/-1', textAlign:'center', padding:'32px', color:'rgba(255,255,255,0.3)', fontSize:14 }}>
+                      No {billing} plans here.{' '}
+                      <button onClick={() => setBilling('all')} style={{ background:'none', border:'none', color:'#22C55E', cursor:'pointer', fontWeight:800, fontSize:14 }}>Show all →</button>
+                    </div>
+                  ) : (filteredPlans||[]).map((plan, pi) => {
+                    const inCart    = isInCart(activeService._id, plan.name);
+                    const isPopular = pi === 1;
+                    const animating = cartAnim === activeService._id + plan.name;
+                    const salePrice = discountedPrice(plan.price);
+
+                    return (
+                      <div key={plan.name} className="plan-card"
+                        style={{ position:'relative', borderRadius:20, background: isPopular ? `linear-gradient(155deg,${activeService.color}11,rgba(255,255,255,0.03))` : 'rgba(255,255,255,0.03)', border:`1px solid ${isPopular ? activeService.color+'50' : 'rgba(255,255,255,0.08)'}`, padding:'24px 22px', transition:'all 0.22s', animation: animating ? 'popIn 0.45s ease' : 'none' }}>
+
+                        {isPopular && <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${activeService.color},transparent)`, borderRadius:'20px 20px 0 0' }} />}
+
+                        {/* Discount ribbon */}
+                        <div style={{
+                          position:'absolute', top:0, right:0,
+                          background:'linear-gradient(135deg,#d97706,#fbbf24)',
+                          color:'#000', fontSize:9, fontWeight:900,
+                          padding:'4px 10px 4px 14px',
+                          borderRadius:'0 18px 0 12px',
+                          fontFamily:"'Space Mono',monospace",
+                          letterSpacing:0.5,
+                          zIndex:2,
+                        }}>
+                          50% OFF
+                        </div>
+
+                        {isPopular && (
+                          <span style={{ position:'absolute', top:14, left:14, background:activeService.color, color:'#000', fontSize:8, fontWeight:900, padding:'3px 8px', borderRadius:5, fontFamily:"'Space Mono',monospace", letterSpacing:1 }}>★ TOP PICK</span>
+                        )}
+
+                        <div style={{ marginBottom:18, marginTop:isPopular ? 16 : 0 }}>
+                          <div style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:900, color:'#fff', marginBottom:6 }}>{plan.name}</div>
+
+                          {/* Pricing: original crossed out + sale price */}
+                          <div style={{ display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap', marginBottom:4 }}>
+                            <span className="old-price" style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:700, letterSpacing:-0.5 }}>
+                              ${plan.price.toLocaleString()}
+                            </span>
+                            <span style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, color:'#fbbf24', letterSpacing:-1.5 }}>
+                              ${salePrice.toLocaleString()}
+                            </span>
+                            <span style={{ fontSize:12, color:'rgba(255,255,255,0.28)', marginLeft:2 }}>
+                              {plan.billing==='monthly' ? '/mo' : plan.billing==='yearly' ? '/yr' : ' once'}
+                            </span>
+                          </div>
+
+                          {/* Savings callout */}
+                          <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 9px', background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:6, marginBottom:4 }}>
+                            <span style={{ fontSize:10, color:'#fbbf24', fontFamily:"'Space Mono',monospace", fontWeight:900 }}>
+                              You save ${(plan.price - salePrice).toLocaleString()}
+                            </span>
+                          </div>
+
+                          {plan.bdt && (
+                            <div style={{ marginTop:4, fontSize:12, color:`${activeService.color}90`, fontFamily:"'Space Mono',monospace", fontWeight:700 }}>
+                              ≈ {plan.bdt}
+                            </div>
+                          )}
+                          {plan.billing==='monthly' && (
+                            <div style={{ marginTop:3, fontSize:10, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>
+                              billed monthly · ${(salePrice*12).toLocaleString()}/yr
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ height:1, background:`linear-gradient(90deg,${activeService.color}35,transparent)`, marginBottom:18 }} />
+
+                        <ul style={{ listStyle:'none', padding:0, margin:'0 0 22px', display:'flex', flexDirection:'column', gap:9 }}>
+                          {plan.features.map((f,fi) => (
+                            <li key={fi} style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
+                              <div style={{ width:17, height:17, borderRadius:5, background:`${activeService.color}15`, border:`1px solid ${activeService.color}28`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
+                                <span style={{ color:activeService.color, fontSize:9, fontWeight:900 }}>✓</span>
+                              </div>
+                              <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <button onClick={() => handleBuy(activeService, plan)}
+                          style={{ width:'100%', padding:'12px', borderRadius:11, border: inCart ? '1px solid rgba(34,197,94,0.3)' : isPopular ? 'none' : '1px solid rgba(255,255,255,0.1)', background: inCart ? 'rgba(34,197,94,0.08)' : isPopular ? activeService.color : 'rgba(255,255,255,0.06)', color: inCart ? '#22C55E' : isPopular ? '#000' : 'rgba(255,255,255,0.65)', fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, letterSpacing:-0.2, cursor:'pointer', transition:'all 0.17s', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}
+                          onMouseEnter={e => { if(!inCart) e.currentTarget.style.filter='brightness(1.1)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.filter='none'; }}>
+                          {inCart ? '✓ In Cart' : isAuthenticated ? '🏷️ Add to Cart →' : '🏷️ Get Started →'}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Nudge */}
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
-          Want custom AI tools for your business? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Let's talk →</Link>
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// ─── New Section Data ─────────────────────────────────────────────────────────
-
-const TOOLS_GRID = [
-  { icon: '🤖', name: 'AutoFlow AI',  tag: 'Workflow Builder',   desc: 'No-code AI workflow builder — connect apps, trigger on events, automate ops.', features: ['200+ integrations', 'GPT-4 nodes', 'Cron triggers'], price: 0,   tier: 'Free',  color: '#22C55E' },
-  { icon: '📈', name: 'RankRadar',    tag: 'SEO Intelligence',   desc: 'AI-driven SEO auditor that surfaces technical issues and tracks rankings daily.', features: ['Tech audit', 'Rank tracking', 'AI fixes'],       price: 39,  tier: 'Pro',   color: '#22D3EE' },
-  { icon: '📧', name: 'InboxAI',      tag: 'Email Marketing',    desc: 'AI-powered email builder that writes, tests and sends personalised sequences.', features: ['GPT-4 copy', 'A/B tests', 'Send-time AI'],         price: 49,  tier: 'Pro',   color: '#FB7185' },
-  { icon: '🛡️', name: 'WP Shield',    tag: 'WordPress Security', desc: 'Enterprise-grade WP security scanner with real-time threat detection built-in.', features: ['Malware scan', 'Plugin CVEs', 'Auto-fix'],        price: 0,   tier: 'Free',  color: '#EF4444' },
-  { icon: '🤖', name: 'BotShield',    tag: 'Bot Protection',     desc: 'Stop credential stuffing, scraping and fake signups at the edge in real time.', features: ['Fingerprinting', 'CAPTCHA-free', 'Analytics'],     price: 35,  tier: 'Pro',   color: '#F59E0B' },
-  { icon: '🔒', name: 'DataVault',    tag: 'Data Privacy',       desc: 'Auto-discover, classify and protect sensitive data across all your platforms.', features: ['PII detection', 'GDPR map', 'One-click redact'],   price: 0,   tier: 'Free',  color: '#06B6D4' },
-];
-
-const CORE_SERVICES = [
-  {
-    icon: '🤖', title: 'AI Automation', label: 'Save 200+ hrs/month',
-    color: '#22C55E', price: '$2,400',
-    desc: 'Custom AI agents and workflow automation that eliminate manual ops. We build GPT-powered systems that run 24/7 without you.',
-    features: ['GPT-4 decision agents', 'No-code + pro-code hybrid', '200+ app integrations', 'Run history & audit log', 'Slack / webhook triggers', 'Full handoff & documentation'],
-  },
-  {
-    icon: '🚀', title: 'SaaS Development', label: 'Ship in 6–8 weeks',
-    color: '#3B82F6', price: '$8,000',
-    desc: 'Full-stack MERN SaaS platforms — from landing page to payments to dashboard. Built to scale from day one.',
-    features: ['MERN stack architecture', 'Stripe payments + subscriptions', 'Auth, roles & permissions', 'Admin + user dashboards', 'CI/CD pipeline included', 'Post-launch support (30 days)'],
-  },
-  {
-    icon: '📊', title: 'Trading Bots', label: 'Algo-ready in 3 weeks',
-    color: '#F59E0B', price: '$3,500',
-    desc: 'Custom algorithmic trading bots for crypto and equities. Backtested strategies, live execution, real-time monitoring.',
-    features: ['Binance, Bybit, Alpaca APIs', 'Custom strategy logic', 'Backtesting framework', 'Risk management rules', 'Live P&L dashboard', 'Telegram / Discord alerts'],
-  },
-];
-
-const DIGITAL_PRODUCTS = [
-  {
-    icon: '⚙️', name: 'AI SaaS Boilerplate', tag: 'Starter Kit',
-    desc: 'Full MERN + Stripe + Auth + AI-ready starter — skip 3 weeks of setup and ship your SaaS today.',
-    includes: ['Auth system', 'Stripe billing', 'GPT-4 ready', 'Dark UI'],
-    price: 149, originalPrice: 299, badge: 'Popular', color: '#22C55E',
-  },
-  {
-    icon: '📊', name: 'Trading Bot Template', tag: 'Algo Trading',
-    desc: 'Python bot with Binance API, backtesting, stop-loss logic, and a React dashboard. Just plug in your strategy.',
-    includes: ['Binance API', 'Backtester', 'Risk engine', 'React UI'],
-    price: 99, originalPrice: null, badge: 'New', color: '#F59E0B',
-  },
-  {
-    icon: '🤖', name: 'GPT Workflow Pack', tag: 'Prompt Engineering',
-    desc: '50 production-ready GPT-4 prompt templates for customer support, content, SEO, and operations teams.',
-    includes: ['50 prompts', 'Notion export', 'Editable JSON', 'Use-case docs'],
-    price: 29, originalPrice: null, badge: null, color: '#A855F7',
-  },
-  {
-    icon: '🛡️', name: 'Security Audit Kit', tag: 'Cybersecurity',
-    desc: 'Bash + Python scripts to audit your VPS, WordPress site, and API endpoints — full report template included.',
-    includes: ['30+ scripts', 'Report template', 'Checklist PDF', 'OWASP coverage'],
-    price: 49, originalPrice: 79, badge: null, color: '#EF4444',
-  },
-];
-
-// ─── Dashboard Preview Component ──────────────────────────────────────────────
-
-const DASH_NAV = [
-  { icon: '📊', label: 'Overview',  active: true },
-  { icon: '🤖', label: 'Automations', active: false },
-  { icon: '📦', label: 'Orders',    active: false },
-  { icon: '🛡️', label: 'Security',  active: false },
-  { icon: '👤', label: 'Profile',   active: false },
-];
-
-const DASH_METRICS = [
-  { label: 'Tasks Automated', value: '2,418', delta: '+14%', color: '#22C55E' },
-  { label: 'Revenue MRR',     value: '$8,340', delta: '+8.2%', color: '#3B82F6' },
-  { label: 'Active Bots',     value: '7',      delta: '+2',    color: '#F59E0B' },
-  { label: 'Threats Blocked', value: '1,103',  delta: '↓ 3%',  color: '#EF4444' },
-];
-
-const DASH_TOOLS = [
-  { name: 'AutoFlow AI',  status: 'running', uptime: '99.9%',  color: '#22C55E', runs: '1,244 runs today' },
-  { name: 'RankRadar',    status: 'running', uptime: '100%',   color: '#22D3EE', runs: 'Crawling 8 URLs' },
-  { name: 'WP Shield',    status: 'idle',    uptime: '99.4%',  color: '#EF4444', runs: 'Last scan 2h ago' },
-  { name: 'BotShield',    status: 'running', uptime: '99.8%',  color: '#F59E0B', runs: '47 threats blocked' },
-];
-
-function DashboardPreview() {
-  const [activeNav, setActiveNav] = useState(0);
-  const [tick, setTick] = useState(0);
-
-  // simulate live metric updates
-  useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 2200);
-    return () => clearInterval(t);
-  }, []);
-
-  const liveMetrics = DASH_METRICS.map((m, i) => ({
-    ...m,
-    value: i === 0 ? `${(2418 + tick * 3).toLocaleString()}` :
-           i === 3 ? `${(1103 + tick).toLocaleString()}` : m.value,
-  }));
-
-  return (
-    <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
-            Live Dashboard Preview
-          </span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Your control center.</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 400, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything in one place — bots, metrics, security and orders. Real-time, always.</p>
-        </div>
-
-        {/* Browser chrome wrapper */}
-        <div style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.6)' }}>
-          {/* Browser bar */}
-          <div style={{ padding: '12px 18px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#EF4444' }} />
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#F59E0B' }} />
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#22C55E' }} />
-            <div style={{ flex: 1, margin: '0 16px', background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-              app.axentralab.com/dashboard
+          {/* ── Compare table ── */}
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
+            <div style={{ textAlign:'center', marginBottom:32 }}>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>Feature Matrix</span>
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Compare All Services</h2>
             </div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {['🔒','⟳'].map((i, x) => <span key={x} style={{ fontSize: 12, opacity: 0.3 }}>{i}</span>)}
-            </div>
-          </div>
-
-          {/* Dashboard layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', minHeight: 480 }}>
-            {/* Sidebar */}
-            <div style={{ background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '20px 0' }}>
-              <div style={{ padding: '0 16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: 8 }}>
-                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 14, color: '#fff', letterSpacing: -0.3 }}>Axentralab</div>
-                <div style={{ fontSize: 10, color: '#22C55E', fontFamily: "'Space Mono',monospace", marginTop: 2 }}>● Pro Plan</div>
-              </div>
-              {DASH_NAV.map((n, i) => (
-                <button key={i} onClick={() => setActiveNav(i)}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: activeNav === i ? 'rgba(34,197,94,0.1)' : 'none', border: 'none', borderLeft: activeNav === i ? '2px solid #22C55E' : '2px solid transparent', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
-                  <span style={{ fontSize: 14 }}>{n.icon}</span>
-                  <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: activeNav === i ? 700 : 500, color: activeNav === i ? '#22C55E' : 'rgba(255,255,255,0.45)' }}>{n.label}</span>
-                </button>
-              ))}
-              <div style={{ margin: '20px 16px 0', padding: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10 }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", marginBottom: 4 }}>STORAGE</div>
-                <div style={{ height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                  <div style={{ width: '62%', height: '100%', background: 'linear-gradient(90deg,#22C55E,#3B82F6)', borderRadius: 4 }} />
-                </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4, fontFamily: "'Space Mono',monospace" }}>6.2 / 10 GB</div>
-              </div>
-            </div>
-
-            {/* Main content */}
-            <div style={{ padding: '24px 24px 28px', overflow: 'hidden' }}>
-              {/* Top row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
-                <div>
-                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Good morning, Alex 👋</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 3 }}>
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}>🔔</div>
-                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>A</div>
-                </div>
-              </div>
-
-              {/* Metric cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 22 }}>
-                {liveMetrics.map((m, i) => (
-                  <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 14px 12px' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.4, marginBottom: 8, textTransform: 'uppercase' }}>{m.label}</div>
-                    <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: m.color, letterSpacing: -0.5, transition: 'all 0.4s' }}>{m.value}</div>
-                    <div style={{ fontSize: 10, color: m.delta.startsWith('+') ? '#22C55E' : m.delta.startsWith('↓') ? '#EF4444' : 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 4 }}>{m.delta} this month</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Active tools */}
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 10 }}>Active Tools</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {DASH_TOOLS.map((t, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.status === 'running' ? '#22C55E' : '#F59E0B', flexShrink: 0, animation: t.status === 'running' ? 'pulse 2s infinite' : 'none' }} />
-                      <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', flex: 1 }}>{t.name}</span>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace' " }}>{t.runs}</span>
-                      <span style={{ fontSize: 11, color: t.color, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>{t.uptime}</span>
-                      <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", background: t.status === 'running' ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${t.status === 'running' ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`, color: t.status === 'running' ? '#22C55E' : '#F59E0B' }}>
-                        {t.status.toUpperCase()}
-                      </span>
-                    </div>
+            <div style={{ overflowX:'auto', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18 }}>
+              <table style={{ width:'100%', borderCollapse:'collapse', minWidth:700 }}>
+                <thead>
+                  <tr style={{ borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+                    <th style={{ padding:'14px 20px', textAlign:'left', fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.2)', letterSpacing:1.5, textTransform:'uppercase', fontWeight:400 }}>Feature</th>
+                    {services.map(s => (
+                      <th key={s._id} style={{ padding:'14px 16px', textAlign:'center', fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:11, color:s.color, letterSpacing:-0.2 }}>
+                        <div style={{ fontSize:16, marginBottom:3 }}>{s.icon}</div>
+                        {s.title}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE_ROWS.map((row, ri) => (
+                    <tr key={ri} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', background: ri%2===0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
+                      <td style={{ padding:'13px 20px', fontSize:13, color:'rgba(255,255,255,0.48)' }}>{row.label}</td>
+                      {row.vals.map((v,vi) => (
+                        <td key={vi} style={{ padding:'13px 16px', textAlign:'center' }}>
+                          {v
+                            ? <span style={{ color:'#22C55E', fontSize:15 }}>✓</span>
+                            : <span style={{ color:'rgba(255,255,255,0.1)', fontSize:13 }}>—</span>
+                          }
+                        </td>
+                      ))}
+                    </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ── How It Works ── */}
+          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
+            <div style={{ textAlign:'center', marginBottom:40 }}>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>Process</span>
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>From Cart to Live in 4 Steps</h2>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:14 }}>
+              {HOW_IT_WORKS.map((h,i) => (
+                <div key={i} className="how-card"
+                  style={{ padding:'28px 22px', background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:18, position:'relative', transition:'all 0.22s' }}>
+                  <div style={{ position:'absolute', top:18, right:18, fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.1)', letterSpacing:1 }}>{h.n}</div>
+                  <div style={{ fontSize:26, marginBottom:14 }}>{h.icon}</div>
+                  <div style={{ fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:900, color:'#fff', marginBottom:8 }}>{h.title}</div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.38)', lineHeight:1.7 }}>{h.desc}</div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
 
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
-          Ready to see the real thing? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Book a live demo →</Link>
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// ─── Main Component ────────────────────────────────────────────────────────────
-
-export default function HomePage() {
-  const navigate = useNavigate();
-
-  return (
-    <div style={{ overflowX: 'hidden' }}>
-      <style>{`
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes spin  { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
-        @keyframes bounceY { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(10px)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
-        @keyframes slideInLeft  { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:none} }
-        @keyframes slideInRight { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:none} }
-        @keyframes scrollMarquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-
-        .hero-left  { animation: slideInLeft  0.7s 0.1s ease both; }
-        .hero-right { animation: slideInRight 0.7s 0.2s ease both; }
-        .hero-badge { animation: fadeUp 0.6s 0s ease both; }
-        .hero-h1    { animation: fadeUp 0.6s 0.15s ease both; }
-        .hero-sub   { animation: fadeUp 0.6s 0.25s ease both; }
-        .hero-ctas  { animation: fadeUp 0.6s 0.35s ease both; }
-        .hero-trust { animation: fadeUp 0.6s 0.45s ease both; }
-
-        .service-card:hover { transform:translateY(-6px) !important; }
-        .blog-card:hover    { transform:translateY(-4px) !important; }
-
-        .marquee-track { display:flex; gap:48px; animation:scrollMarquee 22s linear infinite; white-space:nowrap; }
-
-        @media (max-width: 768px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-right { display: none !important; }
-          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .process-grid { grid-template-columns: 1fr !important; }
-          .service-grid { grid-template-columns: 1fr !important; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after { animation: none !important; transition: none !important; }
-        }
-      `}</style>
-
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section style={{ padding: '120px 5% 80px', minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-        <Glow x="15%"  y="30%"  color="#22C55E" size={600} />
-        <Glow x="70%"  y="20%"  color="#3B82F6" size={400} />
-        <Glow x="90%"  y="70%"  color="#A855F7" size={350} />
-
-        {/* Subtle grid */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px)', backgroundSize: '60px 60px', pointerEvents: 'none' }} />
-
-        <div style={{ width: '100%', maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
-          <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
-
-            {/* Left */}
-            <div className="hero-left">
-              <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 24 }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite', display: 'inline-block' }} />
-                <span style={{ fontSize: 12, fontFamily: "'Space Mono',monospace", color: '#22C55E', fontWeight: 600, letterSpacing: 0.5 }}>Available for new projects</span>
-              </div>
-
-              <h1 className="hero-h1" style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(34px,5.5vw,66px)', fontWeight: 900, color: '#fff', letterSpacing: -2, lineHeight: 1.06, margin: '0 0 22px' }}>
-                We build<br />
-                <AnimatedHeadline /><br />
-                that work<br />
-                <span style={{ color: 'rgba(255,255,255,0.35)' }}>while you sleep.</span>
-              </h1>
-
-              <p className="hero-sub" style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: 36, maxWidth: 420 }}>
-                Axentralab builds AI-powered automation, SaaS platforms, and cybersecurity systems for developers, traders &amp; startups.
-              </p>
-
-              <div className="hero-ctas" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-                <Link to="/contact" className="btn-primary"
-                  style={{ padding: '15px 32px', background: '#22C55E', color: '#000', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  🚀 Start Free
-                </Link>
-                <Link to="/contact"
-                  style={{ padding: '15px 28px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}>
-                  📞 Book Demo
-                </Link>
-              </div>
-
-              <div className="hero-trust" style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request'].map((t, i) => (
-                  <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>{t}</span>
-                ))}
-              </div>
+          {/* ── FAQ ── */}
+          <div style={{ maxWidth:720, margin:`0 auto clamp(48px,7vw,88px)` }}>
+            <div style={{ textAlign:'center', marginBottom:36 }}>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.22)', letterSpacing:2, textTransform:'uppercase' }}>FAQ</span>
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Common Questions</h2>
             </div>
-
-            {/* Right: Terminal */}
-            <div className="hero-right" style={{ position: 'relative' }}>
-              {/* floating badge */}
-              <div style={{ position: 'absolute', top: -18, right: 0, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 12, padding: '8px 16px', fontFamily: "'Space Mono',monospace", fontSize: 12, color: '#22C55E', fontWeight: 700, zIndex: 2, backdropFilter: 'blur(8px)' }}>
-                ⚡ Live Preview
-              </div>
-              <div style={{ position: 'absolute', bottom: -14, left: -10, background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 12, padding: '8px 16px', fontFamily: "'Space Mono',monospace", fontSize: 12, color: '#3B82F6', fontWeight: 700, zIndex: 2, backdropFilter: 'blur(8px)' }}>
-                🛡️ Secured
-              </div>
-              <FloatingTerminal />
-            </div>
-          </div>
-        </div>
-
-        <ScrollIndicator />
-      </section>
-
-      {/* ── STATS BAR ─────────────────────────────────────────────────────── */}
-      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
-        <div className="stats-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
-          {STATS.map(s => <StatCard key={s.label} stat={s} />)}
-        </div>
-      </section>
-
-      {/* ── FREE AI TOOL ──────────────────────────────────────────────────── */}
-      <FreeAITool />
-
-      {/* ── TOOLS GRID ───────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #A855F740', background: '#A855F710', color: '#A855F7', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>SaaS Toolkit</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>6 tools. One platform.</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Production-ready SaaS tools built by Axentralab — use free or unlock pro features instantly.</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 18, maxWidth: 1100, margin: '0 auto' }}>
-          {TOOLS_GRID.map((tool, i) => (
-            <div key={i}
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '24px 24px 20px', cursor: 'pointer', transition: 'all 0.25s', position: 'relative', overflow: 'hidden' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = `${tool.color}40`; e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = `0 16px 48px ${tool.color}14`; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
-              {/* color stripe */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${tool.color},${tool.color}50,transparent)` }} />
-              {/* header row */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${tool.color}15`, border: `1px solid ${tool.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{tool.icon}</div>
-                  <div>
-                    <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: -0.2 }}>{tool.name}</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", marginTop: 1 }}>{tool.tag}</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              {FAQS.map((f,i) => (
+                <div key={i} className="faq-row"
+                  onClick={() => setOpenFaq(openFaq===i ? null : i)}
+                  style={{ background:'rgba(255,255,255,0.025)', border:`1px solid ${openFaq===i ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.07)'}`, borderRadius:13, overflow:'hidden', transition:'all 0.17s', cursor:'pointer' }}>
+                  <div style={{ padding:'17px 22px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12 }}>
+                    <span style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:800, color:'#fff' }}>{f.q}</span>
+                    <span style={{ color:'rgba(255,255,255,0.28)', fontSize:20, flexShrink:0, transition:'transform 0.2s', transform: openFaq===i ? 'rotate(45deg)' : 'none', lineHeight:1 }}>+</span>
                   </div>
-                </div>
-                <span style={{
-                  padding: '3px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5,
-                  background: tool.tier === 'Free' ? 'rgba(34,197,94,0.12)' : 'rgba(251,191,36,0.12)',
-                  border: tool.tier === 'Free' ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(251,191,36,0.3)',
-                  color: tool.tier === 'Free' ? '#22C55E' : '#FCD34D',
-                }}>
-                  {tool.tier === 'Free' ? '⊙ FREE' : '★ PRO'}
-                </span>
-              </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.65, marginBottom: 16 }}>{tool.desc}</p>
-              {/* feature pills */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
-                {tool.features.map((f, fi) => (
-                  <span key={fi} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 6, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace" }}>{f}</span>
-                ))}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 15, fontWeight: 900, color: tool.color }}>
-                  {tool.price === 0 ? 'Free forever' : `$${tool.price}/mo`}
-                </span>
-                <button style={{ padding: '7px 16px', borderRadius: 9, background: `${tool.color}18`, border: `1px solid ${tool.color}35`, color: tool.color, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Space Mono',monospace", transition: 'all 0.15s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${tool.color}30`; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = `${tool.color}18`; }}>
-                  {tool.tier === 'Free' ? 'Try Free →' : 'Get Pro →'}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <Link to="/services" style={{ fontSize: 14, color: '#A855F7', fontWeight: 700, textDecoration: 'none', fontFamily: "'Space Mono',monospace" }}>View all products →</Link>
-        </div>
-      </section>
-
-      {/* ── SERVICES (3-card focused) ─────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>Core Services</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Built to grow your revenue</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 440, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Three flagship services. Every one custom-built, production-ready, and ROI-positive.</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(310px,1fr))', gap: 22, maxWidth: 1080, margin: '0 auto' }}>
-          {CORE_SERVICES.map((s, i) => (
-            <div key={i}
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 22, padding: '30px 28px 26px', transition: 'all 0.25s', position: 'relative', overflow: 'hidden' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = `${s.color}45`; e.currentTarget.style.boxShadow = `0 20px 60px ${s.color}12`; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}>
-              {/* bg glow */}
-              <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle,${s.color}10,transparent 70%)`, pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,${s.color},transparent)` }} />
-              {/* icon + label */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
-                <div style={{ width: 50, height: 50, borderRadius: 14, background: `${s.color}15`, border: `1px solid ${s.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{s.icon}</div>
-                <div>
-                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 17, color: '#fff', letterSpacing: -0.3 }}>{s.title}</div>
-                  <div style={{ fontSize: 11, color: s.color, fontFamily: "'Space Mono',monospace", fontWeight: 600, marginTop: 2 }}>{s.label}</div>
-                </div>
-              </div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 20 }}>{s.desc}</p>
-              {/* feature list */}
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {s.features.map((f, fi) => (
-                  <li key={fi} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
-                    <span style={{ width: 16, height: 16, borderRadius: '50%', background: `${s.color}20`, border: `1px solid ${s.color}40`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: s.color, flexShrink: 0 }}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              {/* pricing + CTA */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <div>
-                  <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>Starting at</div>
-                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: s.color }}>{s.price}</div>
-                </div>
-                <Link to="/contact" style={{ padding: '11px 22px', borderRadius: 11, background: s.color, color: ['#22C55E','#F59E0B'].includes(s.color) ? '#000' : '#fff', fontSize: 13, fontWeight: 800, fontFamily: "'Sora',sans-serif", textDecoration: 'none', transition: 'opacity 0.15s', display: 'inline-block' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-                  Get Started →
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── PRODUCTS (4 digital products) ────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', position: 'relative', overflow: 'hidden' }}>
-        <Glow x="80%" y="50%" color="#3B82F6" size={400} />
-        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
-            <div>
-              <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #3B82F640', background: '#3B82F610', color: '#3B82F6', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 14 }}>Digital Products</span>
-              <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, margin: 0, lineHeight: 1.1 }}>Buy once.<br />Deploy forever.</h2>
-            </div>
-            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, maxWidth: 300, lineHeight: 1.7, margin: 0 }}>One-time purchase. Lifetime access. No subscriptions on these — they're yours.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 18 }}>
-            {DIGITAL_PRODUCTS.map((p, i) => (
-              <div key={i}
-                style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', transition: 'all 0.25s', display: 'flex', flexDirection: 'column' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}40`; e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = `0 18px 50px ${p.color}14`; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
-                {/* product thumbnail band */}
-                <div style={{ height: 80, background: `linear-gradient(135deg,${p.color}20,${p.color}05)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', borderBottom: `1px solid ${p.color}15` }}>
-                  <span style={{ fontSize: 36 }}>{p.icon}</span>
-                  {p.badge && (
-                    <span style={{ position: 'absolute', top: 10, right: 10, padding: '2px 8px', borderRadius: 6, background: p.badge === 'Popular' ? '#F59E0B20' : '#22C55E20', border: `1px solid ${p.badge === 'Popular' ? '#F59E0B40' : '#22C55E40'}`, color: p.badge === 'Popular' ? '#F59E0B' : '#22C55E', fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace" }}>
-                      {p.badge === 'Popular' ? '🔥 Popular' : '⭐ New'}
-                    </span>
+                  {openFaq===i && (
+                    <div style={{ padding:'0 22px 17px' }}>
+                      <p style={{ fontSize:13, color:'rgba(255,255,255,0.43)', lineHeight:1.8, margin:0 }}>{f.a}</p>
+                    </div>
                   )}
                 </div>
-                <div style={{ padding: '20px 20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: p.color, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>{p.tag}</div>
-                  <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: -0.2 }}>{p.name}</h3>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: 16, flex: 1 }}>{p.desc}</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
-                    {p.includes.map((item, ii) => (
-                      <span key={ii} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', fontFamily: "'Space Mono',monospace" }}>✓ {item}</span>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                    <div>
-                      {p.originalPrice && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through', fontFamily: "'Space Mono',monospace" }}>${p.originalPrice}</div>}
-                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: p.color }}>${p.price}</div>
-                    </div>
-                    <button style={{ padding: '9px 16px', borderRadius: 10, background: p.color, color: ['#22C55E','#F59E0B','#22D3EE'].includes(p.color) ? '#000' : '#fff', border: 'none', fontSize: 12, fontWeight: 800, fontFamily: "'Sora',sans-serif", cursor: 'pointer', transition: 'opacity 0.15s', whiteSpace: 'nowrap' }}
-                      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                      onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-                      Buy Now →
-                    </button>
-                  </div>
-                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Enterprise CTA ── */}
+          <div className="cta-section" style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.07),rgba(59,130,246,0.05),rgba(139,92,246,0.06))', border:'1px solid rgba(255,255,255,0.08)', borderRadius:26, textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:560, height:300, borderRadius:'50%', background:'radial-gradient(ellipse,rgba(34,197,94,0.05) 0%,transparent 70%)', pointerEvents:'none' }} />
+
+            {/* Launch discount CTA banner */}
+            <div style={{
+              position:'relative',
+              margin:'0 0 28px',
+              padding:'14px 24px',
+              background:'linear-gradient(90deg,rgba(251,191,36,0.08),rgba(245,158,11,0.05),rgba(251,191,36,0.08))',
+              border:'1px solid rgba(251,191,36,0.2)',
+              borderRadius:16,
+              display:'inline-flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'center',
+            }}>
+              <span style={{ fontSize:20 }}>🎉</span>
+              <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:16, color:'#fbbf24' }}>New Agency Launch — 50% OFF All Plans</span>
+              <span style={{ padding:'3px 11px', background:'rgba(251,191,36,0.15)', border:'1px solid rgba(251,191,36,0.3)', borderRadius:6, fontFamily:"'Space Mono',monospace", fontSize:11, color:'#fbbf24', fontWeight:900, letterSpacing:1 }}>
+                {DISCOUNT_BADGE}
+              </span>
+              <span style={{ fontSize:12, color:'rgba(251,191,36,0.5)', fontFamily:"'Space Mono',monospace" }}>Auto-applied · Limited time</span>
+            </div>
+
+            <div style={{ position:'relative' }}>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase', display:'block', marginBottom:16 }}>Get Started Today</span>
+              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,46px)', fontWeight:900, color:'#fff', letterSpacing:-1.5, margin:'0 0 16px', lineHeight:1.05 }}>
+                Stop Planning.<br />
+                <span style={{ color:'#22C55E' }}>Start Building.</span>
+              </h2>
+              <p style={{ color:'rgba(255,255,255,0.35)', fontSize:15, maxWidth:420, margin:'0 auto 34px', lineHeight:1.8 }}>
+                Every plan includes a free kick-off call, a fixed-scope contract, and an NDA. No surprises. Ever.<br />
+                <span style={{ color:'#fbbf24', fontWeight:700 }}>🏷️ All plans are 50% off for our launch — don't miss it.</span>
+              </p>
+              <div className="cta-btns" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:22 }}>
+                <button className="cta-btn" onClick={() => navigate('/contact')}
+                  style={{ padding:'14px 34px', background:'#fff', color:'#000', border:'none', borderRadius:12, fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:15, letterSpacing:-0.3, cursor:'pointer', transition:'all 0.17s' }}>
+                  Book a Free Call →
+                </button>
+                <button className="cta-btn" onClick={() => navigate('/portfolio')}
+                  style={{ padding:'14px 26px', background:'rgba(255,255,255,0.05)', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:15, cursor:'pointer', transition:'all 0.17s' }}>
+                  See Our Work
+                </button>
               </div>
-            ))}
+              <div className="trust-pills" style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
+                {['✓ No lock-in contracts','✓ NDA included by default','✓ Fixed-price quotes','🏷️ 50% OFF Launch Deal'].map((t,i) => (
+                  <span key={i} style={{ fontSize:11, color: i===3 ? '#fbbf24' : 'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace", fontWeight: i===3 ? 900 : 400 }}>{t}</span>
+                ))}
+              </div>
+            </div>
           </div>
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <Link to="/services" style={{ fontSize: 14, color: '#3B82F6', fontWeight: 700, textDecoration: 'none', fontFamily: "'Space Mono',monospace" }}>Browse all products →</Link>
-          </div>
-        </div>
-      </section>
 
-      {/* ── DASHBOARD PREVIEW ─────────────────────────────────────────────── */}
-      <DashboardPreview />
-
-      {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', maxWidth: 620, margin: '0 auto' }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Get Started</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px,5vw,56px)', fontWeight: 900, color: '#fff', margin: '18px auto 16px', letterSpacing: -1.5, lineHeight: 1.08 }}>
-            Ready to build<br /><span style={{ color: '#22C55E' }}>your next project?</span>
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 32, lineHeight: 1.7 }}>Tell us what you're building — we'll respond within 24 hours with a tailored proposal.</p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 12, textDecoration: 'none' }}>
-              Start a Project →
-            </Link>
-            <Link to="/contact" style={{ padding: '15px 28px', fontSize: 15, borderRadius: 12, textDecoration: 'none', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700 }}>
-              Schedule a Call
-            </Link>
-          </div>
-          <div style={{ marginTop: 28, display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request'].map((t, i) => (
-              <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>{t}</span>
-            ))}
-          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </>
   );
 }
