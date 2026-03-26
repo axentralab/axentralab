@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 // ── Project Data ──────────────────────────────────────────────────────────────
@@ -1709,21 +1709,163 @@ const TESTIMONIALS = [
   { name: 'James Kowalski', role: 'VP Eng, Dataflow', avatar: 'JK', color: '#A855F7', quote: 'The AI automation they built saves us 200+ hours a month. ROI was visible within 30 days. Best technical investment we\'ve made.' },
 ];
 
+
+// ── Project Modal ─────────────────────────────────────────────────────────────
+function ProjectModal({ project, onClose }) {
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [onClose]);
+
+  if (!project) return null;
+  const color = project.color;
+
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.75)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}
+    >
+      <div style={{ background:'#0a0c14', border:`1px solid ${color}30`, borderRadius:24, maxWidth:680, width:'100%', maxHeight:'90vh', overflowY:'auto', position:'relative', boxShadow:`0 40px 100px ${color}20` }}>
+        {/* Top accent */}
+        <div style={{ height:4, background:`linear-gradient(90deg,${color},transparent)`, borderRadius:'24px 24px 0 0' }} />
+
+        {/* Header */}
+        <div style={{ padding:'28px 32px 0' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:16, marginBottom:20 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
+              <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:6, background:`${color}12`, border:`1px solid ${color}28`, color, fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, textTransform:'uppercase', fontWeight:600 }}>{project.tag}</span>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(255,255,255,0.3)' }}>{project.year}</span>
+              {project.featured && <span style={{ padding:'2px 8px', background:color, borderRadius:5, fontSize:9, fontFamily:"'Space Mono',monospace", color:'#000', fontWeight:900, letterSpacing:1 }}>★ FEATURED</span>}
+              {project.isDemo  && <span style={{ padding:'2px 8px', background:`${color}20`, border:`1px solid ${color}50`, borderRadius:5, fontSize:9, fontFamily:"'Space Mono',monospace", color, fontWeight:900, letterSpacing:1 }}>🎨 DEMO</span>}
+            </div>
+            <button onClick={onClose} style={{ flexShrink:0, width:32, height:32, borderRadius:8, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.5)', fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
+          </div>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(20px,3vw,28px)', fontWeight:900, color:'#fff', margin:'0 0 14px', letterSpacing:-0.5 }}>{project.title}</h2>
+          <p style={{ fontSize:15, color:'rgba(255,255,255,0.55)', lineHeight:1.8, margin:'0 0 24px' }}>{project.desc}</p>
+        </div>
+
+        {/* Divider */}
+        <div style={{ height:1, background:`linear-gradient(90deg,${color}40,transparent)`, margin:'0 32px' }} />
+
+        {/* Body */}
+        <div style={{ padding:'24px 32px 32px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:24 }}>
+          {/* Results */}
+          <div>
+            <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', marginBottom:12 }}>Key Results</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              {project.results.map((r,i) => (
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px', background:`${color}08`, border:`1px solid ${color}18`, borderRadius:10 }}>
+                  <span style={{ color, fontSize:14, fontWeight:900 }}>↑</span>
+                  <span style={{ fontSize:13, color:'rgba(255,255,255,0.7)', fontFamily:"'Space Mono',monospace" }}>{r}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tech Stack */}
+          <div>
+            <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', marginBottom:12 }}>Tech Stack</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:7 }}>
+              {project.stack.map((s,i) => (
+                <span key={i} style={{ padding:'6px 12px', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', fontSize:12, color:'rgba(255,255,255,0.65)', fontFamily:"'Space Mono',monospace", fontWeight:600 }}>{s}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer CTA */}
+        <div style={{ padding:'0 32px 28px', display:'flex', gap:10, flexWrap:'wrap' }}>
+          {project.liveUrl && project.liveUrl !== '#' ? (
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+              style={{ flex:1, padding:'13px', background:color, color:['#22C55E','#F59E0B','#10B981','#22D3EE','#84CC16'].includes(color)?'#000':'#fff', border:'none', borderRadius:12, fontSize:14, fontWeight:700, fontFamily:"'Sora',sans-serif", textDecoration:'none', textAlign:'center', minWidth:140 }}>
+              {project.isDemo ? '🔗 ডেমো দেখুন' : '🔗 View Live'}
+            </a>
+          ) : (
+            <a href="/contact"
+              style={{ flex:1, padding:'13px', background:`${color}18`, border:`1px solid ${color}35`, borderRadius:12, fontSize:14, fontWeight:700, fontFamily:"'Sora',sans-serif", color, textDecoration:'none', textAlign:'center', minWidth:140 }}>
+              📄 Case Study দেখুন
+            </a>
+          )}
+          <a href="/contact"
+            style={{ padding:'13px 20px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, fontSize:14, fontWeight:700, fontFamily:"'Sora',sans-serif", color:'rgba(255,255,255,0.6)', textDecoration:'none', textAlign:'center' }}>
+            এরকম বানাবো →
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Featured Showcase ─────────────────────────────────────────────────────────
+function FeaturedShowcase({ onOpenModal }) {
+  const featured = PROJECTS.filter(p => p.featured);
+  return (
+    <section style={{ maxWidth:1100, margin:'0 auto 72px' }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28, flexWrap:'wrap', gap:12 }}>
+        <div>
+          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid rgba(245,158,11,0.35)', background:'rgba(245,158,11,0.08)', color:'#F59E0B', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>★ Featured Work</span>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(18px,2.5vw,26px)', fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Flagship Projects</h2>
+        </div>
+        <span style={{ fontSize:12, color:'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>{featured.length} selected projects</span>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:20 }}>
+        {featured.map((project, i) => {
+          const color = project.color;
+          return (
+            <div key={project.id}
+              onClick={() => onOpenModal(project)}
+              style={{ position:'relative', background:`linear-gradient(135deg,${color}0e,rgba(255,255,255,0.015))`, border:`1px solid ${color}25`, borderRadius:20, padding:28, cursor:'pointer', transition:'all 0.25s', overflow:'hidden' }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-5px)'; e.currentTarget.style.borderColor=`${color}50`; e.currentTarget.style.boxShadow=`0 20px 50px ${color}18`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor=`${color}25`; e.currentTarget.style.boxShadow='none'; }}>
+              {/* Glow orb */}
+              <div style={{ position:'absolute', top:-40, right:-40, width:120, height:120, borderRadius:'50%', background:`radial-gradient(circle,${color}18,transparent 65%)`, pointerEvents:'none' }} />
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:16 }}>
+                <span style={{ display:'inline-block', padding:'3px 9px', borderRadius:6, background:`${color}12`, border:`1px solid ${color}28`, color, fontSize:10, fontFamily:"'Space Mono',monospace", textTransform:'uppercase', fontWeight:600, letterSpacing:0.5 }}>{project.tag}</span>
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.25)' }}>{project.year}</span>
+              </div>
+              <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff', margin:'0 0 10px', letterSpacing:-0.4 }}>{project.title}</h3>
+              <p style={{ fontSize:13, color:'rgba(255,255,255,0.45)', lineHeight:1.7, margin:'0 0 18px' }}>{project.desc}</p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:18 }}>
+                {project.results.map((r,j) => (
+                  <span key={j} style={{ padding:'3px 10px', borderRadius:6, background:`${color}10`, border:`1px solid ${color}20`, fontSize:11, color, fontFamily:"'Space Mono',monospace" }}>↑ {r}</span>
+                ))}
+              </div>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+                  {project.stack.slice(0,3).map((s,j) => (
+                    <span key={j} style={{ padding:'2px 7px', borderRadius:4, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', fontSize:10, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace" }}>{s}</span>
+                  ))}
+                  {project.stack.length > 3 && <span style={{ padding:'2px 7px', fontSize:10, color:'rgba(255,255,255,0.25)', fontFamily:"'Space Mono',monospace" }}>+{project.stack.length-3}</span>}
+                </div>
+                <span style={{ fontSize:12, color, fontWeight:700, fontFamily:"'Sora',sans-serif" }}>View Details →</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 // ── Project Card ──────────────────────────────────────────────────────────────
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, onOpenModal }) {
   const [imgErr, setImgErr] = useState(false);
 
   return (
     <div
+      onClick={() => onOpenModal(project)}
       style={{
         background: 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 20,
         overflow: 'hidden',
         transition: 'all 0.3s',
-        animation: `fadeUp 0.5s ${index * 0.07}s ease both`,
+        animation: `fadeUp 0.5s ${Math.min(index,8) * 0.06}s ease both`,
         display: 'flex',
         flexDirection: 'column',
+        cursor: 'pointer',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.borderColor = `${project.color}40`;
@@ -1740,11 +1882,12 @@ function ProjectCard({ project, index }) {
       <div style={{ height: 3, background: `linear-gradient(90deg,${project.color},transparent)` }} />
 
       {/* Thumbnail */}
-      <div style={{ position: 'relative', height: 200, background: `linear-gradient(135deg,${project.color}18,${project.color}06)`, overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', height: 180, background: `linear-gradient(135deg,${project.color}18,${project.color}06)`, overflow: 'hidden', flexShrink: 0 }}>
         {!imgErr ? (
           <img
             src={project.thumbnail}
             alt={project.title}
+            loading="lazy"
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             onError={() => setImgErr(true)}
           />
@@ -1754,116 +1897,140 @@ function ProjectCard({ project, index }) {
               {project.category === 'Mobile' ? '📱' : project.category === 'SaaS' ? '📦' : project.category === 'Demo' ? '🎨' : '🌐'}
             </div>
             <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: `${project.color}60`, letterSpacing: 2 }}>
-              {project.tag.toUpperCase()}
+              {project.tag.toUpperCase().slice(0,20)}
             </span>
           </div>
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(6,8,15,0.65) 100%)' }} />
 
         {/* Year badge */}
-        <div style={{ position: 'absolute', top: 14, right: 14, padding: '3px 9px', background: 'rgba(6,8,15,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6 }}>
+        <div style={{ position: 'absolute', top: 12, right: 12, padding: '3px 9px', background: 'rgba(6,8,15,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6 }}>
           <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1 }}>{project.year}</span>
         </div>
 
-        {/* Featured badge */}
+        {/* Featured / Demo badge */}
         {project.featured && (
-          <div style={{ position: 'absolute', top: 14, left: 14, padding: '3px 9px', background: project.color, borderRadius: 6 }}>
+          <div style={{ position: 'absolute', top: 12, left: 12, padding: '3px 9px', background: project.color, borderRadius: 6 }}>
             <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: '#000', fontWeight: 900, letterSpacing: 1 }}>★ FEATURED</span>
           </div>
         )}
-
-        {/* Demo badge */}
         {project.isDemo && (
-          <div style={{ position: 'absolute', top: 14, left: 14, padding: '3px 9px', background: 'rgba(0,0,0,0.7)', border: `1px solid ${project.color}60`, borderRadius: 6 }}>
+          <div style={{ position: 'absolute', top: 12, left: 12, padding: '3px 9px', background: 'rgba(0,0,0,0.7)', border: `1px solid ${project.color}60`, borderRadius: 6 }}>
             <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: project.color, fontWeight: 900, letterSpacing: 1 }}>🎨 DEMO</span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div style={{ padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        {/* Tag */}
-        <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 6, background: `${project.color}10`, border: `1px solid ${project.color}25`, color: project.color, fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: 600, marginBottom: 12, alignSelf: 'flex-start' }}>
+      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 6, background: `${project.color}10`, border: `1px solid ${project.color}25`, color: project.color, fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: 600, marginBottom: 10, alignSelf: 'flex-start' }}>
           {project.tag}
         </span>
 
-        <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 18, fontWeight: 900, color: '#fff', margin: '0 0 10px', letterSpacing: -0.4 }}>
+        <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 900, color: '#fff', margin: '0 0 8px', letterSpacing: -0.3 }}>
           {project.title}
         </h3>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, margin: '0 0 16px', flex: 1 }}>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, margin: '0 0 14px', flex: 1, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
           {project.desc}
         </p>
 
-        {/* Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
-          {project.results.map((r, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ color: project.color, fontSize: 11, fontWeight: 900 }}>↑</span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace" }}>{r}</span>
-            </div>
+        {/* Results row */}
+        <div style={{ display: 'flex', flexWrap:'wrap', gap: 4, marginBottom: 12 }}>
+          {project.results.slice(0,2).map((r, i) => (
+            <span key={i} style={{ fontSize: 10, color: project.color, fontFamily:"'Space Mono',monospace", padding:'2px 7px', background:`${project.color}10`, borderRadius:5 }}>↑ {r}</span>
           ))}
         </div>
 
         {/* Stack */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
-          {project.stack.map((s, i) => (
-            <span key={i} style={{ padding: '3px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace" }}>{s}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 14 }}>
+          {project.stack.slice(0,4).map((s, i) => (
+            <span key={i} style={{ padding: '2px 7px', borderRadius: 5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace" }}>{s}</span>
           ))}
+          {project.stack.length > 4 && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace", padding:'2px 4px' }}>+{project.stack.length-4}</span>}
         </div>
 
         {/* CTA */}
         <div style={{ display: 'flex', gap: 8 }}>
-          {project.liveUrl !== '#' ? (
+          {project.liveUrl && project.liveUrl !== '#' ? (
             <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-              style={{ flex: 1, padding: '10px', background: `${project.color}15`, border: `1px solid ${project.color}30`, borderRadius: 10, color: project.color, fontSize: 13, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', textAlign: 'center', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = `${project.color}25`; }}
+              onClick={e => e.stopPropagation()}
+              style={{ flex: 1, padding: '9px', background: `${project.color}15`, border: `1px solid ${project.color}30`, borderRadius: 10, color: project.color, fontSize: 12, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', textAlign: 'center', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.stopPropagation(); e.currentTarget.style.background = `${project.color}25`; }}
               onMouseLeave={e => { e.currentTarget.style.background = `${project.color}15`; }}>
-              {project.isDemo ? 'ডেমো দেখুন →' : 'View Live →'}
+              {project.isDemo ? '🔗 ডেমো দেখুন' : 'View Live →'}
             </a>
           ) : (
-            <div style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, color: 'rgba(255,255,255,0.25)', fontSize: 13, fontFamily: "'Space Mono',monospace", textAlign: 'center' }}>
-              NDA Protected
-            </div>
+            <button
+              onClick={e => { e.stopPropagation(); }}
+              style={{ flex: 1, padding: '9px', background: `${project.color}10`, border: `1px solid ${project.color}25`, borderRadius: 10, color: project.color, fontSize: 12, fontFamily: "'Space Mono',monospace", textAlign: 'center', cursor:'pointer' }}>
+              📄 Case Study
+            </button>
           )}
-          <Link to="/contact"
-            style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', textAlign: 'center', transition: 'all 0.2s' }}
+          <button
+            onClick={e => e.stopPropagation()}
+            style={{ padding: '9px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 700, fontFamily: "'Sora',sans-serif", cursor:'pointer', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; }}>
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; }}>
             {project.isDemo ? 'বানাবো?' : 'Similar?'}
-          </Link>
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
+// ── Unique stacks for filter ──────────────────────────────────────────────────
+const ALL_STACKS = [...new Set(PROJECTS.flatMap(p => p.stack))].sort();
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
-const PER_PAGE = 12;
+const PER_LOAD = 12;
 
 export default function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [page, setPage] = useState(1);
+  const [search,         setSearch]         = useState('');
+  const [activeStack,    setActiveStack]    = useState('');
+  const [visible,        setVisible]        = useState(PER_LOAD);
+  const [modal,          setModal]          = useState(null);
+  const openModal  = useCallback(p => setModal(p), []);
+  const closeModal = useCallback(()  => setModal(null), []);
 
-  const filtered = activeCategory === 'All'
-    ? PROJECTS
-    : PROJECTS.filter(p => p.category === activeCategory);
+  const handleCategoryChange = (cat) => { setActiveCategory(cat); setVisible(PER_LOAD); };
+  const handleSearch         = (val) => { setSearch(val);         setVisible(PER_LOAD); };
+  const handleStack          = (val) => { setActiveStack(val);    setVisible(PER_LOAD); };
 
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const filtered = useMemo(() => {
+    let list = PROJECTS;
+    if (activeCategory !== 'All') list = list.filter(p => p.category === activeCategory);
+    if (activeStack)               list = list.filter(p => p.stack.includes(activeStack));
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.tag.toLowerCase().includes(q) ||
+        p.desc.toLowerCase().includes(q) ||
+        p.stack.some(s => s.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [activeCategory, activeStack, search]);
 
-  const handleCategoryChange = (cat) => { setActiveCategory(cat); setPage(1); };
+  const shown = filtered.slice(0, visible);
+  const hasMore = visible < filtered.length;
 
   return (
     <div style={{ padding: '108px 5% 0', minHeight: '100vh' }}>
+      {modal && <ProjectModal project={modal} onClose={closeModal} />}
+
       <style>{`
         @keyframes fadeUp  { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
         @keyframes pulse   { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
         @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes modalIn { from{opacity:0;transform:scale(0.96) translateY(12px)} to{opacity:1;transform:none} }
 
         .portfolio-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 24px;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 22px;
           max-width: 1100px;
           margin: 0 auto;
         }
@@ -1881,6 +2048,7 @@ export default function PortfolioPage() {
           margin: 0 auto;
         }
         .cat-bar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .filter-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:32px; }
 
         @media (max-width: 700px) {
           .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -1927,8 +2095,11 @@ export default function PortfolioPage() {
         </div>
       </section>
 
+      {/* ── Featured Showcase ── */}
+      <FeaturedShowcase onOpenModal={openModal} />
+
       {/* ── Category Filter ── */}
-      <div className="cat-bar" style={{ marginBottom: 36 }}>
+      <div className="cat-bar" style={{ marginBottom: 20 }}>
         {CATEGORIES.map(cat => (
           <button key={cat} onClick={() => handleCategoryChange(cat)}
             style={{ padding: '8px 20px', borderRadius: 10, border: activeCategory === cat ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCategory === cat ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', color: activeCategory === cat ? '#22C55E' : 'rgba(255,255,255,0.45)', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, cursor: 'pointer', transition: 'all 0.18s' }}>
@@ -1940,13 +2111,55 @@ export default function PortfolioPage() {
         ))}
       </div>
 
+      {/* ── Search + Stack Filter Row ── */}
+      <div className="filter-row">
+        {/* Search */}
+        <div style={{ position:'relative', flex:'1', maxWidth:380, minWidth:200 }}>
+          <span style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:14, opacity:0.35, pointerEvents:'none' }}>🔍</span>
+          <input
+            type="text"
+            value={search}
+            onChange={e => handleSearch(e.target.value)}
+            placeholder="Search projects, stack, tag…"
+            style={{ width:'100%', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, padding:'11px 16px 11px 40px', color:'#fff', fontSize:13, outline:'none', fontFamily:"'Sora',sans-serif", boxSizing:'border-box' }}
+          />
+          {search && (
+            <button onClick={() => handleSearch('')} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', color:'rgba(255,255,255,0.3)', fontSize:14, cursor:'pointer', padding:0 }}>✕</button>
+          )}
+        </div>
+
+        {/* Stack filter */}
+        <div style={{ position:'relative' }}>
+          <select
+            value={activeStack}
+            onChange={e => handleStack(e.target.value)}
+            style={{ background:'rgba(255,255,255,0.04)', border:`1px solid ${activeStack ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`, borderRadius:12, padding:'11px 36px 11px 14px', color: activeStack ? '#22C55E' : 'rgba(255,255,255,0.5)', fontSize:13, outline:'none', fontFamily:"'Sora',sans-serif", cursor:'pointer', appearance:'none', minWidth:160 }}>
+            <option value="" style={{ background:'#0a0c14', color:'#fff' }}>⚙️ All Tech Stacks</option>
+            {ALL_STACKS.map(s => (
+              <option key={s} value={s} style={{ background:'#0a0c14', color:'#fff' }}>{s}</option>
+            ))}
+          </select>
+          <span style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'rgba(255,255,255,0.3)', fontSize:10 }}>▼</span>
+        </div>
+
+        {/* Result count */}
+        {(search || activeStack || activeCategory !== 'All') && (
+          <div style={{ fontSize:12, color:'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace", padding:'8px 14px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10 }}>
+            {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+            {(search || activeStack || activeCategory !== 'All') && (
+              <button onClick={() => { handleSearch(''); handleStack(''); handleCategoryChange('All'); }} style={{ marginLeft:10, color:'rgba(255,255,255,0.3)', background:'none', border:'none', cursor:'pointer', fontSize:11, textDecoration:'underline' }}>clear all</button>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* ── Demo Section Banner ── */}
       {activeCategory === 'Demo' && (
         <div style={{ maxWidth: 1100, margin: '0 auto 32px', background: 'linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.06))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 16, padding: '20px 28px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 32 }}>🎨</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 16, color: '#fff', marginBottom: 4 }}>ডেমো ওয়েবসাইট কালেকশন</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>এই ডেমোগুলো আমাদের সার্ভিসের নমুনা — কর্পোরেট সাইট, ই-কমার্স, SaaS ড্যাশবোর্ড, ব্লগ, ল্যান্ডিং পেজ এবং LMS প্ল্যাটফর্ম। আপনার প্রজেক্টের জন্য কাস্টম সলিউশন বানাতে যোগাযোগ করুন।</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>এই ডেমোগুলো আমাদের সার্ভিসের নমুনা — কর্পোরেট সাইট, ই-কমার্স, SaaS ড্যাশবোর্ড, ব্লগ, ল্যান্ডিং পেজ এবং LMS প্ল্যাটফর্ম।</div>
           </div>
           <Link to="/contact" style={{ padding: '10px 22px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 10, color: '#818CF8', fontSize: 13, fontWeight: 700, fontFamily: "'Sora',sans-serif", textDecoration: 'none', whiteSpace: 'nowrap' }}>
             আজই শুরু করুন →
@@ -1954,34 +2167,46 @@ export default function PortfolioPage() {
         </div>
       )}
 
-      {/* ── Project Grid ── */}
-      <section style={{ marginBottom: 96 }}>
-        <div className="portfolio-grid">
-          {paginated.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
+      {/* ── No results ── */}
+      {filtered.length === 0 && (
+        <div style={{ textAlign:'center', padding:'60px 20px 80px' }}>
+          <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
+          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:15, marginBottom:20 }}>কোনো প্রজেক্ট পাওয়া যায়নি।</p>
+          <button onClick={() => { handleSearch(''); handleStack(''); handleCategoryChange('All'); }} style={{ padding:'10px 22px', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#fff', fontSize:13, cursor:'pointer' }}>সব দেখুন</button>
         </div>
-      </section>
+      )}
 
-      {/* ── Pagination ── */}
-      {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 64, flexWrap: 'wrap' }}>
-          <button onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({top: 0, behavior:'smooth'}); }} disabled={page === 1}
-            style={{ padding: '9px 18px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: page === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)', cursor: page === 1 ? 'default' : 'pointer', fontSize: 13, fontWeight: 600 }}>← Prev</button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter(n => n === 1 || n === totalPages || Math.abs(n - page) <= 2)
-            .reduce((acc, n, idx, arr) => { if (idx > 0 && n - arr[idx - 1] > 1) acc.push('…'); acc.push(n); return acc; }, [])
-            .map((n, i) => n === '…'
-              ? <span key={`e${i}`} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>…</span>
-              : <button key={n} onClick={() => { setPage(n); window.scrollTo({top: 0, behavior:'smooth'}); }}
-                  style={{ width: 38, height: 38, borderRadius: 10, background: page === n ? '#22C55E' : 'rgba(255,255,255,0.04)', border: page === n ? 'none' : '1px solid rgba(255,255,255,0.09)', color: page === n ? '#000' : 'rgba(255,255,255,0.55)', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>{n}</button>
-            )}
-          <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo({top: 0, behavior:'smooth'}); }} disabled={page === totalPages}
-            style={{ padding: '9px 18px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: page === totalPages ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)', cursor: page === totalPages ? 'default' : 'pointer', fontSize: 13, fontWeight: 600 }}>Next →</button>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace", marginLeft: 8 }}>
-            {(page-1)*PER_PAGE+1}–{Math.min(page*PER_PAGE, filtered.length)} of {filtered.length}
-          </span>
-        </div>
+      {/* ── Project Grid ── */}
+      {filtered.length > 0 && (
+        <section style={{ marginBottom: 48 }}>
+          <div className="portfolio-grid">
+            {shown.map((project, i) => (
+              <ProjectCard key={project.id} project={project} index={i} onOpenModal={openModal} />
+            ))}
+          </div>
+
+          {/* ── Load More ── */}
+          {hasMore && (
+            <div style={{ textAlign:'center', marginTop:40 }}>
+              <button
+                onClick={() => setVisible(v => v + PER_LOAD)}
+                style={{ padding:'13px 40px', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:12, color:'#22C55E', fontSize:14, fontWeight:700, fontFamily:"'Sora',sans-serif", cursor:'pointer', transition:'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background='rgba(34,197,94,0.18)'; e.currentTarget.style.transform='translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background='rgba(34,197,94,0.1)'; e.currentTarget.style.transform='none'; }}>
+                আরো দেখুন ({filtered.length - visible} remaining)
+              </button>
+              <div style={{ marginTop:12, fontSize:11, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>
+                {visible} / {filtered.length} projects shown
+              </div>
+            </div>
+          )}
+
+          {!hasMore && filtered.length > PER_LOAD && (
+            <div style={{ textAlign:'center', marginTop:32, fontSize:12, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>
+              ✓ All {filtered.length} projects loaded
+            </div>
+          )}
+        </section>
       )}
 
       {/* ── Process Strip ── */}
