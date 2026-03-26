@@ -4,9 +4,6 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
-const DISCOUNT_RATE = 0.5; // 50% off
-const DISCOUNT_LABEL = '🎉 New Agency Launch — 50% OFF';
-const DISCOUNT_BADGE = 'LAUNCH50';
 
 const FALLBACK = [
   {
@@ -105,7 +102,6 @@ const FAQS = [
   { q:'How fast do you start?',              a:'Most services kick off within 24 hours of payment. Enterprise projects get a scoping call booked the same day.' },
   { q:'Do you sign NDAs?',                   a:'Always. An NDA is included in every contract by default at no extra cost.' },
   { q:'Can I upgrade my plan later?',        a:'Yes. You pay only the difference when upgrading. Downgrades take effect at the next billing cycle.' },
-  { q:'Is the 50% launch discount permanent?', a:'No — this is a limited-time offer for our agency launch. Once the launch period ends, prices return to normal. Lock in your rate now.' },
 ];
 
 const COMPARE_ROWS = [
@@ -128,8 +124,6 @@ const HOW_IT_WORKS = [
 
 const STACK_BADGES = ['React','Next.js','Node.js','MongoDB','Express','Tailwind','Shopify','WooCommerce','Docker','AWS','DigitalOcean','Vercel','Figma','Adobe XD','Burp Suite','OWASP','Nginx','PostgreSQL','Redis','CI/CD'];
 
-// Helper: apply discount
-const discountedPrice = (price) => Math.round(price * (1 - DISCOUNT_RATE));
 
 export default function ShopPage() {
   const [services, setServices] = useState(FALLBACK);
@@ -137,7 +131,6 @@ export default function ShopPage() {
   const [billing, setBilling]   = useState('all');
   const [openFaq, setOpenFaq]   = useState(null);
   const [cartAnim, setCartAnim] = useState(null);
-  const [bannerVisible, setBannerVisible] = useState(true);
   const { addToCart, cart }     = useCart();
   const { isAuthenticated }     = useAuth();
   const navigate                = useNavigate();
@@ -153,9 +146,7 @@ export default function ShopPage() {
 
   const handleBuy = (service, plan) => {
     if (!isAuthenticated) { navigate('/register'); return; }
-    // Pass discounted price to cart
-    const discountedPlan = { ...plan, price: discountedPrice(plan.price), originalPrice: plan.price };
-    addToCart(service, discountedPlan);
+    addToCart(service, plan);
     setCartAnim(service._id + plan.name);
     setTimeout(() => setCartAnim(null), 900);
     navigate('/cart');
@@ -175,39 +166,12 @@ export default function ShopPage() {
         @keyframes slideUp  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
         @keyframes ticker   { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @keyframes pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 7px rgba(34,197,94,0)} }
-        @keyframes bannerGlow { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.0)} 50%{box-shadow:0 4px 32px rgba(251,191,36,0.18)} }
-        @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
-        @keyframes badgePop { 0%{transform:scale(0.8) rotate(-6deg);opacity:0} 70%{transform:scale(1.1) rotate(2deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
-        @keyframes strikeThrough { from{width:0} to{width:100%} }
 
         .srv-pill:hover  { opacity:1 !important; background: rgba(255,255,255,0.07) !important; }
         .plan-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important; }
         .how-card:hover  { border-color: rgba(255,255,255,0.15) !important; transform: translateY(-3px); }
         .faq-row:hover   { background: rgba(255,255,255,0.04) !important; }
         .cta-btn:hover   { filter: brightness(1.1); transform: translateY(-1px); }
-        .launch-banner:hover { animation: none !important; filter: brightness(1.05); }
-
-        .old-price {
-          position: relative;
-          display: inline-block;
-          color: rgba(255,255,255,0.3);
-        }
-        .old-price::after {
-          content: '';
-          position: absolute;
-          left: 0; top: 50%;
-          height: 2px;
-          width: 100%;
-          background: #EF4444;
-          border-radius: 2px;
-          animation: strikeThrough 0.4s ease forwards;
-        }
-
-        .discount-shine {
-          background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
-          background-size: 400px 100%;
-          animation: shimmer 2.5s infinite;
-        }
 
         /* ── RESPONSIVE ── */
         .hero-grid    { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; margin-bottom:88px; }
@@ -248,39 +212,6 @@ export default function ShopPage() {
 
       <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:82 }}>
 
-        {/* ── LAUNCH DISCOUNT BANNER ── */}
-        {bannerVisible && (
-          <div
-            className="launch-banner"
-            style={{
-              position:'relative',
-              background:'linear-gradient(90deg, #92400e, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b, #d97706, #b45309, #92400e)',
-              backgroundSize:'200% 100%',
-              animation:'shimmer 3s linear infinite, bannerGlow 3s ease-in-out infinite',
-              padding:'11px 20px',
-              overflow:'hidden',
-            }}
-          >
-            {/* shimmer overlay */}
-            <div className="discount-shine" style={{ position:'absolute', inset:0, pointerEvents:'none' }} />
-            <div className="banner-inner" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, position:'relative', flexWrap:'wrap' }}>
-              <span style={{ fontSize:18 }}>🎉</span>
-              <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:14, color:'#000', letterSpacing:-0.3 }}>
-                New Agency Launch — <span style={{ fontSize:17 }}>50% OFF</span> All Plans
-              </span>
-              <span style={{ padding:'3px 11px', background:'rgba(0,0,0,0.18)', borderRadius:6, fontFamily:"'Space Mono',monospace", fontSize:10, color:'#000', letterSpacing:1.5, fontWeight:900 }}>
-                USE CODE: {DISCOUNT_BADGE}
-              </span>
-              <span style={{ fontSize:12, color:'rgba(0,0,0,0.6)', fontFamily:"'Space Mono',monospace" }}>
-                Limited time only · Auto-applied at checkout
-              </span>
-            </div>
-            <button
-              onClick={() => setBannerVisible(false)}
-              style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.15)', border:'none', color:'#000', width:24, height:24, borderRadius:'50%', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, fontWeight:900 }}
-            >×</button>
-          </div>
-        )}
 
         {/* ── Ticker ── */}
         <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:'clamp(32px,5vw,64px)' }}>
@@ -299,22 +230,7 @@ export default function ShopPage() {
           <div className="hero-grid">
 
             <div>
-              {/* Launch discount badge */}
-              <div style={{
-                display:'inline-flex', alignItems:'center', gap:8,
-                padding:'5px 14px', borderRadius:6,
-                background:'linear-gradient(90deg,rgba(251,191,36,0.12),rgba(245,158,11,0.08))',
-                border:'1px solid rgba(251,191,36,0.35)',
-                marginBottom:14,
-                animation:'badgePop 0.5s ease 0.3s both',
-              }}>
-                <span style={{ fontSize:14 }}>🏷️</span>
-                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#fbbf24', letterSpacing:1.2, textTransform:'uppercase', fontWeight:900 }}>
-                  50% OFF — New Agency Launch
-                </span>
-              </div>
-
-              <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:6, background:'rgba(34,197,94,0.07)', border:'1px solid rgba(34,197,94,0.18)', marginBottom:22, marginLeft:8 }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:6, background:'rgba(34,197,94,0.07)', border:'1px solid rgba(34,197,94,0.18)', marginBottom:22 }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E', display:'inline-block', animation:'pulse 2s infinite' }} />
                 <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#22C55E', letterSpacing:1.5, textTransform:'uppercase' }}>Live Pricing</span>
               </div>
@@ -325,31 +241,25 @@ export default function ShopPage() {
                 <span style={{ color:'#22C55E' }}>Pricing.</span>
               </h1>
               <p style={{ fontSize:15, color:'rgba(255,255,255,0.37)', lineHeight:1.8, maxWidth:420, margin:'0 0 32px' }}>
-                No discovery fees. No hidden costs. Pick a plan, add to cart, and we kick off within 24 hours.<br />
-                <span style={{ color:'#fbbf24', fontWeight:700 }}>🎉 Launch special: All plans are 50% off — limited time.</span>
+                No discovery fees. No hidden costs. Pick a plan, add to cart, and we kick off within 24 hours.
               </p>
               <div className="stat-pills">
-                {[['120+','Projects'],['98%','Retention'],['24hr','Kickoff'],['50%','OFF NOW']].map(([v,l],i) => (
+                {[['120+','Projects'],['98%','Retention'],['24hr','Kickoff'],['4.9★','Rating']].map(([v,l],i) => (
                   <div key={i} style={{
                     padding:'10px 16px',
-                    background: i===3 ? 'rgba(251,191,36,0.08)' : 'rgba(255,255,255,0.035)',
-                    border: i===3 ? '1px solid rgba(251,191,36,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                    background:'rgba(255,255,255,0.035)',
+                    border:'1px solid rgba(255,255,255,0.07)',
                     borderRadius:10
                   }}>
-                    <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:900, color: i===3 ? '#fbbf24' : '#fff', letterSpacing:-0.5 }}>{v}</div>
-                    <div style={{ fontSize:10, color: i===3 ? 'rgba(251,191,36,0.55)' : 'rgba(255,255,255,0.28)', marginTop:2, fontFamily:"'Space Mono',monospace" }}>{l}</div>
+                    <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:900, color:'#fff', letterSpacing:-0.5 }}>{v}</div>
+                    <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)', marginTop:2, fontFamily:"'Space Mono',monospace" }}>{l}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Live cart summary */}
-            <div className="cart-sticky" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden' }}>
-              {/* Discount strip on cart */}
-              <div style={{ background:'linear-gradient(90deg,#92400e,#d97706,#92400e)', padding:'7px 16px', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-                <span style={{ fontSize:12 }}>🏷️</span>
-                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#000', letterSpacing:1.5, fontWeight:900 }}>50% OFF APPLIED — {DISCOUNT_BADGE}</span>
-              </div>
+            <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:20, overflow:'hidden' }}>
               <div style={{ padding:'16px 22px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, color:'#fff' }}>🛒 Your Cart</span>
                 <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.22)', letterSpacing:1 }}>{cart.length} ITEM{cart.length!==1?'S':''}</span>
@@ -359,9 +269,6 @@ export default function ShopPage() {
                   <div style={{ textAlign:'center', padding:'24px 0', color:'rgba(255,255,255,0.2)', fontSize:13, lineHeight:2 }}>
                     <div style={{ fontSize:28, marginBottom:8, opacity:0.4 }}>🛒</div>
                     Cart is empty.<br />Pick a plan below.
-                    <div style={{ marginTop:12, padding:'8px 12px', background:'rgba(251,191,36,0.07)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:8, fontSize:11, color:'#fbbf24' }}>
-                      🏷️ 50% discount auto-applied
-                    </div>
                   </div>
                 ) : (
                   <>
@@ -373,11 +280,6 @@ export default function ShopPage() {
                             <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)', marginTop:1, fontFamily:"'Space Mono',monospace" }}>{item.plan}</div>
                           </div>
                           <div style={{ textAlign:'right' }}>
-                            {item.originalPrice && (
-                              <div className="old-price" style={{ fontSize:10, display:'block', marginBottom:2 }}>
-                                ${item.originalPrice?.toLocaleString()}
-                              </div>
-                            )}
                             <div style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:900, color:'#22C55E' }}>${item.price?.toLocaleString()}</div>
                           </div>
                         </div>
@@ -387,10 +289,6 @@ export default function ShopPage() {
                     <div style={{ display:'flex', justifyContent:'space-between', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.07)', marginBottom:8 }}>
                       <span style={{ fontSize:12, color:'rgba(255,255,255,0.35)' }}>Total</span>
                       <span style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff' }}>${cartTotal.toLocaleString()}</span>
-                    </div>
-                    <div style={{ padding:'6px 10px', background:'rgba(251,191,36,0.07)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:8, marginBottom:14, display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:11 }}>🏷️</span>
-                      <span style={{ fontSize:11, color:'#fbbf24', fontFamily:"'Space Mono',monospace" }}>50% LAUNCH DISCOUNT SAVED!</span>
                     </div>
                     <button onClick={() => navigate('/cart')} style={{ width:'100%', padding:'12px', background:'#22C55E', color:'#000', border:'none', borderRadius:11, fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, cursor:'pointer', letterSpacing:-0.3, transition:'all 0.17s' }}
                       onMouseEnter={e => e.currentTarget.style.background='#16a34a'}
@@ -408,9 +306,6 @@ export default function ShopPage() {
             <div className="browse-hdr">
               <div>
                 <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', letterSpacing:-0.5, margin:'0 0 4px' }}>Browse Services</h2>
-                <div style={{ fontSize:12, color:'#fbbf24', fontFamily:"'Space Mono',monospace", fontWeight:700 }}>
-                  🏷️ All plans 50% off — Launch discount auto-applied
-                </div>
               </div>
               <div className="billing-bar">
                 {[['all','All'],['one-time','One-time'],['monthly','Monthly']].map(([val,label]) => (
@@ -430,11 +325,8 @@ export default function ShopPage() {
                   style={{ display:'flex', alignItems:'center', gap:9, padding:'10px 18px', borderRadius:12, border: selected===s._id ? `1px solid ${s.color}55` : '1px solid rgba(255,255,255,0.07)', background: selected===s._id ? `${s.color}10` : 'rgba(255,255,255,0.025)', cursor:'pointer', transition:'all 0.17s', opacity: selected===s._id ? 1 : 0.7 }}>
                   <span style={{ fontSize:17 }}>{s.icon}</span>
                   <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:13, color: selected===s._id ? '#fff' : 'rgba(255,255,255,0.6)' }}>{s.title}</span>
-                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color: selected===s._id ? '#fbbf24' : 'rgba(255,255,255,0.2)', textDecoration:'line-through', opacity:0.6 }}>
-                    ${Math.min(...s.plans.map(p=>p.price)).toLocaleString()}
-                  </span>
-                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#fbbf24', fontWeight:900 }}>
-                    from ${Math.min(...s.plans.map(p=>discountedPrice(p.price))).toLocaleString()}
+                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.3)', fontWeight:700 }}>
+                    from ${Math.min(...s.plans.map(p=>p.price)).toLocaleString()}
                   </span>
                 </button>
               ))}
@@ -450,10 +342,6 @@ export default function ShopPage() {
                       <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff', letterSpacing:-0.4, margin:0 }}>{activeService.title}</h2>
                       <span style={{ padding:'2px 9px', borderRadius:6, background:`${activeService.color}12`, color:activeService.color, fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>
                         {activeService.plans?.length} plans
-                      </span>
-                      {/* Discount badge on service header */}
-                      <span style={{ padding:'2px 9px', borderRadius:6, background:'rgba(251,191,36,0.12)', color:'#fbbf24', fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5, fontWeight:900, border:'1px solid rgba(251,191,36,0.25)' }}>
-                        🏷️ 50% OFF
                       </span>
                     </div>
                     <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'0 0 12px', lineHeight:1.6 }}>{activeService.description}</p>
@@ -486,27 +374,12 @@ export default function ShopPage() {
                     const inCart    = isInCart(activeService._id, plan.name);
                     const isPopular = pi === 1;
                     const animating = cartAnim === activeService._id + plan.name;
-                    const salePrice = discountedPrice(plan.price);
 
                     return (
                       <div key={plan.name} className="plan-card"
                         style={{ position:'relative', borderRadius:20, background: isPopular ? `linear-gradient(155deg,${activeService.color}11,rgba(255,255,255,0.03))` : 'rgba(255,255,255,0.03)', border:`1px solid ${isPopular ? activeService.color+'50' : 'rgba(255,255,255,0.08)'}`, padding:'24px 22px', transition:'all 0.22s', animation: animating ? 'popIn 0.45s ease' : 'none' }}>
 
                         {isPopular && <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${activeService.color},transparent)`, borderRadius:'20px 20px 0 0' }} />}
-
-                        {/* Discount ribbon */}
-                        <div style={{
-                          position:'absolute', top:0, right:0,
-                          background:'linear-gradient(135deg,#d97706,#fbbf24)',
-                          color:'#000', fontSize:9, fontWeight:900,
-                          padding:'4px 10px 4px 14px',
-                          borderRadius:'0 18px 0 12px',
-                          fontFamily:"'Space Mono',monospace",
-                          letterSpacing:0.5,
-                          zIndex:2,
-                        }}>
-                          50% OFF
-                        </div>
 
                         {isPopular && (
                           <span style={{ position:'absolute', top:14, left:14, background:activeService.color, color:'#000', fontSize:8, fontWeight:900, padding:'3px 8px', borderRadius:5, fontFamily:"'Space Mono',monospace", letterSpacing:1 }}>★ TOP PICK</span>
@@ -515,23 +388,12 @@ export default function ShopPage() {
                         <div style={{ marginBottom:18, marginTop:isPopular ? 16 : 0 }}>
                           <div style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:900, color:'#fff', marginBottom:6 }}>{plan.name}</div>
 
-                          {/* Pricing: original crossed out + sale price */}
                           <div style={{ display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                            <span className="old-price" style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:700, letterSpacing:-0.5 }}>
+                            <span style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, color:activeService.color, letterSpacing:-1.5 }}>
                               ${plan.price.toLocaleString()}
-                            </span>
-                            <span style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, color:'#fbbf24', letterSpacing:-1.5 }}>
-                              ${salePrice.toLocaleString()}
                             </span>
                             <span style={{ fontSize:12, color:'rgba(255,255,255,0.28)', marginLeft:2 }}>
                               {plan.billing==='monthly' ? '/mo' : plan.billing==='yearly' ? '/yr' : ' once'}
-                            </span>
-                          </div>
-
-                          {/* Savings callout */}
-                          <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 9px', background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.2)', borderRadius:6, marginBottom:4 }}>
-                            <span style={{ fontSize:10, color:'#fbbf24', fontFamily:"'Space Mono',monospace", fontWeight:900 }}>
-                              You save ${(plan.price - salePrice).toLocaleString()}
                             </span>
                           </div>
 
@@ -542,7 +404,7 @@ export default function ShopPage() {
                           )}
                           {plan.billing==='monthly' && (
                             <div style={{ marginTop:3, fontSize:10, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>
-                              billed monthly · ${(salePrice*12).toLocaleString()}/yr
+                              billed monthly · ${(plan.price*12).toLocaleString()}/yr
                             </div>
                           )}
                         </div>
@@ -660,24 +522,6 @@ export default function ShopPage() {
           <div className="cta-section" style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.07),rgba(59,130,246,0.05),rgba(139,92,246,0.06))', border:'1px solid rgba(255,255,255,0.08)', borderRadius:26, textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:560, height:300, borderRadius:'50%', background:'radial-gradient(ellipse,rgba(34,197,94,0.05) 0%,transparent 70%)', pointerEvents:'none' }} />
 
-            {/* Launch discount CTA banner */}
-            <div style={{
-              position:'relative',
-              margin:'0 0 28px',
-              padding:'14px 24px',
-              background:'linear-gradient(90deg,rgba(251,191,36,0.08),rgba(245,158,11,0.05),rgba(251,191,36,0.08))',
-              border:'1px solid rgba(251,191,36,0.2)',
-              borderRadius:16,
-              display:'inline-flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'center',
-            }}>
-              <span style={{ fontSize:20 }}>🎉</span>
-              <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:16, color:'#fbbf24' }}>New Agency Launch — 50% OFF All Plans</span>
-              <span style={{ padding:'3px 11px', background:'rgba(251,191,36,0.15)', border:'1px solid rgba(251,191,36,0.3)', borderRadius:6, fontFamily:"'Space Mono',monospace", fontSize:11, color:'#fbbf24', fontWeight:900, letterSpacing:1 }}>
-                {DISCOUNT_BADGE}
-              </span>
-              <span style={{ fontSize:12, color:'rgba(251,191,36,0.5)', fontFamily:"'Space Mono',monospace" }}>Auto-applied · Limited time</span>
-            </div>
-
             <div style={{ position:'relative' }}>
               <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase', display:'block', marginBottom:16 }}>Get Started Today</span>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,46px)', fontWeight:900, color:'#fff', letterSpacing:-1.5, margin:'0 0 16px', lineHeight:1.05 }}>
@@ -685,8 +529,7 @@ export default function ShopPage() {
                 <span style={{ color:'#22C55E' }}>Start Building.</span>
               </h2>
               <p style={{ color:'rgba(255,255,255,0.35)', fontSize:15, maxWidth:420, margin:'0 auto 34px', lineHeight:1.8 }}>
-                Every plan includes a free kick-off call, a fixed-scope contract, and an NDA. No surprises. Ever.<br />
-                <span style={{ color:'#fbbf24', fontWeight:700 }}>🏷️ All plans are 50% off for our launch — don't miss it.</span>
+                Every plan includes a free kick-off call, a fixed-scope contract, and an NDA. No surprises. Ever.
               </p>
               <div className="cta-btns" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:22 }}>
                 <button className="cta-btn" onClick={() => navigate('/contact')}
@@ -699,8 +542,8 @@ export default function ShopPage() {
                 </button>
               </div>
               <div className="trust-pills" style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-                {['✓ No lock-in contracts','✓ NDA included by default','✓ Fixed-price quotes','🏷️ 50% OFF Launch Deal'].map((t,i) => (
-                  <span key={i} style={{ fontSize:11, color: i===3 ? '#fbbf24' : 'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace", fontWeight: i===3 ? 900 : 400 }}>{t}</span>
+                {['✓ No lock-in contracts','✓ NDA included by default','✓ Fixed-price quotes'].map((t,i) => (
+                  <span key={i} style={{ fontSize:11, color:'rgba(255,255,255,0.2)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
                 ))}
               </div>
             </div>
