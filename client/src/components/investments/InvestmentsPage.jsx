@@ -175,7 +175,7 @@ export default function InvestmentsPage() {
                 <tr key={i} style={{ cursor: 'pointer' }} onClick={() => setActiveAsset(p)}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: `${p.color}20`, display: 'flex', alignItems: 'center', just-content: 'center', fontWeight: 700, fontSize: '0.65rem', color: p.color, fontFamily: 'var(--font-mono)', padding: 4 }}>{p.symbol.slice(0,3)}</div>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: `${p.color}20`, display: 'flex', alignItems: 'center', justcontent: 'center', fontWeight: 700, fontSize: '0.65rem', color: p.color, fontFamily: 'var(--font-mono)', padding: 4 }}>{p.symbol.slice(0,3)}</div>
                       <div>
                         <div style={{ fontWeight: 600, fontSize: '0.82rem' }}>{p.name}</div>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{p.symbol}</div>
