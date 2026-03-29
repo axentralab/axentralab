@@ -1,1 +1,156 @@
 
+<div align="center">
+
+```
+ █████╗ ██╗  ██╗███████╗███╗   ██╗████████╗██████╗  █████╗ ██╗      █████╗ ██████╗ 
+██╔══██╗╚██╗██╔╝██╔════╝████╗  ██║╚══██╔══╝██╔══██╗██╔══██╗██║     ██╔══██╗██╔══██╗
+███████║ ╚███╔╝ █████╗  ██╔██╗ ██║   ██║   ██████╔╝███████║██║     ███████║██████╔╝
+██╔══██║ ██╔██╗ ██╔══╝  ██║╚██╗██║   ██║   ██╔══██╗██╔══██║██║     ██╔══██║██╔══██╗
+██║  ██║██╔╝ ██╗███████╗██║ ╚████║   ██║   ██║  ██║██║  ██║███████╗██║  ██║██████╔╝
+╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
+```
+
+### ⚡ Building the Future, One Commit at a Time ⚡
+
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Full+Stack+Developer+%F0%9F%9A%80;Open+Source+Enthusiast+%F0%9F%8C%9F;Problem+Solver+%F0%9F%A7%A0;Always+Learning+%F0%9F%93%9A)](https://git.io/typing-svg)
+
+<br/>
+
+![Profile Views](https://komarev.com/ghpvc/?username=axentralab&color=00d9ff&style=flat-square&label=PROFILE+VIEWS)
+[![GitHub followers](https://img.shields.io/github/followers/axentralab?label=Followers&style=flat-square&color=00d9ff)](https://github.com/axentralab?tab=followers)
+[![GitHub stars](https://img.shields.io/github/stars/axentralab?label=Stars&style=flat-square&color=00d9ff)](https://github.com/axentralab)
+
+</div>
+
+---
+
+## 🧬 About Me
+
+```yaml
+name: Axentralab
+location: 🌍 Earth
+current_focus: Building awesome open source tools
+interests:
+  - 🔭 Exploring new technologies
+  - 🤖 AI & Machine Learning
+  - 🛠️  Developer Tools
+  - 🌐 Web & System Architecture
+philosophy: "Code is poetry. Make it beautiful."
+available_for: Collaboration, Open Source, Freelance
+```
+
+---
+
+## 🛠️ Tech Arsenal
+
+<div align="center">
+
+**Languages**
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
+
+**Frontend**
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+**Backend & Cloud**
+
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+</div>
+
+---
+
+## 📊 GitHub Stats
+
+<div align="center">
+
+<img height="180em" src="https://github-readme-stats.vercel.app/api?username=axentralab&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true&bg_color=0d1117&title_color=00d9ff&icon_color=00d9ff"/>
+<img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=axentralab&layout=compact&langs_count=8&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=00d9ff"/>
+
+</div>
+
+<div align="center">
+
+[![GitHub Streak](https://streak-stats.demolab.com/?user=axentralab&theme=tokyonight&hide_border=true&background=0d1117&ring=00d9ff&fire=ff6b6b&currStreakLabel=00d9ff)](https://git.io/streak-stats)
+
+</div>
+
+---
+
+## 🏆 Achievements
+
+<div align="center">
+
+[![trophy](https://github-profile-trophy.vercel.app/?username=axentralab&theme=tokyonight&no-frame=true&no-bg=true&column=7&margin-w=10)](https://github.com/ryo-ma/github-profile-trophy)
+
+</div>
+
+---
+
+## 📈 Contribution Graph
+
+<div align="center">
+
+[![Axentralab's github activity graph](https://github-readme-activity-graph.vercel.app/graph?username=axentralab&bg_color=0d1117&color=00d9ff&line=00d9ff&point=ffffff&area=true&hide_border=true)](https://github.com/ashutosh00710/github-readme-activity-graph)
+
+</div>
+
+---
+
+## 🚀 Featured Projects
+
+<div align="center">
+
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=axentralab&repo=YOUR_REPO_1&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=00d9ff)](https://github.com/axentralab)
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=axentralab&repo=YOUR_REPO_2&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=00d9ff)](https://github.com/axentralab)
+
+</div>
+
+---
+
+## 🌐 Connect With Me
+
+<div align="center">
+
+[![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=About.me&logoColor=white)](https://axentralab.com)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/axentralab)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/axentralab)
+[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/axentralab)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:hello@axentralab.com)
+
+</div>
+
+---
+
+<div align="center">
+
+### 💡 Random Dev Quote
+
+![Quote](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
+
+<br/>
+
+```
+╔══════════════════════════════════════════╗
+║   Thanks for visiting! Drop a ⭐ if      ║
+║   you find my work useful!  🙏           ║
+╚══════════════════════════════════════════╝
+```
+
+**"The best way to predict the future is to build it."**
+
+![Wave](https://raw.githubusercontent.com/mayhemantt/mayhemantt/Update/svg/Bottom.svg)
+
+</div>
