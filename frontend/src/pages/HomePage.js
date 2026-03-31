@@ -4,10 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: 150, suffix: '+', label: 'Projects Delivered', color: '#22C55E' },
-  { value: 80,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
-  { value: 99,  suffix: '%', label: 'Uptime SLA',         color: '#A855F7' },
-  { value: 30,  suffix: '+', label: 'Days Avg Delivery',  color: '#F59E0B' },
+  { value: 15,  suffix: '+', label: 'Projects Completed', color: '#22C55E' },
+  { value: 10,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
+  { value: 5,   suffix: '+', label: 'Ongoing Projects',   color: '#A855F7' },
+  { value: 8,   suffix: '+', label: 'Team Members',       color: '#F59E0B' },
 ];
 
 // Terminal lines shown in the floating code widget
@@ -430,59 +430,63 @@ function FreeAITool() {
 // ─── New Section Data ─────────────────────────────────────────────────────────
 
 const TOOLS_GRID = [
-  { icon: '🤖', name: 'AutoFlow AI',  tag: 'Workflow Builder',   desc: 'No-code AI workflow builder — connect apps, trigger on events, automate ops.', features: ['200+ integrations', 'GPT-4 nodes', 'Cron triggers'], price: 0,   tier: 'Free',  color: '#22C55E' },
-  { icon: '📈', name: 'RankRadar',    tag: 'SEO Intelligence',   desc: 'AI-driven SEO auditor that surfaces technical issues and tracks rankings daily.', features: ['Tech audit', 'Rank tracking', 'AI fixes'],       price: 39,  tier: 'Pro',   color: '#22D3EE' },
-  { icon: '📧', name: 'InboxAI',      tag: 'Email Marketing',    desc: 'AI-powered email builder that writes, tests and sends personalised sequences.', features: ['GPT-4 copy', 'A/B tests', 'Send-time AI'],         price: 49,  tier: 'Pro',   color: '#FB7185' },
-  { icon: '🛡️', name: 'WP Shield',    tag: 'WordPress Security', desc: 'Enterprise-grade WP security scanner with real-time threat detection built-in.', features: ['Malware scan', 'Plugin CVEs', 'Auto-fix'],        price: 0,   tier: 'Free',  color: '#EF4444' },
-  { icon: '🤖', name: 'BotShield',    tag: 'Bot Protection',     desc: 'Stop credential stuffing, scraping and fake signups at the edge in real time.', features: ['Fingerprinting', 'CAPTCHA-free', 'Analytics'],     price: 35,  tier: 'Pro',   color: '#F59E0B' },
-  { icon: '🔒', name: 'DataVault',    tag: 'Data Privacy',       desc: 'Auto-discover, classify and protect sensitive data across all your platforms.', features: ['PII detection', 'GDPR map', 'One-click redact'],   price: 0,   tier: 'Free',  color: '#06B6D4' },
+  { icon: '🌐', name: 'Business Website',   tag: 'Web Development',    desc: 'Clean, fast and professional websites for businesses, corporates and startups — responsive and SEO-ready.',       features: ['5+ pages', 'Mobile responsive', 'SEO setup'],      price: 10000, tier: 'From ৳', color: '#22C55E' },
+  { icon: '🛒', name: 'E-commerce Store',   tag: 'Online Shop',        desc: 'Full-featured online stores with product management, cart, checkout and local payment gateway integration.',          features: ['Product filters', 'Cart & checkout', 'Admin panel'], price: 30000, tier: 'From ৳', color: '#3B82F6' },
+  { icon: '⚙️', name: 'Custom Web System',  tag: 'POS / SaaS / Custom',desc: 'Tailor-made web apps — POS systems, courier platforms, SaaS dashboards built for your specific workflow.',          features: ['Custom logic', 'Role-based access', 'Dashboard'],   price: 50000, tier: 'From ৳', color: '#A855F7' },
+  { icon: '🎨', name: 'UI/UX Design',       tag: 'Design',             desc: 'User-centred design for web apps and websites — Figma wireframes, prototypes and production-ready design systems.',  features: ['Figma design', 'Wireframes', 'Prototype'],          price: 8000,  tier: 'From ৳', color: '#F59E0B' },
+  { icon: '🔐', name: 'Security Audit',     tag: 'Cybersecurity',      desc: 'Basic security checks for your website or web app — vulnerability scan, HTTPS setup and hardening recommendations.',  features: ['Vulnerability scan', 'HTTPS setup', 'Report'],      price: 5000,  tier: 'From ৳', color: '#EF4444' },
+  { icon: '📈', name: 'Digital Marketing',  tag: 'Marketing & Sales',  desc: 'Sales funnels, SEO, social media management and lead generation campaigns to grow your online presence.',            features: ['Sales funnel', 'SEO', 'Social media'],              price: 5000,  tier: 'From ৳', color: '#06B6D4' },
 ];
 
 const CORE_SERVICES = [
   {
-    icon: '🤖', title: 'AI Automation', label: 'Save 200+ hrs/month',
-    color: '#22C55E', price: '$2,400',
-    desc: 'Custom AI agents and workflow automation that eliminate manual ops. We build GPT-powered systems that run 24/7 without you.',
-    features: ['GPT-4 decision agents', 'No-code + pro-code hybrid', '200+ app integrations', 'Run history & audit log', 'Slack / webhook triggers', 'Full handoff & documentation'],
+    icon: '🌐', title: 'Website Development', label: 'Business & Corporate',
+    color: '#22C55E', price: '৳10,000+',
+    desc: 'Professional business websites, corporate portals and landing pages — fully responsive, fast-loading and built to convert visitors into clients.',
+    features: ['Business / Corporate sites', 'Responsive mobile design', 'Contact forms & SEO setup', 'Custom branding & color system', 'CMS for easy content update', 'Delivered in 1–3 weeks'],
   },
   {
-    icon: '🚀', title: 'SaaS Development', label: 'Ship in 6–8 weeks',
-    color: '#3B82F6', price: '$8,000',
-    desc: 'Full-stack MERN SaaS platforms — from landing page to payments to dashboard. Built to scale from day one.',
-    features: ['MERN stack architecture', 'Stripe payments + subscriptions', 'Auth, roles & permissions', 'Admin + user dashboards', 'CI/CD pipeline included', 'Post-launch support (30 days)'],
+    icon: '🛒', title: 'E-commerce Development', label: 'Online Store Solutions',
+    color: '#3B82F6', price: '৳30,000+',
+    desc: 'Full-featured online stores built for the Bangladesh market — product management, cart, checkout and payment gateway integration included.',
+    features: ['Product listing & filters', 'Cart & checkout flow', 'Payment gateway setup', 'Order & inventory management', 'Admin dashboard', 'Mobile-first design'],
   },
   {
-    icon: '📊', title: 'Trading Bots', label: 'Algo-ready in 3 weeks',
-    color: '#F59E0B', price: '$3,500',
-    desc: 'Custom algorithmic trading bots for crypto and equities. Backtested strategies, live execution, real-time monitoring.',
-    features: ['Binance, Bybit, Alpaca APIs', 'Custom strategy logic', 'Backtesting framework', 'Risk management rules', 'Live P&L dashboard', 'Telegram / Discord alerts'],
+    icon: '⚙️', title: 'Custom Web Systems', label: 'POS / Courier / SaaS',
+    color: '#A855F7', price: '৳50,000+',
+    desc: 'Tailor-made web applications for your business — POS systems, courier management platforms, SaaS dashboards and custom admin panels.',
+    features: ['Custom business logic', 'Role-based access control', 'Real-time dashboards', 'API integrations', 'Scalable architecture', 'Full source code handoff'],
   },
 ];
 
 const DIGITAL_PRODUCTS = [
   {
-    icon: '⚙️', name: 'AI SaaS Boilerplate', tag: 'Starter Kit',
-    desc: 'Full MERN + Stripe + Auth + AI-ready starter — skip 3 weeks of setup and ship your SaaS today.',
-    includes: ['Auth system', 'Stripe billing', 'GPT-4 ready', 'Dark UI'],
-    price: 149, originalPrice: 299, badge: 'Popular', color: '#22C55E',
+    icon: '🌐', name: 'Business Website Package', tag: 'Website',
+    desc: 'Professional 5-page business website — Home, About, Services, Portfolio and Contact. Responsive, fast and SEO-ready.',
+    includes: ['5 pages', 'Mobile responsive', 'Contact form', 'SEO setup'],
+    price: 15000, originalPrice: 20000, badge: 'Popular', color: '#22C55E',
+    priceUnit: '৳',
   },
   {
-    icon: '📊', name: 'Trading Bot Template', tag: 'Algo Trading',
-    desc: 'Python bot with Binance API, backtesting, stop-loss logic, and a React dashboard. Just plug in your strategy.',
-    includes: ['Binance API', 'Backtester', 'Risk engine', 'React UI'],
-    price: 99, originalPrice: null, badge: 'New', color: '#F59E0B',
+    icon: '🛒', name: 'E-commerce Starter', tag: 'Online Shop',
+    desc: 'Ready-to-launch online store with product listings, cart, checkout and bKash/Nagad payment integration.',
+    includes: ['Product management', 'Cart & checkout', 'Payment gateway', 'Admin panel'],
+    price: 35000, originalPrice: null, badge: 'New', color: '#3B82F6',
+    priceUnit: '৳',
   },
   {
-    icon: '🤖', name: 'GPT Workflow Pack', tag: 'Prompt Engineering',
-    desc: '50 production-ready GPT-4 prompt templates for customer support, content, SEO, and operations teams.',
-    includes: ['50 prompts', 'Notion export', 'Editable JSON', 'Use-case docs'],
-    price: 29, originalPrice: null, badge: null, color: '#A855F7',
+    icon: '⚙️', name: 'POS System', tag: 'Custom System',
+    desc: 'Simple point-of-sale system for retail shops — sales tracking, inventory management and daily reports.',
+    includes: ['Sales dashboard', 'Inventory', 'Reports', 'User roles'],
+    price: 55000, originalPrice: null, badge: null, color: '#A855F7',
+    priceUnit: '৳',
   },
   {
-    icon: '🛡️', name: 'Security Audit Kit', tag: 'Cybersecurity',
-    desc: 'Bash + Python scripts to audit your VPS, WordPress site, and API endpoints — full report template included.',
-    includes: ['30+ scripts', 'Report template', 'Checklist PDF', 'OWASP coverage'],
-    price: 49, originalPrice: 79, badge: null, color: '#EF4444',
+    icon: '🎨', name: 'UI/UX Design Pack', tag: 'Design',
+    desc: 'Complete UI design for your web project — wireframes, full Figma prototype and developer-ready design system.',
+    includes: ['Wireframes', 'Figma design', 'Design system', 'Prototype'],
+    price: 8000, originalPrice: 12000, badge: null, color: '#F59E0B',
+    priceUnit: '৳',
   },
 ];
 
@@ -756,9 +760,9 @@ export default function HomePage() {
       {/* ── TOOLS GRID ───────────────────────────────────────────────────── */}
       <section style={{ padding: '100px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #A855F740', background: '#A855F710', color: '#A855F7', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>SaaS Toolkit</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>6 tools. One platform.</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Production-ready SaaS tools built by Axentralab — use free or unlock pro features instantly.</p>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #A855F740', background: '#A855F710', color: '#A855F7', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>Our Services</span>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>6 services. One agency.</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything your business needs to build, grow and secure its digital presence — all under one roof.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 18, maxWidth: 1100, margin: '0 auto' }}>
           {TOOLS_GRID.map((tool, i) => (
@@ -795,12 +799,12 @@ export default function HomePage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 15, fontWeight: 900, color: tool.color }}>
-                  {tool.price === 0 ? 'Free forever' : `$${tool.price}/mo`}
+                  {tool.tier} {tool.price.toLocaleString()}
                 </span>
                 <button style={{ padding: '7px 16px', borderRadius: 9, background: `${tool.color}18`, border: `1px solid ${tool.color}35`, color: tool.color, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Space Mono',monospace", transition: 'all 0.15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background = `${tool.color}30`; }}
                   onMouseLeave={e => { e.currentTarget.style.background = `${tool.color}18`; }}>
-                  {tool.tier === 'Free' ? 'Try Free →' : 'Get Pro →'}
+                  Get Quote →
                 </button>
               </div>
             </div>
@@ -899,8 +903,8 @@ export default function HomePage() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                     <div>
-                      {p.originalPrice && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through', fontFamily: "'Space Mono',monospace" }}>${p.originalPrice}</div>}
-                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: p.color }}>${p.price}</div>
+                      {p.originalPrice && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through', fontFamily: "'Space Mono',monospace" }}>{p.priceUnit || '$'}{p.originalPrice.toLocaleString()}</div>}
+                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: p.color }}>{p.priceUnit || '$'}{p.price.toLocaleString()}</div>
                     </div>
                     <button style={{ padding: '9px 16px', borderRadius: 10, background: p.color, color: ['#22C55E','#F59E0B','#22D3EE'].includes(p.color) ? '#000' : '#fff', border: 'none', fontSize: 12, fontWeight: 800, fontFamily: "'Sora',sans-serif", cursor: 'pointer', transition: 'opacity 0.15s', whiteSpace: 'nowrap' }}
                       onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
@@ -929,11 +933,10 @@ export default function HomePage() {
           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px,5vw,56px)', fontWeight: 900, color: '#fff', margin: '18px auto 16px', letterSpacing: -1.5, lineHeight: 1.08 }}>
             Ready to build<br /><span style={{ color: '#22C55E' }}>your next project?</span>
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 20, lineHeight: 1.7 }}>Tell us what you're building — we'll respond within 24 hours with a tailored proposal.</p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 12, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.07)', marginBottom: 28 }}>
-            <span style={{ fontSize: 14 }}>🎁</span>
-            <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, color: '#FCD34D', fontWeight: 700 }}>New clients get 50% off their first project</span>
-            <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(253,230,138,0.55)' }}>· Code: FIRST50</span>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 20, lineHeight: 1.7 }}>Tell us what you need — we'll respond within 24 hours with a clear proposal and honest pricing.</p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 12, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 28 }}>
+            <span style={{ fontSize: 14 }}>📍</span>
+            <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, color: '#86EFAC', fontWeight: 700 }}>Based in Dhaka, Bangladesh · Serving local & remote clients</span>
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 12, textDecoration: 'none' }}>

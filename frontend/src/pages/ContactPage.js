@@ -9,8 +9,8 @@ const BUDGETS  = ['Under $5k','$5k – $15k','$15k – $50k','$50k+','Let\'s dis
 const TRUST_POINTS = [
   { icon:'⚡', label:'24hr Response',   sub:'Guaranteed reply within one business day' },
   { icon:'🔒', label:'NDA on Request',  sub:'Your project details stay strictly private' },
-  { icon:'🌍', label:'Global Clients',  sub:'Teams across 30+ countries, 24/7 coverage' },
-  { icon:'💯', label:'98% Retention',   sub:'Clients come back — and bring friends' },
+  { icon:'🌍', label:'Local + Remote',  sub:'Based in Dhaka, serving clients worldwide' },
+  { icon:'💯', label:'Results-Driven',  sub:'We focus on delivery, not just promises' },
 ];
 
 export default function ContactPage() {
@@ -197,9 +197,9 @@ export default function ContactPage() {
               {/* Contact details */}
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {[
-                  { icon:'📧', label:'Email', val:'axentralab@gmail.com', color:'#22C55E' },
-                  { icon:'💬', label:'Facebook', val:'@Axentralab', color:'#3B82F6' },
-                  { icon:'🌍', label:'Timezone', val:'Worldwide · 24/7', color:'#A855F7' },
+                  { icon:'📧', label:'Email',    val:'axentralab@gmail.com',       color:'#22C55E' },
+                  { icon:'📞', label:'Phone',    val:'01322695162 / 01329478744',   color:'#3B82F6' },
+                  { icon:'📍', label:'Location', val:'Dhaka, Bangladesh',           color:'#A855F7' },
                 ].map((c,i) => (
                   <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, transition:'all 0.2s', cursor:'default' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor=`${c.color}30`; e.currentTarget.style.background='rgba(255,255,255,0.035)'; }}
