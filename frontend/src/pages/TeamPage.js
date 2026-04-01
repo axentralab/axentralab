@@ -83,6 +83,26 @@ const TEAM = [
     social:   { linkedin: 'https://linkedin.com' },
     badge:    null,
   },
+    {
+    name:     'Asadujjaman Atik',
+    role:     'Full-Stack Web Developer',
+    bio:      'Full-time developer focused on e-commerce and business web solutions. Delivers production-ready projects with attention to detail.',
+    photo:    '/images/team/atik.jpg',
+    color:    '#1678f9',
+    skills:   ['React', 'Node.js', 'E-commerce', 'MongoDB'],
+    social:   { linkedin: 'https://linkedin.com' },
+    badge:    null,
+  },
+    {
+    name:     'Majharul Islam Sourabh',
+    role:     'Full-Stack Web Developer',
+    bio:      'Full-time developer specialising in custom web applications including POS systems, courier platforms and SaaS products.',
+    photo:    '/images/team/sourabh.jpg',
+    color:    '#a9f916',
+    skills:   ['React', 'Node.js', 'MongoDB', 'PostgreSQL'],
+    social:   { linkedin: 'https://linkedin.com' },
+    badge:    null,
+  },
 ];
 
 const STATS = [
