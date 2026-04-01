@@ -49,22 +49,18 @@ const PROJECTS = [
     featured: true,
     isDemo: true,
   },
-  {
-    id: "d3",
-    title: "Video Agency",
-    tag: "SaaS / Agency / POS",
-    category: "Demo",
-    color: "#22C55E",
-    year: "2025",
-    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775049937/demo-video-agency_t5w0yu.png",
-    desc: "Demo for a video production agency — client portal, project management dashboard, sales analytics and inventory management system in one platform.",
-    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
-    results: [
-      "Client portal with project updates",
-      "Project management dashboard",
-      "Sales analytics with charts",
-    ],
-    liveUrl: "https://vagencys.vercel.app/",
+   {
+    id: 'd3', 
+    title: 'FoodExpress — Food Delivery',
+    tag: 'E-Commerce / Delivery',
+    category: 'Demo',
+    color: '#E21B70', 
+    year: '2026',
+    thumbnail: 'https://res.cloudinary.com/dnc1uozna/image/upload/v1775070146/food_xpress_banner_rh24wx.png', 
+    desc: 'A premium, high-performance food delivery platform featuring a dynamic restaurant explorer, real-time filtering, and a seamless menu experience.',
+    stack: ['Next.js 14', 'React', 'Tailwind CSS', 'Framer Motion', 'TypeScript'],
+    results: ['Advanced search & filtering', 'Premium UI/UX micro-interactions', 'Fully responsive design'],
+    liveUrl: 'https://food-xpress-gules.vercel.app', 
     featured: true,
     isDemo: true,
   },
@@ -131,7 +127,27 @@ const PROJECTS = [
     liveUrl: "https://wp-shield-pi.vercel.app/",
     featured: false,
     isDemo: true,
-  }
+  },
+   {
+    id: "d8",
+    title: "Video Agency",
+    tag: "SaaS / Agency / POS",
+    category: "Demo",
+    color: "#22C55E",
+    year: "2025",
+    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775049937/demo-video-agency_t5w0yu.png",
+    desc: "Demo for a video production agency — client portal, project management dashboard, sales analytics and inventory management system in one platform.",
+    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
+    results: [
+      "Client portal with project updates",
+      "Project management dashboard",
+      "Sales analytics with charts",
+    ],
+    liveUrl: "https://vagencys.vercel.app/",
+    featured: true,
+    isDemo: true,
+  },
+
 ];
 
 // ── Constants ──────────────────────────────────────────────────────────────────
