@@ -1,504 +1,603 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
-const PRIMARY  = '#6366F1';
-const ACCENT   = '#8B5CF6';
-const PRIMARY2 = '#A78BFA';
-const WISH_KEY = 'axentralab_wishlist';
+// ─── Design tokens (mirrors site palette) ────────────────────────────────────
+const GREEN  = '#22C55E';
+const BLUE   = '#3B82F6';
+const PURPLE = '#A855F7';
+const AMBER  = '#F59E0B';
+const CYAN   = '#06B6D4';
 
-const FALLBACK = [
-  { _id:'1', title:'Web Development', icon:'🌐', color:'#3B82F6', description:'Business websites, landing pages, web apps, and SaaS platforms built with React, Next.js & Node.js.', features:['React / Next.js','Node.js & Express','MongoDB','REST API','Tailwind CSS'], subServices:['Business / Corporate Website','Landing Page Design','Portfolio Website','Web Application','SaaS Platform','MERN Stack Development','API Development & Integration'], plans:[{ name:'Landing Page', price:250, billing:'one-time', bdt:'৳25,000', features:['Responsive design','Up to 5 sections','Basic SEO','1 month support','Source code included'] },{ name:'Business Site', price:600, billing:'one-time', bdt:'৳60,000', features:['Multi-page site','Contact form','SEO ready','CMS integration','3 months support'] },{ name:'Custom Web App', price:3000, billing:'one-time', bdt:'৳3,00,000', features:['Full MERN stack','Auth system','Dashboard','REST API','6 months support','Dedicated PM'] }] },
-  { _id:'2', title:'E-Commerce', icon:'🛒', color:'#F97316', description:'Online stores with Shopify, WooCommerce, or fully custom — including payment gateways and subscriptions.', features:['Shopify / WooCommerce','Custom store','Payment gateway','Subscription system','Product management'], subServices:['Shopify Store Development','WooCommerce Store Development','Custom E-commerce Website','Payment Gateway Integration','Subscription / Membership System'], plans:[{ name:'Shopify Starter', price:300, billing:'one-time', bdt:'৳30,000', features:['Up to 50 products','Payment gateway','Responsive','Basic SEO','2 weeks delivery'] },{ name:'WooCommerce Pro', price:500, billing:'one-time', bdt:'৳50,000', features:['Unlimited products','Custom theme','Payment + shipping','Coupons & offers','2 months support'] },{ name:'Custom Store', price:2500, billing:'one-time', bdt:'৳2,50,000', features:['Fully custom build','Subscription billing','Admin panel','Analytics','6 months support','Dedicated PM'] }] },
-  { _id:'3', title:'Cybersecurity', icon:'🛡️', color:'#EF4444', description:'Security audits, malware removal, penetration testing, and server hardening for web apps and servers.', features:['Security audit','Malware removal','Penetration testing','Server hardening','24/7 monitoring'], subServices:['Website Security Audit','Malware Removal','WordPress Security Hardening','Vulnerability Scanning','Penetration Testing (Web Apps)','Server Security Hardening','Incident Response'], plans:[{ name:'Basic Audit', price:80, billing:'one-time', bdt:'৳8,000', features:['Surface vulnerability scan','Written report','Fix recommendations','PDF delivery'] },{ name:'Full Pentest', price:800, billing:'one-time', bdt:'৳80,000', features:['Deep penetration test','OWASP Top 10 coverage','Exploit PoC','Detailed report','Fix support'] },{ name:'Security Monitor', price:99, billing:'monthly', bdt:'৳10,000/mo', features:['24/7 monitoring','Instant breach alerts','Monthly security report','Incident response','Server hardening check'] }] },
-  { _id:'4', title:'Website Optimization', icon:'⚡', color:'#F59E0B', description:'Speed up slow websites, fix Core Web Vitals, optimize databases, and set up CDN for peak performance.', features:['Speed optimization','Core Web Vitals','DB optimization','Image & asset opt','CDN setup'], subServices:['Website Speed Optimization','Core Web Vitals Optimization','Database Optimization','Image & Asset Optimization','CDN Setup','Performance Audit'], plans:[{ name:'Speed Fix', price:50, billing:'one-time', bdt:'৳5,000', features:['Image compression','Caching setup','Basic JS/CSS minify','Performance report'] },{ name:'Advanced Boost', price:200, billing:'one-time', bdt:'৳20,000', features:['Core Web Vitals fix','DB query optimization','CDN integration','Lazy loading','Before/after report'] },{ name:'Full Audit+Fix', price:300, billing:'one-time', bdt:'৳30,000', features:['Full performance audit','All above fixes','Server-side optimizations','3-month monitoring','Written SLA'] }] },
-  { _id:'5', title:'Hosting & DevOps', icon:'☁️', color:'#8B5CF6', description:'VPS setup, cloud deployment on AWS/DigitalOcean, CI/CD pipelines, Docker, and disaster recovery.', features:['VPS setup','AWS / Vercel / DO','CI/CD pipeline','Docker deployment','Backup & recovery'], subServices:['VPS Setup & Management','Cloud Deployment (AWS / Vercel / DigitalOcean)','CI/CD Pipeline Setup','Docker Deployment','Server Monitoring','Backup & Disaster Recovery'], plans:[{ name:'VPS Setup', price:120, billing:'one-time', bdt:'৳12,000', features:['Server provisioning','Nginx / Apache config','SSL setup','Basic monitoring','Docs handover'] },{ name:'Full DevOps', price:250, billing:'one-time', bdt:'৳25,000', features:['Cloud deployment','CI/CD pipeline','Docker + K8s','Auto-scaling','Runbooks'] },{ name:'Managed Server', price:150, billing:'monthly', bdt:'৳15,000/mo', features:['24/7 monitoring','Auto backups','Incident response','Security patches','Monthly report'] }] },
-  { _id:'6', title:'SaaS & Custom Software', icon:'📦', color:'#22C55E', description:'End-to-end SaaS product development — CRM dashboards, fintech tools, admin panels, and business automation.', features:['SaaS product dev','CRM / Fintech dashboard','Analytics panel','Admin tools','Multi-tenant'], subServices:['SaaS Product Development','CRM Dashboard','Fintech Dashboard','Analytics Dashboard','Admin Panels','Internal Business Tools'], plans:[{ name:'MVP', price:1500, billing:'one-time', bdt:'৳1,50,000', features:['Core features','Auth & billing','Basic analytics','3 months support','Source code'] },{ name:'Full SaaS', price:8000, billing:'one-time', bdt:'৳8,00,000', features:['All features','Multi-tenant','Admin dashboard','Advanced analytics','6 months support','Dedicated PM'] }] },
-  { _id:'7', title:'UI/UX Design', icon:'🎨', color:'#EC4899', description:'Beautiful, conversion-focused UI designs for websites, SaaS dashboards, and mobile apps using Figma.', features:['Website UI','Mobile app UI','SaaS dashboard UI','Wireframe & prototype','Design system'], subServices:['Website UI Design','Mobile App UI','SaaS Dashboard UI','Wireframe & Prototype','Design System'], plans:[{ name:'Landing Page UI', price:120, billing:'one-time', bdt:'৳12,000', features:['1-page design','Desktop + mobile','Figma source file','2 revision rounds','3-day delivery'] },{ name:'Website UI', price:400, billing:'one-time', bdt:'৳40,000', features:['Up to 8 pages','Component library','Figma + handoff','3 revision rounds','1 week delivery'] },{ name:'SaaS Dashboard', price:600, billing:'one-time', bdt:'৳60,000', features:['Full dashboard UI','Design system','Interactive prototype','Unlimited revisions','Dev handoff notes'] }] },
-  { _id:'8', title:'Maintenance & Support', icon:'🛠️', color:'#06B6D4', description:'Ongoing website maintenance, bug fixing, security monitoring, and performance upkeep after launch.', features:['Bug fixing','Security monitoring','Performance check','Content updates','Monthly reports'], subServices:['Website Maintenance','Security Monitoring','Bug Fixing','Performance Monitoring','Monthly Support Plans'], plans:[{ name:'Basic', price:30, billing:'monthly', bdt:'৳3,000/mo', features:['Monthly backup','Bug fixes (2hrs)','Uptime monitoring','Email support'] },{ name:'Standard', price:60, billing:'monthly', bdt:'৳6,000/mo', features:['Weekly backup','Bug fixes (5hrs)','Security scan','Performance check','Priority support'] },{ name:'Premium', price:120, billing:'monthly', bdt:'৳12,000/mo', features:['Daily backup','Unlimited bug fixes','24/7 monitoring','Monthly report','Dedicated engineer','SLA guarantee'] }] },
+// ─── Service Packs ────────────────────────────────────────────────────────────
+const PACKS = [
+  {
+    id: 'startup',
+    badge: 'Entry Point',
+    label: 'Startup Pack',
+    tagline: 'Perfect for new businesses & MVPs',
+    price: '৳20,000',
+    priceMax: '৳50,000',
+    delivery: '7–10 days',
+    support: '1 month post-launch',
+    pages: '1–3 responsive pages',
+    tech: 'WordPress / HTML + CSS',
+    color: GREEN,
+    icon: '🚀',
+    features: [
+      'Mobile-friendly responsive design',
+      'Basic on-page SEO setup',
+      'Contact form integration',
+      'Social media links & icons',
+      'Clean, professional UI',
+      'Hosting setup guidance',
+    ],
+    addons: ['Extra page +৳5,000', 'Logo design +৳8,000', 'Domain setup +৳2,000'],
+    popular: false,
+  },
+  {
+    id: 'sme',
+    badge: 'Most Popular',
+    label: 'SME Pack',
+    tagline: 'For growing businesses & brands',
+    price: '৳50,000',
+    priceMax: '৳1,50,000',
+    delivery: '10–20 days',
+    support: '3 months post-launch',
+    pages: '4–10 pages + blog',
+    tech: 'WordPress + custom JS / Next.js',
+    color: BLUE,
+    icon: '⚡',
+    features: [
+      'Custom design & UI/UX system',
+      'Full on-page SEO optimization',
+      'Core Web Vitals & PageSpeed tuning',
+      'Blog / news integration',
+      'Email subscription & newsletter setup',
+      'Basic analytics & tracking setup',
+      'Advanced custom JS features',
+    ],
+    addons: ['eCommerce +৳30,000', 'CRM integration +৳20,000', 'Maintenance contract'],
+    popular: true,
+  },
+  {
+    id: 'enterprise',
+    badge: 'Full Power',
+    label: 'Enterprise Pack',
+    tagline: 'Custom platforms, SaaS & dashboards',
+    price: '৳1,50,000',
+    priceMax: null,
+    delivery: '20+ days',
+    support: '6 months + optional contract',
+    pages: 'Unlimited / custom scope',
+    tech: 'React / Next.js + Node.js / WordPress',
+    color: PURPLE,
+    icon: '🛡️',
+    features: [
+      'Custom eCommerce / POS system',
+      'Admin dashboards & analytics',
+      'Advanced UI/UX with animations',
+      'Full SEO + performance optimization',
+      'Payment gateway integrations',
+      'API, CRM & third-party integrations',
+      'Reporting & data dashboards',
+      'Ongoing maintenance contract option',
+    ],
+    addons: ['Mobile app (React Native)', 'AI feature integrations', 'White-label solution'],
+    popular: false,
+  },
 ];
 
-const FAQS = [
-  { q:'Do I need to pay upfront?',         a:'For one-time projects we take 50% upfront and 50% on delivery. Monthly plans are billed at the start of each billing cycle.' },
-  { q:'Can I mix services in one order?',   a:'Yes — add multiple services and plans to your cart and check out together. We\'ll coordinate all deliverables under one PM.' },
-  { q:'What if I\'m not satisfied?',        a:'We offer a free revision round on every deliverable. If we miss the agreed scope, we\'ll refund the relevant milestone.' },
-  { q:'How fast do you start?',             a:'Most services kick off within 24 hours of payment. Enterprise projects get a scoping call booked the same day.' },
-  { q:'Do you sign NDAs?',                  a:'Always. An NDA is included in every contract by default at no extra cost.' },
-  { q:'Can I upgrade my plan later?',       a:'Yes. You pay only the difference when upgrading. Downgrades take effect at the next billing cycle.' },
+// ─── Case Studies ─────────────────────────────────────────────────────────────
+const CASES = [
+  {
+    name: 'FoodExpress POS',
+    client: 'Local Restaurant Chain · Dhaka',
+    challenge: 'Slow legacy POS, manual inventory tracking, zero online ordering capability.',
+    solution: 'Built a Next.js admin dashboard with real-time inventory, integrated online ordering, and automated reporting.',
+    metrics: [
+      { label: 'Page load', before: '5.2s', after: '1.4s', icon: '⚡' },
+      { label: 'Order processing', delta: '↓ 50%', icon: '📦' },
+      { label: 'Monthly active users', delta: '↑ 200%', icon: '👥' },
+    ],
+    stack: ['Next.js', 'React', 'PostgreSQL', 'TailwindCSS', 'Stripe'],
+    demo: 'foodexpress.vercel.app',
+    color: GREEN,
+    icon: '🍔',
+    pack: 'Enterprise Pack',
+  },
+  {
+    name: 'LexFirm BD',
+    client: 'Law Firm · Chittagong',
+    challenge: 'No web presence, clients contacting via WhatsApp only, no appointment system.',
+    solution: 'Delivered a polished WordPress site with custom booking integration, blog, and SEO-optimized service pages.',
+    metrics: [
+      { label: 'Organic traffic', delta: '↑ 320%', icon: '🔍' },
+      { label: 'Inquiries / month', delta: '↑ 8×', icon: '📩' },
+      { label: 'PageSpeed score', before: '42', after: '94', icon: '🚀' },
+    ],
+    stack: ['WordPress', 'Custom CSS', 'Yoast SEO', 'Calendly API'],
+    demo: 'lexfirmbd.com',
+    color: BLUE,
+    icon: '⚖️',
+    pack: 'SME Pack',
+  },
+  {
+    name: 'CryptoWatch Pro',
+    client: 'FinTech Startup · Remote',
+    challenge: 'Needed a real-time crypto analytics dashboard with portfolio tracking and alert system.',
+    solution: 'Built a full-stack SaaS dashboard using React + Node.js with WebSocket live data, custom charting, and a Stripe subscription model.',
+    metrics: [
+      { label: 'Real-time latency', before: '3s polling', after: '<80ms WS', icon: '⚡' },
+      { label: 'Paying subscribers', delta: '↑ 150% (3mo)', icon: '💳' },
+      { label: 'Uptime', delta: '99.9%', icon: '🛡️' },
+    ],
+    stack: ['React', 'Node.js', 'WebSocket', 'CoinGecko API', 'Stripe', 'MongoDB'],
+    demo: 'cryptowatch.vercel.app',
+    color: PURPLE,
+    icon: '📈',
+    pack: 'Enterprise Pack',
+  },
 ];
 
-const COMPARE_ROWS = [
-  { label:'Source code included',  vals:[true,true,true,true,true,true,true,true] },
-  { label:'Dedicated PM',          vals:[false,false,false,false,false,true,false,false] },
-  { label:'Monthly retainer opt',  vals:[false,false,true,false,true,false,false,true] },
-  { label:'SLA guarantee',         vals:[false,false,true,false,true,false,false,true] },
-  { label:'NDA included',          vals:[true,true,true,true,true,true,true,true] },
-  { label:'Post-delivery support', vals:[true,true,true,true,true,true,true,true] },
-  { label:'Design (Figma) files',  vals:[false,false,false,false,false,false,true,false] },
-  { label:'24/7 monitoring',       vals:[false,false,true,false,true,false,false,true] },
+// ─── Portfolio items ──────────────────────────────────────────────────────────
+const PORTFOLIO = [
+  { name: 'AgroTech BD', cat: 'Startup', icon: '🌾', color: GREEN,  tech: 'WordPress', desc: 'Agricultural marketplace for rural Bangladesh farmers.' },
+  { name: 'MediConnect',  cat: 'SME',     icon: '🏥', color: BLUE,   tech: 'Next.js',   desc: 'Doctor appointment booking platform with telemedicine.' },
+  { name: 'EduFlow LMS',  cat: 'Enterprise', icon: '📚', color: PURPLE, tech: 'React + Node.js', desc: 'Full learning management system with live classes.' },
+  { name: 'ShopNow BD',   cat: 'SME',     icon: '🛍️', color: AMBER,  tech: 'WooCommerce', desc: 'Multi-vendor eCommerce for Dhaka boutiques.' },
+  { name: 'TradeBot AI',  cat: 'Enterprise', icon: '🤖', color: CYAN,   tech: 'React + Python', desc: 'Automated crypto trading bot with analytics dashboard.' },
+  { name: 'BeautyHub',    cat: 'Startup', icon: '💄', color: '#EC4899', tech: 'WordPress', desc: 'Booking & portfolio site for a beauty salon chain.' },
 ];
 
-const HOW_IT_WORKS = [
-  { n:'01', icon:'🛒', title:'Add to Cart',      desc:'Pick any plan. Mix services. One unified checkout — our PM coordinates everything.' },
-  { n:'02', icon:'📋', title:'Scope & Sign',      desc:'Detailed scope doc + NDA within 2 hours. E-sign in one click. No back-and-forth.' },
-  { n:'03', icon:'⚙️', title:'Build & Review',    desc:'Weekly sprint demos with staging access. You give feedback; we iterate.' },
-  { n:'04', icon:'🚀', title:'Launch & Handover', desc:'Full docs, repo transfer, and optional retainer. You own everything — forever.' },
-];
-
-const STACK_BADGES = ['React','Next.js','Node.js','MongoDB','Express','Tailwind','Shopify','WooCommerce','Docker','AWS','DigitalOcean','Vercel','Figma','Adobe XD','Burp Suite','OWASP','Nginx','PostgreSQL','Redis','CI/CD'];
-
-export default function ShopPage() {
-  const [services, setServices]   = useState(FALLBACK);
-  const [selected, setSelected]   = useState('1');
-  const [billing, setBilling]     = useState('all');
-  const [openFaq, setOpenFaq]     = useState(null);
-  const [cartAnim, setCartAnim]   = useState(null);
-  const [showWishlist, setShowWishlist] = useState(false);
-  const [wishlist, setWishlist]   = useState(() => {
-    try { return JSON.parse(localStorage.getItem(WISH_KEY) || '[]'); }
-    catch { return []; }
-  });
-  const { addToCart, cart } = useCart();
-  const { isAuthenticated } = useAuth();
-  const navigate            = useNavigate();
-
+// ─── Small hooks / utils ──────────────────────────────────────────────────────
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    localStorage.setItem(WISH_KEY, JSON.stringify(wishlist));
-  }, [wishlist]);
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold });
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
 
-  useEffect(() => {
-    api.get('/services')
-      .then(r => { if (r.data.data?.length) setServices(r.data.data); })
-      .catch(() => {});
-  }, []);
+function Glow({ x, y, color = GREEN, size = 500 }) {
+  return (
+    <div style={{
+      position: 'absolute', left: x, top: y,
+      width: size, height: size,
+      background: `radial-gradient(circle,${color}12 0%,transparent 70%)`,
+      borderRadius: '50%', pointerEvents: 'none',
+      transform: 'translate(-50%,-50%)', filter: 'blur(40px)',
+    }} />
+  );
+}
 
-  const isInCart    = (sid, plan)  => cart.some(i => i.serviceId === sid && i.plan === plan);
-  const isWished    = (sid)        => wishlist.includes(sid);
-  const toggleWish  = (e, sid)     => { e.stopPropagation(); setWishlist(prev => prev.includes(sid) ? prev.filter(x => x !== sid) : [...prev, sid]); };
+function SectionLabel({ color, children }) {
+  return (
+    <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: `1px solid ${color}40`, background: `${color}10`, color, fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>
+      {children}
+    </span>
+  );
+}
 
-  const handleBuy = (service, plan) => {
-    if (!isAuthenticated) { navigate('/register'); return; }
-    addToCart(service, plan);
-    setCartAnim(service._id + plan.name);
-    setTimeout(() => setCartAnim(null), 900);
-    navigate('/cart');
-  };
+// ─── Pack Card ────────────────────────────────────────────────────────────────
+function PackCard({ pack, idx }) {
+  const [ref, visible] = useInView();
+  const [expanded, setExpanded] = useState(false);
 
-  const displayedServices = showWishlist ? services.filter(s => wishlist.includes(s._id)) : services;
-  const activeService     = services.find(s => s._id === selected) || services[0];
-  const filteredPlans     = billing === 'all' ? activeService?.plans : activeService?.plans?.filter(p => p.billing === billing);
-  const cartTotal         = cart.reduce((a, i) => a + (i.price || 0), 0);
+  return (
+    <div ref={ref} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'none' : 'translateY(28px)',
+      transition: `opacity 0.55s ${idx * 0.12}s, transform 0.55s ${idx * 0.12}s`,
+      position: 'relative',
+      background: pack.popular
+        ? `linear-gradient(160deg, rgba(59,130,246,0.08), rgba(168,85,247,0.05))`
+        : 'rgba(255,255,255,0.025)',
+      border: pack.popular
+        ? `1px solid ${pack.color}35`
+        : '1px solid rgba(255,255,255,0.07)',
+      borderRadius: 22,
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'border-color 0.25s, box-shadow 0.25s, transform 0.25s',
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.borderColor = `${pack.color}45`;
+      e.currentTarget.style.boxShadow   = `0 16px 50px ${pack.color}14`;
+      e.currentTarget.style.transform   = 'translateY(-5px)';
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.borderColor = pack.popular ? `${pack.color}35` : 'rgba(255,255,255,0.07)';
+      e.currentTarget.style.boxShadow   = 'none';
+      e.currentTarget.style.transform   = 'none';
+    }}>
+
+      {/* top gradient bar */}
+      <div style={{ height: 4, background: `linear-gradient(90deg,${pack.color},transparent)` }} />
+
+      {/* popular badge */}
+      {pack.popular && (
+        <div style={{ position: 'absolute', top: 20, right: 20, padding: '3px 11px', borderRadius: 999, background: `${pack.color}20`, border: `1px solid ${pack.color}40`, color: pack.color, fontSize: 10, fontFamily: "'Space Mono',monospace", fontWeight: 700, letterSpacing: 0.5 }}>
+          🔥 Most Popular
+        </div>
+      )}
+
+      <div style={{ padding: '28px 28px 0' }}>
+        {/* icon + label */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 16, background: `${pack.color}15`, border: `1px solid ${pack.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flexShrink: 0 }}>{pack.icon}</div>
+          <div>
+            <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: pack.color, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 3 }}>{pack.badge}</div>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{pack.label}</div>
+          </div>
+        </div>
+
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 22, lineHeight: 1.65 }}>{pack.tagline}</p>
+
+        {/* price */}
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>Starting at</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 32, fontWeight: 900, color: pack.color, letterSpacing: -1 }}>{pack.price}</span>
+            {pack.priceMax && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace" }}>– {pack.priceMax}</span>}
+            {!pack.priceMax && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace" }}>+</span>}
+          </div>
+        </div>
+
+        {/* meta chips */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+          {[
+            { icon: '📄', text: pack.pages },
+            { icon: '⚙️', text: pack.tech },
+            { icon: '📅', text: pack.delivery },
+            { icon: '🛠️', text: pack.support },
+          ].map((m, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace" }}>
+              {m.icon} {m.text}
+            </span>
+          ))}
+        </div>
+
+        {/* features */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 18px', display: 'flex', flexDirection: 'column', gap: 9 }}>
+          {pack.features.map((f, fi) => (
+            <li key={fi} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, fontSize: 13, color: 'rgba(255,255,255,0.62)', lineHeight: 1.5 }}>
+              <span style={{ width: 18, height: 18, borderRadius: '50%', background: `${pack.color}18`, border: `1px solid ${pack.color}38`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: pack.color, flexShrink: 0, marginTop: 1 }}>✓</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        {/* add-ons toggle */}
+        <button onClick={() => setExpanded(e => !e)} style={{ background: 'none', border: 'none', color: `${pack.color}99`, fontSize: 11, fontFamily: "'Space Mono',monospace", cursor: 'pointer', padding: '0 0 18px', letterSpacing: 0.3 }}>
+          {expanded ? '▲ Hide add-ons' : '▼ View optional add-ons'}
+        </button>
+
+        {expanded && (
+          <div style={{ padding: '14px 16px', background: `${pack.color}06`, border: `1px solid ${pack.color}18`, borderRadius: 12, marginBottom: 18 }}>
+            {pack.addons.map((a, i) => (
+              <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', padding: '4px 0', fontFamily: "'Space Mono',monospace", borderBottom: i < pack.addons.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                + {a}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* CTA */}
+      <div style={{ marginTop: 'auto', padding: '0 28px 28px' }}>
+        <Link to="/contact" style={{
+          display: 'block', textAlign: 'center',
+          padding: '13px 24px', borderRadius: 12,
+          background: pack.popular ? `linear-gradient(135deg,${pack.color},${PURPLE})` : `${pack.color}18`,
+          border: pack.popular ? 'none' : `1px solid ${pack.color}35`,
+          color: pack.popular ? '#fff' : pack.color,
+          fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14,
+          textDecoration: 'none',
+          boxShadow: pack.popular ? `0 4px 20px ${pack.color}35` : 'none',
+          transition: 'filter 0.18s, transform 0.18s',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+        onMouseLeave={e => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'none'; }}>
+          Get Started →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ─── Case Study Card ──────────────────────────────────────────────────────────
+function CaseCard({ c, idx }) {
+  const [ref, visible] = useInView();
+
+  return (
+    <div ref={ref} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'none' : 'translateY(28px)',
+      transition: `opacity 0.55s ${idx * 0.14}s, transform 0.55s ${idx * 0.14}s`,
+      background: 'rgba(255,255,255,0.025)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      borderRadius: 22,
+      overflow: 'hidden',
+    }}>
+      {/* top accent bar */}
+      <div style={{ height: 3, background: `linear-gradient(90deg,${c.color},transparent)` }} />
+
+      <div style={{ padding: 28 }}>
+        {/* header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18, gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: `${c.color}15`, border: `1px solid ${c.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>{c.icon}</div>
+            <div>
+              <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 17, color: '#fff', letterSpacing: -0.3 }}>{c.name}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", marginTop: 2 }}>{c.client}</div>
+            </div>
+          </div>
+          <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 999, background: `${c.color}12`, border: `1px solid ${c.color}30`, color: c.color, fontFamily: "'Space Mono',monospace", fontWeight: 600, flexShrink: 0, letterSpacing: 0.3 }}>{c.pack}</span>
+        </div>
+
+        {/* challenge + solution */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 22 }}>
+          <div style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)' }}>
+            <div style={{ fontSize: 10, color: '#EF4444', fontFamily: "'Space Mono',monospace", fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>🔴 Challenge</div>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>{c.challenge}</p>
+          </div>
+          <div style={{ padding: '12px 14px', borderRadius: 12, background: `${c.color}06`, border: `1px solid ${c.color}18` }}>
+            <div style={{ fontSize: 10, color: c.color, fontFamily: "'Space Mono',monospace", fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>✅ Solution</div>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>{c.solution}</p>
+          </div>
+        </div>
+
+        {/* metrics */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+          {c.metrics.map((m, i) => (
+            <div key={i} style={{ flex: '1 1 auto', minWidth: 90, padding: '12px 14px', background: `${c.color}08`, border: `1px solid ${c.color}18`, borderRadius: 12, textAlign: 'center' }}>
+              <div style={{ fontSize: 18, marginBottom: 4 }}>{m.icon}</div>
+              <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 13, color: c.color, marginBottom: 2 }}>
+                {m.delta ? m.delta : `${m.before} → ${m.after}`}
+              </div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace" }}>{m.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* stack */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+          {c.stack.map((s, i) => (
+            <span key={i} style={{ fontSize: 10, padding: '3px 9px', borderRadius: 6, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', fontFamily: "'Space Mono',monospace" }}>{s}</span>
+          ))}
+        </div>
+
+        {/* demo link */}
+        <a href={`https://${c.demo}`} target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: 12, color: c.color, fontFamily: "'Space Mono',monospace", textDecoration: 'none', fontWeight: 600, opacity: 0.75, transition: 'opacity 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.75'}>
+          🔗 {c.demo} →
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function ServicesPage() {
+  const [activeTab, setActiveTab] = useState('pricing');
+  const [portfolioCat, setPortfolioCat] = useState('All');
+  const [heroRef, heroVisible] = useInView(0.05);
+
+  const filteredPortfolio = portfolioCat === 'All'
+    ? PORTFOLIO
+    : PORTFOLIO.filter(p => p.cat === portfolioCat);
+
+  const CATS_PORT = ['All', 'Startup', 'SME', 'Enterprise'];
 
   return (
     <>
       <style>{`
-        @keyframes popIn   { 0%{transform:scale(0.9);opacity:0} 60%{transform:scale(1.03)} 100%{transform:scale(1);opacity:1} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
-        @keyframes ticker  { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @keyframes pulseDot { 0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0.4)} 50%{box-shadow:0 0 0 7px rgba(99,102,241,0)} }
-        @keyframes glowFloat { 0%,100%{opacity:0.4} 50%{opacity:0.75} }
-        @keyframes spin { to{transform:rotate(360deg)} }
+        @keyframes glowFloat { 0%,100%{opacity:0.45;transform:scale(1)} 50%{opacity:0.8;transform:scale(1.06)} }
+        @keyframes fadeUp    { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+        @keyframes shimmer   { from{background-position:200% 0} to{background-position:-200% 0} }
 
-        .srv-pill:hover  { opacity:1 !important; background: rgba(255,255,255,0.07) !important; }
-        .plan-card { transition: transform 0.22s ease, box-shadow 0.22s ease; }
-        .plan-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important; }
-        .how-card { transition: all 0.22s; }
-        .how-card:hover { border-color: rgba(99,102,241,0.3) !important; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(99,102,241,0.1); }
-        .faq-row { cursor: pointer; transition: all 0.17s; }
-        .faq-row:hover { background: rgba(255,255,255,0.04) !important; }
-        .wish-btn { transition: all 0.18s; cursor: pointer; border: none; }
-        .wish-btn:hover { transform: scale(1.15); }
-        .cta-btn { transition: all 0.17s; cursor: pointer; }
-        .cta-btn:hover { transform: translateY(-2px); }
+        .services-tab {
+          padding: 9px 20px;
+          border-radius: 999px;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          letter-spacing: 0.3px;
+          border: 1px solid transparent;
+        }
+        .services-tab.active  { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); color: #fff; }
+        .services-tab.inactive{ background: transparent; border-color: rgba(255,255,255,0.07); color: rgba(255,255,255,0.38); }
+        .services-tab.inactive:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.65); }
 
-        .hero-grid   { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; margin-bottom:88px; }
-        .browse-hdr  { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
-        .svc-hdr     { display:flex; align-items:flex-start; gap:18px; }
-        .cta-section { padding:60px 44px; }
-        .cart-sticky { position:sticky; top:96px; }
-        .stat-pills  { display:flex; gap:10px; flex-wrap:wrap; }
-        .pill-scroll { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
-        .billing-bar { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:4px; }
+        .port-item {
+          transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
+          cursor: default;
+        }
+        .port-item:hover {
+          transform: translateY(-4px);
+        }
 
         @media (max-width: 900px) {
-          .hero-grid { grid-template-columns:1fr !important; gap:32px !important; margin-bottom:56px !important; }
-          .cart-sticky { position:static !important; top:unset !important; }
+          .packs-grid { grid-template-columns: 1fr !important; }
+          .cases-grid { grid-template-columns: 1fr !important; }
+          .case-split  { grid-template-columns: 1fr !important; }
         }
-        @media (max-width: 640px) {
-          .hero-grid    { margin-bottom:40px !important; }
-          .cta-section  { padding:36px 22px !important; }
-          .svc-hdr      { flex-wrap:wrap !important; }
-          .browse-hdr   { flex-direction:column !important; align-items:flex-start !important; }
-          .billing-bar  { width:100%; justify-content:space-between; }
-          .billing-bar button { flex:1; }
-          .stat-pills   { gap:8px; }
-          .stat-pills > div { flex:1 1 calc(50% - 8px); min-width:80px; }
-          .pill-scroll  { overflow-x:auto; flex-wrap:nowrap !important; padding-bottom:6px; }
-          .pill-scroll::-webkit-scrollbar { display:none; }
-        }
-        @media (max-width: 420px) {
-          .cta-btns { flex-direction:column !important; }
-          .cta-btns button { width:100% !important; }
-          .trust-pills { flex-direction:column !important; }
-          .banner-inner { flex-direction:column !important; gap:8px !important; text-align:center; }
+        @media (max-width: 600px) {
+          .port-grid { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
 
-      <div style={{ minHeight:'100vh', background:'#06080F', color:'#fff', paddingTop:82, position:'relative', overflow:'hidden' }}>
-        {/* BG glows */}
-        <div style={{ position:'fixed', top:'15%', left:'-5%', width:550, height:550, borderRadius:'50%', background:'radial-gradient(circle,rgba(99,102,241,0.1),transparent 70%)', pointerEvents:'none', zIndex:0, animation:'glowFloat 7s ease-in-out infinite' }} />
-        <div style={{ position:'fixed', bottom:'10%', right:'-5%', width:450, height:450, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.08),transparent 70%)', pointerEvents:'none', zIndex:0 }} />
+      <div style={{ padding: '100px 5% 80px', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Ticker */}
-        <div style={{ overflow:'hidden', borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'1px solid rgba(255,255,255,0.05)', padding:'9px 0', marginBottom:'clamp(32px,5vw,64px)', position:'relative', zIndex:1 }}>
-          <div style={{ display:'flex', animation:'ticker 30s linear infinite', width:'max-content' }}>
-            {[...STACK_BADGES,...STACK_BADGES].map((b,i) => (
-              <span key={i} style={{ padding:'0 24px', fontSize:11, color:'rgba(255,255,255,0.15)', fontFamily:"'Space Mono',monospace", whiteSpace:'nowrap' }}>
-                {b} <span style={{ color:'rgba(255,255,255,0.06)' }}>·</span>
-              </span>
+        {/* Background glows */}
+        <div style={{ position: 'fixed', top: '15%', left: '-8%', width: 600, height: 600, borderRadius: '50%', background: `radial-gradient(circle,${GREEN}10,transparent 68%)`, pointerEvents: 'none', animation: 'glowFloat 7s ease-in-out infinite', zIndex: 0 }} />
+        <div style={{ position: 'fixed', bottom: '20%', right: '-8%', width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle,${BLUE}09,transparent 68%)`, pointerEvents: 'none', zIndex: 0 }} />
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+
+          {/* ── HERO ────────────────────────────────────────────────────────── */}
+          <div ref={heroRef} style={{
+            textAlign: 'center', marginBottom: 56,
+            opacity: heroVisible ? 1 : 0,
+            transform: heroVisible ? 'none' : 'translateY(24px)',
+            transition: 'opacity 0.6s, transform 0.6s',
+          }}>
+            <SectionLabel color={GREEN}>Services & Pricing</SectionLabel>
+            <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,6vw,64px)', fontWeight: 900, color: '#fff', marginTop: 18, letterSpacing: -2, lineHeight: 1.05, marginBottom: 16 }}>
+              Transparent pricing.<br />
+              <span style={{ color: GREEN }}>Real results.</span>
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
+              From startup landing pages to full-stack SaaS platforms — fixed-price packages with no hidden fees. Based in Dhaka, serving clients worldwide.
+            </p>
+
+            {/* trust chips */}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+              {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request', '✓ BDT & USD accepted'].map((t, i) => (
+                <span key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", padding: '4px 12px', borderRadius: 999, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* ── TAB NAV ─────────────────────────────────────────────────────── */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 52 }}>
+            {[
+              { id: 'pricing',   label: '💰 Pricing Packages' },
+              { id: 'portfolio', label: '🖼️ Portfolio' },
+              { id: 'cases',     label: '📊 Case Studies' },
+            ].map(t => (
+              <button key={t.id} onClick={() => setActiveTab(t.id)}
+                className={`services-tab ${activeTab === t.id ? 'active' : 'inactive'}`}>
+                {t.label}
+              </button>
             ))}
           </div>
-        </div>
 
-        <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 clamp(16px,5%,5%)', position:'relative', zIndex:1 }}>
-
-          {/* Hero */}
-          <div className="hero-grid">
-            <div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:6, background:`${PRIMARY}10`, border:`1px solid ${PRIMARY}30`, marginBottom:22 }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:PRIMARY, display:'inline-block', animation:'pulseDot 2s infinite' }} />
-                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:PRIMARY2, letterSpacing:1.5, textTransform:'uppercase' }}>Live Pricing</span>
+          {/* ── PRICING TAB ─────────────────────────────────────────────────── */}
+          {activeTab === 'pricing' && (
+            <>
+              <div className="packs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 22, maxWidth: 1140, margin: '0 auto 48px' }}>
+                {PACKS.map((pack, i) => <PackCard key={pack.id} pack={pack} idx={i} />)}
               </div>
 
-              <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(34px,5vw,64px)', fontWeight:900, lineHeight:1.02, letterSpacing:-2.5, color:'#fff', margin:'0 0 18px' }}>
-                Services &<br />
-                <span style={{ color:'transparent', WebkitTextStroke:'1.5px rgba(255,255,255,0.2)' }}>Transparent</span><br />
-                <span style={{ background:`linear-gradient(135deg,${PRIMARY},${ACCENT})`, WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Pricing.</span>
-              </h1>
-              <p style={{ fontSize:15, color:'rgba(255,255,255,0.35)', lineHeight:1.8, maxWidth:420, margin:'0 0 32px' }}>
-                No discovery fees. No hidden costs. Pick a plan, add to cart, and we kick off within 24 hours.
-              </p>
-
-              {/* Wishlist toggle */}
-              <div style={{ display:'flex', gap:8, marginBottom:20 }}>
-                <button onClick={() => setShowWishlist(false)}
-                  style={{ padding:'7px 16px', borderRadius:999, fontSize:12, fontWeight:700, fontFamily:"'Space Mono',monospace", cursor:'pointer', background:!showWishlist ? `${PRIMARY}18` : 'rgba(255,255,255,0.04)', border:!showWishlist ? `1px solid ${PRIMARY}40` : '1px solid rgba(255,255,255,0.08)', color:!showWishlist ? PRIMARY2 : 'rgba(255,255,255,0.4)', transition:'all 0.18s' }}>
-                  All Services
-                </button>
-                <button onClick={() => setShowWishlist(true)}
-                  style={{ padding:'7px 16px', borderRadius:999, fontSize:12, fontWeight:700, fontFamily:"'Space Mono',monospace", cursor:'pointer', background:showWishlist ? `${ACCENT}18` : 'rgba(255,255,255,0.04)', border:showWishlist ? `1px solid ${ACCENT}40` : '1px solid rgba(255,255,255,0.08)', color:showWishlist ? PRIMARY2 : 'rgba(255,255,255,0.4)', transition:'all 0.18s', display:'flex', alignItems:'center', gap:6 }}>
-                  ❤️ Wishlist
-                  {wishlist.length > 0 && <span style={{ background:ACCENT, color:'#fff', borderRadius:999, fontSize:9, fontWeight:900, padding:'1px 6px', minWidth:18, textAlign:'center' }}>{wishlist.length}</span>}
-                </button>
-              </div>
-
-              <div className="stat-pills">
-                {[['120+','Projects'],['98%','Retention'],['24hr','Kickoff'],['4.9★','Rating']].map(([v,l],i) => (
-                  <div key={i} style={{ padding:'10px 16px', background:'rgba(255,255,255,0.03)', border:`1px solid ${PRIMARY}15`, borderRadius:10 }}>
-                    <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:900, color:'#fff', letterSpacing:-0.5 }}>{v}</div>
-                    <div style={{ fontSize:10, color:'rgba(255,255,255,0.25)', marginTop:2, fontFamily:"'Space Mono',monospace" }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Cart preview */}
-            <div style={{ background:'rgba(255,255,255,0.025)', border:`1px solid ${PRIMARY}20`, borderRadius:20, overflow:'hidden' }}>
-              <div style={{ height:3, background:`linear-gradient(90deg,${PRIMARY},${ACCENT})` }} />
-              <div style={{ padding:'16px 22px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, color:'#fff' }}>🛒 Your Cart</span>
-                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.2)', letterSpacing:1 }}>{cart.length} ITEM{cart.length!==1?'S':''}</span>
-              </div>
-              <div style={{ padding:'16px 22px' }}>
-                {cart.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'24px 0', color:'rgba(255,255,255,0.2)', fontSize:13, lineHeight:2 }}>
-                    <div style={{ fontSize:28, marginBottom:8, opacity:0.4 }}>🛒</div>
-                    Cart is empty.<br />Pick a plan below.
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
-                      {cart.slice(0,4).map((item,i) => (
-                        <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-                          <div>
-                            <div style={{ fontSize:13, color:'rgba(255,255,255,0.7)', fontWeight:700 }}>{item.serviceTitle}</div>
-                            <div style={{ fontSize:10, color:'rgba(255,255,255,0.25)', marginTop:1, fontFamily:"'Space Mono',monospace" }}>{item.plan}</div>
-                          </div>
-                          <div style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:900, color:PRIMARY2 }}>${item.price?.toLocaleString()}</div>
-                        </div>
-                      ))}
-                      {cart.length > 4 && <div style={{ fontSize:11, color:'rgba(255,255,255,0.2)', textAlign:'center' }}>+{cart.length-4} more</div>}
-                    </div>
-                    <div style={{ display:'flex', justifyContent:'space-between', paddingTop:12, borderTop:'1px solid rgba(255,255,255,0.07)', marginBottom:8 }}>
-                      <span style={{ fontSize:12, color:'rgba(255,255,255,0.35)' }}>Total</span>
-                      <span style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, background:`linear-gradient(135deg,${PRIMARY2},${ACCENT})`, WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>${cartTotal.toLocaleString()}</span>
-                    </div>
-                    <button onClick={() => navigate('/cart')}
-                      style={{ width:'100%', padding:'12px', background:`linear-gradient(135deg,${PRIMARY},${ACCENT})`, color:'#fff', border:'none', borderRadius:11, fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, cursor:'pointer', letterSpacing:-0.3, transition:'all 0.17s', boxShadow:`0 4px 16px ${PRIMARY}40` }}
-                      onMouseEnter={e => e.currentTarget.style.transform='translateY(-1px)'}
-                      onMouseLeave={e => e.currentTarget.style.transform='none'}>
-                      Checkout →
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Browse Services */}
-          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
-            <div className="browse-hdr">
-              <div>
-                <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:900, color:'#fff', letterSpacing:-0.5, margin:'0 0 4px' }}>
-                  {showWishlist ? '❤️ Your Wishlist' : 'Browse Services'}
-                </h2>
-                {showWishlist && wishlist.length === 0 && (
-                  <p style={{ fontSize:12, color:'rgba(255,255,255,0.35)', fontFamily:"'Space Mono',monospace" }}>Click ❤️ on any service to add to wishlist</p>
-                )}
-              </div>
-              <div className="billing-bar">
-                {[['all','All'],['one-time','One-time'],['monthly','Monthly']].map(([val,label]) => (
-                  <button key={val} onClick={() => setBilling(val)}
-                    style={{ padding:'6px 14px', borderRadius:7, border:'none', background: billing===val ? `${PRIMARY}25` : 'transparent', color: billing===val ? PRIMARY2 : 'rgba(255,255,255,0.3)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:12, cursor:'pointer', transition:'all 0.15s' }}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Service pills */}
-            <div className="pill-scroll">
-              {displayedServices.map(s => (
-                <button key={s._id} className="srv-pill" onClick={() => { setSelected(s._id); if(showWishlist) setShowWishlist(false); }}
-                  style={{ display:'flex', alignItems:'center', gap:9, padding:'10px 18px', borderRadius:12, border: selected===s._id ? `1px solid ${s.color}55` : `1px solid rgba(255,255,255,0.07)`, background: selected===s._id ? `${s.color}10` : 'rgba(255,255,255,0.025)', cursor:'pointer', transition:'all 0.17s', opacity: selected===s._id ? 1 : 0.65, position:'relative' }}>
-                  <span style={{ fontSize:17 }}>{s.icon}</span>
-                  <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:13, color: selected===s._id ? '#fff' : 'rgba(255,255,255,0.6)' }}>{s.title}</span>
-                  <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.25)', fontWeight:700 }}>
-                    from ${Math.min(...s.plans.map(p=>p.price)).toLocaleString()}
-                  </span>
-                  {/* Wishlist heart on pill */}
-                  <button className="wish-btn" onClick={e => toggleWish(e, s._id)}
-                    style={{ marginLeft:2, fontSize:12, background:'none', padding:2, color: isWished(s._id) ? '#EF4444' : 'rgba(255,255,255,0.25)', lineHeight:1 }}
-                    title={isWished(s._id) ? 'Remove from wishlist' : 'Add to wishlist'}>
-                    {isWished(s._id) ? '❤️' : '🤍'}
-                  </button>
-                </button>
-              ))}
-            </div>
-
-            {/* Active service */}
-            {activeService && !showWishlist && (
-              <div key={selected} style={{ animation:'slideUp 0.22s ease' }}>
-                <div className="svc-hdr" style={{ padding:'22px 26px', background:`linear-gradient(120deg,${activeService.color}08,rgba(255,255,255,0.02))`, border:`1px solid ${activeService.color}20`, borderRadius:18, marginBottom:22, overflow:'hidden', position:'relative' }}>
-                  <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,${activeService.color},${ACCENT},transparent)` }} />
-                  <div style={{ width:54, height:54, borderRadius:15, background:`${activeService.color}14`, border:`1px solid ${activeService.color}28`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{activeService.icon}</div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', marginBottom:5 }}>
-                      <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:900, color:'#fff', letterSpacing:-0.4, margin:0 }}>{activeService.title}</h2>
-                      <span style={{ padding:'2px 9px', borderRadius:6, background:`${activeService.color}12`, color:activeService.color, fontSize:9, fontFamily:"'Space Mono',monospace", letterSpacing:0.5 }}>{activeService.plans?.length} plans</span>
-                      {/* Wishlist button */}
-                      <button className="wish-btn" onClick={e => toggleWish(e, activeService._id)}
-                        style={{ display:'flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:999, background: isWished(activeService._id) ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)', border:`1px solid ${isWished(activeService._id) ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)'}`, color: isWished(activeService._id) ? '#EF4444' : 'rgba(255,255,255,0.4)', fontSize:11, fontFamily:"'Space Mono',monospace", fontWeight:600 }}>
-                        <span>{isWished(activeService._id) ? '❤️' : '🤍'}</span>
-                        <span>{isWished(activeService._id) ? 'Wishlisted' : 'Add to Wishlist'}</span>
-                      </button>
-                    </div>
-                    <p style={{ fontSize:13, color:'rgba(255,255,255,0.38)', margin:'0 0 12px', lineHeight:1.6 }}>{activeService.description}</p>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: activeService.subServices ? 12 : 0 }}>
-                      {(activeService.features||[]).map((f,i) => (
-                        <span key={i} style={{ padding:'3px 9px', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:6, fontSize:10, color:'rgba(255,255,255,0.4)', fontFamily:"'Space Mono',monospace" }}>{f}</span>
-                      ))}
-                    </div>
-                    {activeService.subServices && (
-                      <div style={{ marginTop:10, paddingTop:10, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
-                        <div style={{ fontSize:9, fontFamily:"'Space Mono',monospace", color:'rgba(255,255,255,0.18)', letterSpacing:1.5, textTransform:'uppercase', marginBottom:8 }}>Includes</div>
-                        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-                          {activeService.subServices.map((s,i) => (
-                            <span key={i} style={{ padding:'3px 9px', background:`${activeService.color}08`, border:`1px solid ${activeService.color}18`, borderRadius:6, fontSize:11, color:`${activeService.color}bb` }}>{s}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+              {/* comparison callout */}
+              <div style={{ maxWidth: 840, margin: '0 auto', padding: '28px 32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
+                <div>
+                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 16, color: '#fff', marginBottom: 5 }}>Not sure which pack is right for you?</div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0, lineHeight: 1.6 }}>Book a free 30-minute consultation — we'll scope your project and recommend the best fit.</p>
                 </div>
+                <Link to="/contact" style={{ padding: '13px 26px', background: `linear-gradient(135deg,${GREEN},${BLUE})`, color: '#000', borderRadius: 12, fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  Book Free Call →
+                </Link>
+              </div>
 
-                {/* Plan cards */}
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(250px,1fr))', gap:16 }}>
-                  {(filteredPlans||[]).length === 0 ? (
-                    <div style={{ gridColumn:'1/-1', textAlign:'center', padding:'32px', color:'rgba(255,255,255,0.3)', fontSize:14 }}>
-                      No {billing} plans here.{' '}
-                      <button onClick={() => setBilling('all')} style={{ background:'none', border:'none', color:PRIMARY2, cursor:'pointer', fontWeight:800, fontSize:14 }}>Show all →</button>
-                    </div>
-                  ) : (filteredPlans||[]).map((plan, pi) => {
-                    const inCart    = isInCart(activeService._id, plan.name);
-                    const isPopular = pi === 1;
-                    const animating = cartAnim === activeService._id + plan.name;
-                    return (
-                      <div key={plan.name} className="plan-card"
-                        style={{ position:'relative', borderRadius:20, background: isPopular ? `linear-gradient(155deg,${PRIMARY}10,rgba(255,255,255,0.03))` : 'rgba(255,255,255,0.025)', border:`1px solid ${isPopular ? PRIMARY+'40' : 'rgba(255,255,255,0.07)'}`, padding:'24px 22px', animation: animating ? 'popIn 0.45s ease' : 'none' }}>
-
-                        {isPopular && <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${PRIMARY},${ACCENT},transparent)`, borderRadius:'20px 20px 0 0' }} />}
-                        {isPopular && <span style={{ position:'absolute', top:14, left:14, background:`linear-gradient(135deg,${PRIMARY},${ACCENT})`, color:'#fff', fontSize:8, fontWeight:900, padding:'3px 8px', borderRadius:5, fontFamily:"'Space Mono',monospace", letterSpacing:1 }}>★ TOP PICK</span>}
-
-                        <div style={{ marginBottom:18, marginTop:isPopular ? 16 : 0 }}>
-                          <div style={{ fontFamily:"'Sora',sans-serif", fontSize:17, fontWeight:900, color:'#fff', marginBottom:6 }}>{plan.name}</div>
-                          <div style={{ display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                            <span style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:900, background: isPopular ? `linear-gradient(135deg,${PRIMARY},${ACCENT})` : 'none', WebkitBackgroundClip: isPopular ? 'text' : 'unset', WebkitTextFillColor: isPopular ? 'transparent' : activeService.color, backgroundClip: isPopular ? 'text' : 'unset', color: isPopular ? 'transparent' : activeService.color, letterSpacing:-1.5 }}>
-                              ${plan.price.toLocaleString()}
-                            </span>
-                            <span style={{ fontSize:12, color:'rgba(255,255,255,0.25)', marginLeft:2 }}>
-                              {plan.billing==='monthly' ? '/mo' : plan.billing==='yearly' ? '/yr' : ' once'}
-                            </span>
-                          </div>
-                          {plan.bdt && <div style={{ marginTop:4, fontSize:12, color:`${PRIMARY2}`, fontFamily:"'Space Mono',monospace", fontWeight:700, opacity:0.8 }}>≈ {plan.bdt}</div>}
-                          {plan.billing==='monthly' && <div style={{ marginTop:3, fontSize:10, color:'rgba(255,255,255,0.18)', fontFamily:"'Space Mono',monospace" }}>billed monthly · ${(plan.price*12).toLocaleString()}/yr</div>}
-                        </div>
-
-                        <div style={{ height:1, background:`linear-gradient(90deg,${isPopular ? PRIMARY : activeService.color}40,transparent)`, marginBottom:18 }} />
-
-                        <ul style={{ listStyle:'none', padding:0, margin:'0 0 22px', display:'flex', flexDirection:'column', gap:9 }}>
-                          {plan.features.map((f,fi) => (
-                            <li key={fi} style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
-                              <div style={{ width:17, height:17, borderRadius:5, background:`${isPopular ? PRIMARY : activeService.color}15`, border:`1px solid ${isPopular ? PRIMARY : activeService.color}28`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
-                                <span style={{ color:isPopular ? PRIMARY2 : activeService.color, fontSize:9, fontWeight:900 }}>✓</span>
-                              </div>
-                              <span style={{ fontSize:13, color:'rgba(255,255,255,0.52)', lineHeight:1.5 }}>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-
-                        <button onClick={() => handleBuy(activeService, plan)}
-                          style={{ width:'100%', padding:'12px', borderRadius:11, border: inCart ? `1px solid ${PRIMARY}40` : isPopular ? 'none' : '1px solid rgba(255,255,255,0.1)', background: inCart ? `${PRIMARY}12` : isPopular ? `linear-gradient(135deg,${PRIMARY},${ACCENT})` : 'rgba(255,255,255,0.06)', color: inCart ? PRIMARY2 : '#fff', fontFamily:"'Sora',sans-serif", fontWeight:800, fontSize:14, letterSpacing:-0.2, cursor:'pointer', transition:'all 0.17s', display:'flex', alignItems:'center', justifyContent:'center', gap:8, boxShadow: isPopular && !inCart ? `0 4px 16px ${PRIMARY}40` : 'none' }}
-                          onMouseEnter={e => { if(!inCart) e.currentTarget.style.filter='brightness(1.1)'; e.currentTarget.style.transform='translateY(-1px)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.filter='none'; e.currentTarget.style.transform='none'; }}>
-                          {inCart ? `✓ In Cart` : isAuthenticated ? '🏷️ Add to Cart →' : '🏷️ Get Started →'}
-                        </button>
-                      </div>
-                    );
-                  })}
+              {/* add-ons section */}
+              <div style={{ maxWidth: 1140, margin: '48px auto 0' }}>
+                <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                  <SectionLabel color={AMBER}>Add-Ons</SectionLabel>
+                  <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(20px,3vw,32px)', fontWeight: 900, color: '#fff', marginTop: 14, letterSpacing: -0.8 }}>Extend any package</h3>
                 </div>
-              </div>
-            )}
-
-            {/* Wishlist empty state */}
-            {showWishlist && wishlist.length === 0 && (
-              <div style={{ textAlign:'center', padding:'60px 20px' }}>
-                <div style={{ fontSize:48, marginBottom:16 }}>❤️</div>
-                <p style={{ color:'rgba(255,255,255,0.4)', fontSize:15 }}>No wishlisted services yet. Click 🤍 on any service to add it here.</p>
-                <button onClick={() => setShowWishlist(false)} style={{ marginTop:20, padding:'10px 24px', background:`linear-gradient(135deg,${PRIMARY},${ACCENT})`, border:'none', borderRadius:10, color:'#fff', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:14, cursor:'pointer' }}>Browse Services</button>
-              </div>
-            )}
-          </div>
-
-          {/* Compare table */}
-          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
-            <div style={{ textAlign:'center', marginBottom:32 }}>
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase' }}>Feature Matrix</span>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Compare All Services</h2>
-            </div>
-            <div style={{ overflowX:'auto', background:'rgba(255,255,255,0.02)', border:`1px solid ${PRIMARY}15`, borderRadius:18 }}>
-              <table style={{ width:'100%', borderCollapse:'collapse', minWidth:700 }}>
-                <thead>
-                  <tr style={{ borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
-                    <th style={{ padding:'14px 20px', textAlign:'left', fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.2)', letterSpacing:1.5, textTransform:'uppercase', fontWeight:400 }}>Feature</th>
-                    {services.map(s => (
-                      <th key={s._id} style={{ padding:'14px 16px', textAlign:'center', fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:11, color:s.color, letterSpacing:-0.2 }}>
-                        <div style={{ fontSize:16, marginBottom:3 }}>{s.icon}</div>{s.title}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARE_ROWS.map((row,ri) => (
-                    <tr key={ri} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', background: ri%2===0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
-                      <td style={{ padding:'13px 20px', fontSize:13, color:'rgba(255,255,255,0.45)' }}>{row.label}</td>
-                      {row.vals.map((v,vi) => (
-                        <td key={vi} style={{ padding:'13px 16px', textAlign:'center' }}>
-                          {v ? <span style={{ color:PRIMARY2, fontSize:15 }}>✓</span> : <span style={{ color:'rgba(255,255,255,0.1)', fontSize:13 }}>—</span>}
-                        </td>
-                      ))}
-                    </tr>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(230px,1fr))', gap: 14 }}>
+                  {[
+                    { icon: '📄', label: 'Extra Pages', price: '৳5,000 / page', color: GREEN },
+                    { icon: '🎨', label: 'Logo Design', price: '৳8,000', color: CYAN },
+                    { icon: '🛒', label: 'eCommerce Module', price: '৳30,000+', color: BLUE },
+                    { icon: '🔗', label: 'API Integration', price: '৳15,000+', color: PURPLE },
+                    { icon: '🛡️', label: 'Security Hardening', price: '৳12,000', color: AMBER },
+                    { icon: '🔧', label: 'Monthly Maintenance', price: '৳5,000 / mo', color: GREEN },
+                    { icon: '📈', label: 'SEO Retainer', price: '৳8,000 / mo', color: BLUE },
+                    { icon: '📱', label: 'React Native App', price: 'Custom quote', color: PURPLE },
+                  ].map((a, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, transition: 'border-color 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = `${a.color}35`}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'}>
+                      <span style={{ fontSize: 22 }}>{a.icon}</span>
+                      <div>
+                        <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: 700, color: '#fff' }}>{a.label}</div>
+                        <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: a.color, marginTop: 2 }}>{a.price}</div>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* How It Works */}
-          <div style={{ marginBottom:'clamp(48px,7vw,88px)' }}>
-            <div style={{ textAlign:'center', marginBottom:40 }}>
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase' }}>Process</span>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>From Cart to Live in 4 Steps</h2>
-            </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:14 }}>
-              {HOW_IT_WORKS.map((h,i) => (
-                <div key={i} className="how-card" style={{ padding:'28px 22px', background:'rgba(255,255,255,0.025)', border:`1px solid ${PRIMARY}12`, borderRadius:18, position:'relative', overflow:'hidden' }}>
-                  <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,${PRIMARY}${i%2===0?'':'00'},${ACCENT}${i%2===0?'00':''},transparent)`, opacity:0.6 }} />
-                  <div style={{ position:'absolute', top:18, right:18, fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.08)', letterSpacing:1 }}>{h.n}</div>
-                  <div style={{ fontSize:26, marginBottom:14 }}>{h.icon}</div>
-                  <div style={{ fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:900, color:'#fff', marginBottom:8 }}>{h.title}</div>
-                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.35)', lineHeight:1.7 }}>{h.desc}</div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* FAQ */}
-          <div style={{ maxWidth:720, margin:`0 auto clamp(48px,7vw,88px)` }}>
-            <div style={{ textAlign:'center', marginBottom:36 }}>
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase' }}>FAQ</span>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:26, fontWeight:900, color:'#fff', marginTop:10, letterSpacing:-0.5 }}>Common Questions</h2>
-            </div>
-            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-              {FAQS.map((f,i) => (
-                <div key={i} className="faq-row" onClick={() => setOpenFaq(openFaq===i ? null : i)}
-                  style={{ background:'rgba(255,255,255,0.025)', border:`1px solid ${openFaq===i ? PRIMARY+'30' : 'rgba(255,255,255,0.07)'}`, borderRadius:13, overflow:'hidden', transition:'all 0.17s' }}>
-                  <div style={{ padding:'17px 22px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12 }}>
-                    <span style={{ fontFamily:"'Sora',sans-serif", fontSize:14, fontWeight:800, color:'#fff' }}>{f.q}</span>
-                    <span style={{ color: openFaq===i ? PRIMARY2 : 'rgba(255,255,255,0.25)', fontSize:20, flexShrink:0, transition:'transform 0.2s', transform: openFaq===i ? 'rotate(45deg)' : 'none', lineHeight:1 }}>+</span>
-                  </div>
-                  {openFaq===i && (
-                    <div style={{ padding:'0 22px 17px' }}>
-                      <p style={{ fontSize:13, color:'rgba(255,255,255,0.42)', lineHeight:1.8, margin:0 }}>{f.a}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="cta-section" style={{ background:`linear-gradient(135deg,${PRIMARY}08,${ACCENT}06,rgba(255,255,255,0.01))`, border:`1px solid ${PRIMARY}18`, borderRadius:26, textAlign:'center', marginBottom:100, position:'relative', overflow:'hidden' }}>
-            <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${PRIMARY},${ACCENT},transparent)` }} />
-            <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:560, height:300, borderRadius:'50%', background:`radial-gradient(ellipse,${PRIMARY}05 0%,transparent 70%)`, pointerEvents:'none' }} />
-            <div style={{ position:'relative' }}>
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,0.18)', letterSpacing:2, textTransform:'uppercase', display:'block', marginBottom:16 }}>Get Started Today</span>
-              <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,46px)', fontWeight:900, color:'#fff', letterSpacing:-1.5, margin:'0 0 16px', lineHeight:1.05 }}>
-                Stop Planning.<br />
-                <span style={{ background:`linear-gradient(135deg,${PRIMARY},${ACCENT})`, WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Start Building.</span>
-              </h2>
-              <p style={{ color:'rgba(255,255,255,0.32)', fontSize:15, maxWidth:420, margin:'0 auto 34px', lineHeight:1.8 }}>
-                Every plan includes a free kick-off call, a fixed-scope contract, and an NDA. No surprises. Ever.
-              </p>
-              <div className="cta-btns" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:22 }}>
-                <button className="cta-btn" onClick={() => navigate('/contact')}
-                  style={{ padding:'14px 34px', background:'#fff', color:'#000', border:'none', borderRadius:12, fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:15, letterSpacing:-0.3, boxShadow:`0 4px 18px rgba(99,102,241,0.25)` }}>
-                  Book a Free Call →
-                </button>
-                <button className="cta-btn" onClick={() => navigate('/portfolio')}
-                  style={{ padding:'14px 26px', background:`${PRIMARY}12`, color:PRIMARY2, border:`1px solid ${PRIMARY}30`, borderRadius:12, fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:15 }}>
-                  See Our Work
-                </button>
               </div>
-              <div className="trust-pills" style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-                {['✓ No lock-in contracts','✓ NDA included by default','✓ Fixed-price quotes'].map((t,i) => (
-                  <span key={i} style={{ fontSize:11, color:'rgba(255,255,255,0.18)', fontFamily:"'Space Mono',monospace" }}>{t}</span>
+            </>
+          )}
+
+          {/* ── PORTFOLIO TAB ────────────────────────────────────────────────── */}
+          {activeTab === 'portfolio' && (
+            <div style={{ maxWidth: 1140, margin: '0 auto' }}>
+              {/* category filter */}
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 36 }}>
+                {CATS_PORT.map(cat => {
+                  const active = portfolioCat === cat;
+                  return (
+                    <button key={cat} onClick={() => setPortfolioCat(cat)}
+                      style={{ padding: '7px 16px', borderRadius: 999, fontSize: 12, fontWeight: 600, fontFamily: "'Space Mono',monospace", cursor: 'pointer', transition: 'all 0.15s', background: active ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)', border: active ? '1px solid rgba(255,255,255,0.22)' : '1px solid rgba(255,255,255,0.07)', color: active ? '#fff' : 'rgba(255,255,255,0.38)' }}>
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="port-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 18 }}>
+                {filteredPortfolio.map((p, i) => (
+                  <div key={i} className="port-item" style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden', opacity: 1, transition: 'all 0.25s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}35`; e.currentTarget.style.boxShadow = `0 12px 38px ${p.color}12`; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}>
+
+                    {/* thumbnail */}
+                    <div style={{ height: 90, background: `linear-gradient(135deg,${p.color}18,${p.color}06)`, borderBottom: `1px solid ${p.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      <span style={{ fontSize: 40 }}>{p.icon}</span>
+                      <span style={{ position: 'absolute', top: 10, right: 10, fontSize: 10, padding: '2px 9px', borderRadius: 6, background: `${p.color}18`, border: `1px solid ${p.color}30`, color: p.color, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>{p.cat}</span>
+                    </div>
+
+                    <div style={{ padding: '18px 20px 20px' }}>
+                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, color: '#fff', marginBottom: 6, letterSpacing: -0.2 }}>{p.name}</div>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: 14 }}>{p.desc}</p>
+                      <span style={{ fontSize: 10, padding: '3px 9px', borderRadius: 6, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.38)', fontFamily: "'Space Mono',monospace" }}>{p.tech}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
+
+              <div style={{ textAlign: 'center', marginTop: 44, padding: '24px 28px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18 }}>
+                <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, marginBottom: 16, fontFamily: "'Space Mono',monospace" }}>Interested in working together?</p>
+                <Link to="/contact" className="btn-primary" style={{ padding: '12px 28px', background: GREEN, color: '#000', borderRadius: 12, textDecoration: 'none', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14 }}>
+                  Start a Project →
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* ── CASE STUDIES TAB ─────────────────────────────────────────────── */}
+          {activeTab === 'cases' && (
+            <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+              <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, fontFamily: "'Space Mono',monospace" }}>Real projects · measurable impact · honest metrics</p>
+              </div>
+              <div className="cases-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(340px,1fr))', gap: 24 }}>
+                {CASES.map((c, i) => <CaseCard key={i} c={c} idx={i} />)}
+              </div>
+
+              {/* CTA callout */}
+              <div style={{ marginTop: 48, textAlign: 'center', padding: '36px 28px', background: `linear-gradient(135deg,rgba(34,197,94,0.05),rgba(59,130,246,0.05))`, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 }}>
+                <div style={{ fontSize: 36, marginBottom: 14 }}>📋</div>
+                <h3 style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 22, color: '#fff', letterSpacing: -0.5, marginBottom: 10 }}>Want a case study for your project?</h3>
+                <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 400, margin: '0 auto 24px', lineHeight: 1.7 }}>We document results for every enterprise project — you'll have real proof of ROI to share with stakeholders.</p>
+                <Link to="/contact" style={{ padding: '13px 28px', background: `linear-gradient(135deg,${GREEN},${BLUE})`, color: '#000', borderRadius: 12, fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14, textDecoration: 'none' }}>
+                  Discuss Your Project →
+                </Link>
+              </div>
+            </div>
+          )}
 
         </div>
       </div>

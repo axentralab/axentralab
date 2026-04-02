@@ -60,7 +60,7 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <ToastProvider>
-            <div style={{ minHeight: '100vh', background: '#020617', position: 'relative' }}>
+            <div style={{ minHeight: '100vh', background: 'var(--bg)', position: 'relative' }}>
               <div className="grid-bg" />
               <ScrollToTop />
               <AIChatbot />
