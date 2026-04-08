@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Alex Johnson</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">AJ</h1>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#work">Work</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>Hi, I'm Alex Johnson</h2>
+            <p>Full Stack Developer & Designer</p>
+            <p class="subtitle">I create beautiful and functional web experiences</p>
+            <button class="btn btn-primary" onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})">See My Work</button>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a passionate developer with 5+ years of experience in web development. I love building responsive, user-friendly websites and applications using modern technologies.</p>
+                    <p>When I'm not coding, you'll find me exploring new design trends, contributing to open source, or enjoying the outdoors.</p>
+                </div>
+                <div class="about-skills">
+                    <h3>Skills</h3>
+                    <div class="skills-grid">
+                        <span class="skill">React</span>
+                        <span class="skill">JavaScript</span>
+                        <span class="skill">CSS3</span>
+                        <span class="skill">Node.js</span>
+                        <span class="skill">MongoDB</span>
+                        <span class="skill">UI/UX Design</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Section -->
+    <section id="work" class="work">
+        <div class="container">
+            <h2>Featured Work</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📱</div>
+                    <h3>Mobile App Design</h3>
+                    <p>A beautiful mobile app design for a fitness tracking application built with React Native.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">💼</div>
+                    <h3>Corporate Website</h3>
+                    <p>Modern corporate website redesign with improved UX and performance optimization.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">🛍️</div>
+                    <h3>E-Commerce Platform</h3>
+                    <p>Full-featured e-commerce platform with payment integration and inventory management.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">📊</div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Interactive analytics dashboard with real-time data visualization and reporting.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">🎨</div>
+                    <h3>Creative Agency Site</h3>
+                    <p>Creative portfolio website showcasing design work with smooth animations.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">🚀</div>
+                    <h3>SaaS Application</h3>
+                    <p>Cloud-based SaaS application with authentication, subscription management, and more.</p>
+                    <a href="#" class="link">View Project →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Let's Work Together</h2>
+            <p>Have a project in mind? Let's talk!</p>
+            <div class="contact-links">
+                <a href="mailto:alex@example.com" class="contact-link">Email</a>
+                <a href="#" class="contact-link">LinkedIn</a>
+                <a href="#" class="contact-link">GitHub</a>
+                <a href="#" class="contact-link">Twitter</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Alex Johnson. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
