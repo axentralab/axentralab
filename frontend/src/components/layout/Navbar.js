@@ -27,13 +27,14 @@ export default function Navbar() {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const navLinks = [
-    { to: '/services',  label: 'Services' },
-    { to: '/products',  label: 'Products' },
-    { to: '/portfolio', label: 'Portfolio' },
-    { to: '/team',      label: 'Team' },
-    { to: '/blog',      label: 'Blog' },
-    { to: '/contact',   label: 'Contact' },
-    { to: '/quote',     label: '💰 Quote', highlight: true },
+    { to: '/services',     label: 'Services' },
+    { to: '/products',     label: 'Products' },
+    { to: '/portfolio',    label: 'Portfolio' },
+    { to: '/case-studies', label: 'Case Studies' },
+    { to: '/team',         label: 'Team' },
+    { to: '/blog',         label: 'Blog' },
+    { to: '/contact',      label: 'Contact' },
+    { to: '/quote',        label: '💰 Quote', highlight: true },
   ];
 
   const active = (path) =>
