@@ -10,7 +10,7 @@ const STATS = [
   { value: 15,  suffix: '+', label: 'Projects Completed', color: '#22C55E' },
   { value: 10,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
   { value: 5,   suffix: '+', label: 'Ongoing Projects',   color: '#A855F7' },
-  { value: 8,   suffix: '+', label: 'Team Members',       color: '#F59E0B' },
+  { value: 25,   suffix: '+', label: 'Team Members',       color: '#F59E0B' },
 ];
 
 // Terminal lines shown in the floating code widget
