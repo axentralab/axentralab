@@ -3,64 +3,65 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
-// demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
+// Real product links - Replace demo URLs with actual project showcases
 
 const PRODUCTS = [
-  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:19, billing:'monthly', color:'#22C55E', demoUrl:'https://wp-shield-pi.vercel.app/' },
-  { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6', demoUrl:'https://demo.axentralab.com/siteguard' },
-  { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444', demoUrl:'https://demo.axentralab.com/api-scanner' },
-  { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7', demoUrl:'https://demo.axentralab.com/cloudarmor' },
-  { id:'p5', name:'PenBot', tag:'Automated Pentesting', desc:'Simulated attacker that runs automated penetration tests on your web apps continuously, not just once a year.', features:['Continuous attack simulation','OWASP Top 10 coverage','Session & auth bypass tests','Custom scan schedules','Executive + dev reports'], price:89, billing:'monthly', color:'#F97316', demoUrl:'https://demo.axentralab.com/penbot' },
-  { id:'p6', name:'DataVault', tag:'Data Privacy', desc:'Discover, classify, and protect sensitive data across databases, file stores, and SaaS platforms automatically.', features:['PII/PHI auto-discovery','GDPR & CCPA mapping','Data lineage tracking','Breach risk scoring','One-click redaction'], price:59, billing:'monthly', color:'#06B6D4', demoUrl:'https://demo.axentralab.com/datavault' },
-  { id:'p7', name:'PhishNet', tag:'Email Security', desc:'AI-powered phishing detection and email threat intelligence that protects your team inbox before the damage is done.', features:['Real-time phishing detection','Spoofed domain alerts','DMARC/DKIM/SPF analysis','Employee risk scoring','Automated quarantine'], price:29, billing:'monthly', color:'#EC4899', demoUrl:'https://demo.axentralab.com/phishnet' },
-  { id:'p8', name:'LogSentinel', tag:'Log Management', desc:'Centralised log aggregation, anomaly detection, and real-time SIEM-lite alerting for web apps and servers.', features:['Multi-source log ingestion','Anomaly & spike detection','Real-time alert rules','Log retention (90 days)','CSV / JSON export'], price:45, billing:'monthly', color:'#14B8A6', demoUrl:'https://demo.axentralab.com/logsentinel' },
-  { id:'p9', name:'AutoFlow AI', tag:'AI Automation', desc:'No-code AI workflow builder — connect your apps, trigger actions on events, and automate repetitive ops tasks with GPT-4 intelligence.', features:['Drag-and-drop workflow builder','200+ app integrations','GPT-4 decision nodes','Webhook & cron triggers','Run history & audit log'], price:55, billing:'monthly', color:'#8B5CF6', demoUrl:'https://demo.axentralab.com/autoflow' },
-  { id:'p10', name:'BotShield', tag:'Bot Protection', desc:'Distinguish real users from malicious bots in real time. Stop credential stuffing, scraping, and fake signups at the edge.', features:['Behavioural fingerprinting','Credential stuffing defence','Scraper & crawler blocking','CAPTCHA-free challenge mode','Analytics dashboard'], price:35, billing:'monthly', color:'#F59E0B', demoUrl:'https://demo.axentralab.com/botshield' },
-  { id:'p11', name:'RankRadar', tag:'SEO Intelligence', desc:'AI-driven SEO auditor and keyword tracker that surfaces technical issues, monitors rankings, and suggests fixes automatically.', features:['Full technical SEO audit','Daily rank tracking','AI fix suggestions','Competitor gap analysis','Core Web Vitals monitor'], price:39, billing:'monthly', color:'#22D3EE', demoUrl:'https://demo.axentralab.com/rankradar' },
-  { id:'p12', name:'InboxAI', tag:'AI Email Marketing', desc:'AI-powered email campaign builder that writes, tests, and sends personalised sequences — with deliverability monitoring built in.', features:['GPT-4 email copywriter','A/B test automation','Send-time optimisation','Spam score checker','Unsubscribe & bounce mgmt'], price:49, billing:'monthly', color:'#FB7185', demoUrl:'https://demo.axentralab.com/inboxai' },
+  { id:'p1', name:'Custom Web Development', tag:'Web Development', desc:'Full-stack web applications built with React, Node.js, and modern frameworks. From startup MVPs to enterprise platforms.', features:['Responsive design','API development','Database optimization','Performance tuning','Deployment & maintenance'], price:2500, billing:'project', color:'#22C55E', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p2', name:'Cybersecurity Audit', tag:'Security', desc:'Comprehensive penetration testing, vulnerability assessment, and security hardening for your digital infrastructure.', features:['Network penetration testing','Web app security audit','Code review & analysis','Threat modeling','Risk assessment report'], price:3500, billing:'project', color:'#3B82F6', demoUrl:'https://axentralab.com/services' },
+  { id:'p3', name:'AI Integration & Automation', tag:'AI Services', desc:'Intelligent automation solutions using GPT-4, machine learning, and custom AI models for business process optimization.', features:['Custom AI model training','Process automation','Natural language processing','Predictive analytics','Integration with existing systems'], price:4000, billing:'project', color:'#EF4444', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p4', name:'Cloud Infrastructure Setup', tag:'Cloud Services', desc:'Complete cloud migration, infrastructure automation, and DevOps pipeline setup for scalable applications.', features:['AWS/Azure/GCP setup','CI/CD pipeline setup','Container orchestration','Auto-scaling configuration','Cost optimization'], price:3000, billing:'project', color:'#A855F7', demoUrl:'https://axentralab.com/services' },
+  { id:'p5', name:'SaaS Application Development', tag:'SaaS Development', desc:'End-to-end SaaS platform development with multi-tenant architecture, billing integration, and analytics.', features:['Multi-tenant architecture','Payment processing','Analytics dashboard','User management','API documentation'], price:5000, billing:'project', color:'#F97316', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p6', name:'Mobile App Development', tag:'Mobile Apps', desc:'Native and cross-platform mobile applications for iOS and Android with seamless backend integration.', features:['iOS & Android development','Push notifications','Offline functionality','App store deployment','Post-launch support'], price:4500, billing:'project', color:'#06B6D4', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p7', name:'E-commerce Platform', tag:'E-commerce', desc:'Complete e-commerce solutions with inventory management, payment processing, and marketing automation.', features:['Product management system','Inventory tracking','Payment gateway integration','Marketing automation','Analytics & reporting'], price:3800, billing:'project', color:'#EC4899', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p8', name:'Business Intelligence & Analytics', tag:'Analytics', desc:'Custom BI solutions with real-time dashboards, data warehousing, and predictive analytics for data-driven decisions.', features:['Data warehouse setup','Real-time dashboards','Custom reporting','Data visualization','Predictive models'], price:3200, billing:'project', color:'#14B8A6', demoUrl:'https://axentralab.com/services' },
+  { id:'p9', name:'AI Chatbot Development', tag:'AI Services', desc:'Intelligent conversational AI chatbots for customer support, lead generation, and business automation.', features:['Natural language understanding','Multi-language support','Integration with CRM','Sentiment analysis','Analytics dashboard'], price:2800, billing:'project', color:'#8B5CF6', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p10', name:'API Development & Design', tag:'Backend Development', desc:'RESTful and GraphQL API development with solid architecture, documentation, and security best practices.', features:['API design consultation','Rate limiting & security','API documentation','Testing & QA','Version management'], price:2200, billing:'project', color:'#F59E0B', demoUrl:'https://axentralab.com/services' },
+  { id:'p11', name:'SEO & Performance Optimization', tag:'Digital Marketing', desc:'Technical SEO, site optimization, and performance enhancement to boost organic visibility and user experience.', features:['Technical SEO audit','Page speed optimization','Core Web Vitals improvement','Schema markup setup','Competitor analysis'], price:1500, billing:'project', color:'#22D3EE', demoUrl:'https://axentralab.com/portfolio' },
+  { id:'p12', name:'24/7 Technical Support', tag:'Support & Maintenance', desc:'Dedicated technical support team for ongoing maintenance, bug fixes, and feature development of your applications.', features:['Priority issue response','Regular updates & patches','Performance monitoring','Security patches','Feature enhancement'], price:1500, billing:'monthly', color:'#FB7185', demoUrl:'https://axentralab.com/services' },
 ];
 
 const ENTERPRISE_FEATURES = [
-  { icon:'🏗️', title:'Custom Integrations', desc:'SSO, SAML, custom webhooks, and tailored API access for your internal toolchain.' },
-  { icon:'🛡️', title:'Dedicated SOC Analyst', desc:'A real human security expert reviews your findings and advises your team weekly.' },
-  { icon:'📊', title:'Unlimited Seats', desc:'No per-seat pricing. Add your entire engineering and security team at no extra cost.' },
-  { icon:'📝', title:'Compliance Reports', desc:'SOC 2, ISO 27001, PCI-DSS, and HIPAA report generation built right in.' },
-  { icon:'⚡', title:'Priority Response SLA', desc:'Critical findings triaged within 1 hour. P1 incidents have a guaranteed 15-min response.' },
-  { icon:'🔒', title:'Private Deployment', desc:'Deploy Axentralab tools in your own VPC or on-premise environment.' },
+  { icon:'👥', title:'Dedicated Team', desc:'Get a dedicated project team that becomes an extension of your organization for the duration of the engagement.' },
+  { icon:'🔒', title:'Security First', desc:'All projects include security audits, penetration testing, and compliance checks built into the development process.' },
+  { icon:'📊', title:'Custom Analytics', desc:'Real-time dashboards and analytics tailored to your business metrics and KPIs.' },
+  { icon:'⚡', title:'Performance Guaranteed', desc:'SLA-backed uptime guarantees and performance optimization as part of every engagement.' },
+  { icon:'🚀', title:'Rapid Deployment', desc:'Agile methodology with sprints, demos, and continuous feedback to accelerate time to market.' },
+  { icon:'📞', title:'24/7 Support', desc:'Dedicated support team available round-the-clock to ensure your systems run smoothly post-launch.' },
 ];
 
 const TESTIMONIALS = [
-  { name:'Lena Park', role:'CTO, StackFlow Inc.', avatar:'LP', color:'#22C55E', quote:'WP Shield caught a supply-chain malware injection in one of our plugins within 3 minutes of deployment. It literally saved our SaaS business.' },
-  { name:'James Okonkwo', role:'Security Lead, Nexora', avatar:'JO', color:'#3B82F6', quote:"SiteGuard's auto IP-blocking stopped a credential stuffing attack at 2 AM while everyone was asleep. The Slack alert woke me up after the threat was already handled." },
-  { name:'Sofia Reyes', role:'DevOps Engineer, Luminary', avatar:'SR', color:'#A855F7', quote:"CloudArmor found 14 open S3 buckets we didn't even know existed. The CIS benchmark report made our compliance audit a breeze." },
-  { name:'Tobias Brandt', role:'Founder, Codewright', avatar:'TB', color:'#F97316', quote:'PenBot runs continuous pen tests against our staging env on every deploy. Found an auth bypass before it ever hit production. 10/10.' },
-  { name:'Priya Nair', role:'Head of Ops, Finberry', avatar:'PN', color:'#8B5CF6', quote:'AutoFlow AI replaced 3 Zapier workflows and an intern. Runs 200+ automations a day, never misses a beat, and costs 60% less.' },
-  { name:'Marc Dubois', role:'Marketing Lead, Clutch.io', avatar:'MD', color:'#22D3EE', quote:"RankRadar's AI fix suggestions bumped our organic traffic 38% in 6 weeks. The competitor gap report alone was worth every cent." },
+  { name:'Md. Karim', role:'CTO, TechStart Bangladesh', avatar:'MK', color:'#22C55E', quote:'Axentralab delivered our MVP in 6 weeks. The team understood our vision immediately and built a scalable platform that handles 50K+ daily users without breaking a sweat.' },
+  { name:'Sarah Johnson', role:'Founder, Digital Solutions Inc', avatar:'SJ', color:'#3B82F6', quote:'The security audit they conducted uncovered critical vulnerabilities we would have missed. Their recommendations were actionable and their team helped us implement them properly.' },
+  { name:'Raj Patel', role:'Operations Director, GlobalTech', avatar:'RP', color:'#A855F7', quote:'Their AI automation solution cut our manual processes by 70%. What used to take our team 40 hours per week now runs in the background automatically.' },
+  { name:'Emma Wilson', role:'CEO, E-commerce Pro', avatar:'EW', color:'#F97316', quote:'Building our SaaS platform with Axentralab was the best decision we made. They handled everything from architecture to DevOps, and the platform scales beautifully.' },
+  { name:'Arif Ahmed', role:'VP Engineering, StartupHub', avatar:'AA', color:'#8B5CF6', quote:'Outstanding technical team. They completed our cloud migration 2 weeks ahead of schedule and ensured zero downtime during the transition. Highly recommend.' },
+  { name:'Lisa Chen', role:'Marketing Director, Growth Innovations', avatar:'LC', color:'#22D3EE', quote:'The SEO optimization work Axentralab did increased our organic traffic by 250% in 4 months. Their technical expertise and data-driven approach is unmatched.' },
 ];
 
 const FAQS = [
-  { q:'Is there a free trial available?', a:'Yes — every product includes a 14-day free trial with no credit card required. You get full access to all features during the trial period.' },
-  { q:'Can I cancel anytime?', a:'Absolutely. All plans are month-to-month with no lock-in contracts. Cancel from your dashboard with one click and you\'ll never be charged again.' },
-  { q:'Do you offer annual billing discounts?', a:'Yes, switching to annual billing saves you 20% across all plans. You can toggle this on your subscription settings page.' },
-  { q:'Is my data secure with Axentralab?', a:"We're SOC 2 Type II certified and all data is encrypted at rest (AES-256) and in transit (TLS 1.3). We never sell or share your data with third parties." },
-  { q:'Can I use multiple products together?', a:'Yes, and they integrate natively. Add any products to your cart and manage everything from a single unified dashboard.' },
-  { q:'Do you support on-premise deployments?', a:'On-premise and private VPC deployments are available on the Enterprise plan. Contact our sales team for a custom quote.' },
+  { q:'How long does a typical project take?', a:'It depends on scope and complexity. Most projects range from 4-16 weeks. We provide detailed timelines during the discovery phase after understanding your requirements.' },
+  { q:'Do you offer retainer-based support?', a:'Yes, absolutely. After project completion, we offer flexible retainer packages for ongoing support, maintenance, and new feature development.' },
+  { q:'What is your development process?', a:'We use Agile methodology with 2-week sprints, weekly demos, and regular stakeholder reviews. We prioritize communication and transparency throughout the project.' },
+  { q:'Do you work with startups and enterprises?', a:'Yes, we work with everyone from early-stage startups to Fortune 500 companies. We scale our processes to match your organization and budget.' },
+  { q:'What technologies do you specialize in?', a:'We specialize in modern web stack (React, Node.js, Python), cloud platforms (AWS, Azure, GCP), and emerging technologies like AI/ML and blockchain.' },
+  { q:'Can you help migrate legacy systems?', a:'Definitely. We have extensive experience migrating legacy systems to modern architectures with zero or minimal downtime. Includes data migration and integration.' },
 ];
 
 const STATS = [
-  { value:'12M+', label:'Threats Blocked', color:'#22C55E' },
-  { value:'99.98%', label:'Uptime SLA', color:'#3B82F6' },
-  { value:'4,200+', label:'Customers', color:'#A855F7' },
-  { value:'< 3 min', label:'Avg Detection Time', color:'#F97316' },
+  { value:'150+', label:'Projects Delivered', color:'#22C55E' },
+  { value:'98%', label:'Client Satisfaction', color:'#3B82F6' },
+  { value:'50+', label:'Team Members', color:'#A855F7' },
+  { value:'8 yrs', label:'Industry Experience', color:'#F97316' },
 ];
 
-const CATEGORIES = ['All', 'Cybersecurity', 'AI / Automation', 'SEO & Marketing'];
+const CATEGORIES = ['All', 'Web Development', 'Security', 'AI Services', 'Support'];
 
 const getCat = (tag) => {
-  if (['WordPress Security','Monitoring Platform','API Security','Cloud Security','Automated Pentesting','Data Privacy','Email Security','Log Management','Bot Protection'].includes(tag)) return 'Cybersecurity';
-  if (['AI Automation','AI Email Marketing'].includes(tag)) return 'AI / Automation';
-  if (['SEO Intelligence'].includes(tag)) return 'SEO & Marketing';
-  return 'Cybersecurity';
+  if (['Web Development','Web Development','E-commerce','Mobile Apps','SaaS Development'].includes(tag)) return 'Web Development';
+  if (['Security','Cybersecurity'].includes(tag)) return 'Security';
+  if (['AI Services','AI Integration & Automation','AI Services','AI Chatbot Development'].includes(tag)) return 'AI Services';
+  if (['Support & Maintenance'].includes(tag)) return 'Support';
+  return 'Web Development';
 };
 
 export default function ProductsPage() {
@@ -175,9 +176,9 @@ export default function ProductsPage() {
         {/* ── Compare Table ── */}
         <div style={{ maxWidth:1100, margin:'72px auto 0' }}>
           <div style={{ textAlign:'center', marginBottom:32 }}>
-            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Feature Matrix</span>
-            <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Compare All Plans</h2>
-            <p style={{ fontSize:13, color:'rgba(255,255,255,0.3)', marginTop:8 }}>Security products only — scroll horizontally on mobile</p>
+            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #ffffff15', background:'#ffffff08', color:'rgba(255,255,255,0.5)', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>Service Offerings</span>
+            <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>What We Offer</h2>
+            <p style={{ fontSize:13, color:'rgba(255,255,255,0.3)', marginTop:8 }}>Core services and capabilities — scroll horizontally on mobile</p>
           </div>
           <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflow:'auto' }}>
             <div style={{ minWidth:780 }}>
@@ -188,17 +189,17 @@ export default function ProductsPage() {
                 ))}
               </div>
               {[
-                ['Real-time scanning',     true,  true,  true,  true,  true,  true ],
-                ['Auto remediation',       false, true,  false, false, true,  false],
-                ['API endpoint testing',   false, false, true,  false, true,  false],
-                ['Dashboard & reports',    true,  true,  true,  true,  true,  true ],
-                ['Slack / email alerts',   false, true,  true,  true,  true,  true ],
-                ['CI/CD integration',      false, false, true,  false, true,  false],
-                ['Cloud infra scanning',   false, false, false, true,  false, false],
-                ['PII/PHI data discovery', false, false, false, false, false, true ],
-                ['Pen test simulation',    false, false, false, false, true,  false],
-                ['Compliance export',      false, false, false, true,  false, true ],
-                ['White-label option',     false, true,  false, false, false, false],
+                ['Custom Development',     true,  true,  true,  true,  true,  true ],
+                ['Frontend Development',   true,  true,  true,  true,  true,  false],
+                ['Backend Services',       true,  true,  true,  true,  true,  false],
+                ['Security Audit',         true,  true,  true,  true,  true,  true ],
+                ['Testing & QA',           true,  true,  true,  true,  true,  true ],
+                ['CI/CD Setup',            true,  true,  true,  true,  true,  true ],
+                ['Cloud Infrastructure',   false, true,  true,  true,  false, false],
+                ['24/7 Support',           false, false, false, true,  false, true ],
+                ['Post-Launch Maintenance',false, true,  true,  false, true,  false],
+                ['Performance Optimization',true, false, false, true,  false, true ],
+                ['Scalability Consulting',  true, true,  false, false, true,  false],
               ].map(([label, ...vals], i, arr) => (
                 <div key={i} style={{ display:'grid', gridTemplateColumns:'2fr repeat(6,1fr)', padding:'12px 24px', borderBottom:i<arr.length-1?'1px solid rgba(255,255,255,0.04)':'none', background:i%2===0?'transparent':'rgba(255,255,255,0.01)', gap:8, alignItems:'center' }}>
                   <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)' }}>{label}</span>
@@ -218,15 +219,15 @@ export default function ProductsPage() {
             <div style={{ position:'absolute', bottom:-40, left:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', pointerEvents:'none' }} />
             <div className="ent-flex" style={{ display:'flex', flexWrap:'wrap', gap:40, alignItems:'flex-start', position:'relative' }}>
               <div style={{ flex:'1 1 340px' }}>
-                <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #A855F740', background:'#A855F712', color:'#A855F7', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Enterprise</span>
+                <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #A855F740', background:'#A855F712', color:'#A855F7', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Custom Solutions</span>
                 <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(24px,4vw,38px)', fontWeight:900, color:'#fff', margin:'16px 0 14px', letterSpacing:-1 }}>
-                  Built for Teams<br />That Can't Afford<br /><span style={{ color:'#A855F7' }}>to Be Breached</span>
+                  Enterprise Projects<br />That Scale &<br /><span style={{ color:'#A855F7' }}>Perform</span>
                 </h2>
                 <p style={{ color:'rgba(255,255,255,0.5)', fontSize:14, lineHeight:1.8, maxWidth:380, marginBottom:28 }}>
-                  Everything in all plans plus dedicated support, on-premise deployments, unlimited seats, and a named security engineer on your account.
+                  Beyond standard packages — we build custom solutions tailored to your exact needs. Dedicated project teams, flexible timelines, and white-glove support throughout delivery.
                 </p>
                 <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
-                  <button className="btn-primary" style={{ padding:'13px 28px', background:'#A855F7', color:'#fff', fontSize:14, border:'none' }}>Talk to Sales →</button>
+                  <button className="btn-primary" style={{ padding:'13px 28px', background:'#A855F7', color:'#fff', fontSize:14, border:'none' }}>Schedule Consultation →</button>
                   <button className="btn-outline" style={{ padding:'13px 22px', fontSize:14 }}>View Case Studies</button>
                 </div>
               </div>
