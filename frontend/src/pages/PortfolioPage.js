@@ -147,7 +147,44 @@ const PROJECTS = [
     featured: true,
     isDemo: true,
   },
-
+  {
+    id: "d9",
+    title: "Travel Agency",
+    tag: "SaaS / Agency",
+    category: "Live",
+    color: "#22C55E",
+    year: "2025",
+    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775646905/Screenshot_2026-04-08_170919_w8jurr.png",
+    desc: "Live Travel Agency website demo — client portal, booking management system, sales analytics dashboard and inventory management system in one platform.",
+    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
+    results: [
+      "Client portal with booking updates",
+      "Booking management system",
+      "Sales analytics with charts",
+    ],
+    liveUrl: "https://usatravelguru.com/",
+    featured: true,
+    isDemo: true,
+  },
+  {
+    id: "d10",
+    title: "USA Travel Agency",
+    tag: "SaaS / Agency",
+    category: "Live",
+    color: "#9b2a9b",
+    year: "2025",
+    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775647274/Screenshot_2026-04-08_172050_kp9p2l.png",
+    desc: "USA base Travel Agency website demo — client portal, booking management system, sales analytics dashboard and inventory management system in one platform.",
+    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
+    results: [
+      "Client portal with booking updates",
+      "Booking management system",
+      "Sales analytics with charts",
+    ],
+    liveUrl: "https://www.tours-usa.com/",
+    featured: true,
+    isDemo: true,
+  }
 ];
 
 // ── Constants ──────────────────────────────────────────────────────────────────
