@@ -184,6 +184,25 @@ const PROJECTS = [
     liveUrl: "https://www.tours-usa.com/",
     featured: true,
     isDemo: true,
+  },
+  {
+    id: "d11",
+    title: "USA Guided Tours",
+    tag: "Tours / Agency",
+    category: "Live",
+    color: "#7594b1",
+    year: "2025",
+    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775653685/Screenshot_2026-04-08_190644_nsii53.png",
+    desc: "USA base Guided Tours website demo — client portal, booking management system, sales analytics dashboard and inventory management system in one platform.",
+    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
+    results: [
+      "Client portal with booking updates",
+      "Booking management system",
+      "Sales analytics with charts",
+    ],
+    liveUrl: "https://usaguidedtours.com/",
+    featured: true,
+    isDemo: true,
   }
 ];
 
