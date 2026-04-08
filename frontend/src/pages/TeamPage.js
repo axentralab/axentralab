@@ -107,10 +107,10 @@ const TEAM = [
 
 
 const STATS = [
-  { value: '8+',   label: 'Core Team Members',   color: '#22C55E' },
+  { value: '25',   label: 'Core Team Members',   color: '#22C55E' },
   { value: '15+',  label: 'Projects Completed',   color: '#3B82F6' },
   { value: '5+',   label: 'Ongoing Projects',     color: '#A855F7' },
-  { value: '10+',  label: 'Happy Clients',        color: '#F59E0B' },
+  { value: '7+',  label: 'Happy Clients',        color: '#F59E0B' },
 ];
 
 const EXPERTISE = [
