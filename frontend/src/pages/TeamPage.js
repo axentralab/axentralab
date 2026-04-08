@@ -104,7 +104,7 @@ const TEAM = [
   { name:'Shakil Ahmed', role:'Automation Engineer', bio:'Builds automation.', photo:'/images/team/user16.jpg', color:'#F59E0B', skills:['Automation'], social:{ } },
   { name:'Nayeem Islam', role:'Intern Developer', bio:'Learning & contributing.', photo:'/images/team/user17.jpg', color:'#9CA3AF', skills:['Learning'], social:{ } },
 ];
-];
+
 
 const STATS = [
   { value: '8+',   label: 'Core Team Members',   color: '#22C55E' },
