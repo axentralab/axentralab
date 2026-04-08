@@ -1,9 +1,0 @@
-# ads.txt file for Axentralab
-# This file contains the advertising system authorizations for this domain
-
-# Google AdSense
-google.com, ca-pub-5782400203327623, DIRECT, f08c47fec0942fa0
-
-# Additional trusted partners (add more as needed)
-# Example format:
-# <SSP/Exchange>, <Publisher ID>, <Account Type>, <Hash>

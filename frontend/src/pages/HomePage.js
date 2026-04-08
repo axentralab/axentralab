@@ -938,7 +938,7 @@ export default function HomePage() {
       <BlogSection />
 
       {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      {/* <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', maxWidth: 620, margin: '0 auto' }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Get Started</span>
@@ -964,7 +964,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

@@ -16,7 +16,6 @@ import AboutPage       from './pages/AboutPage';
 import ShopPage        from './pages/ShopPage';
 import ProductsPage    from './pages/ProductsPage';
 import PortfolioPage   from './pages/PortfolioPage';
-import CaseStudiesPage from './pages/CaseStudiesPage';
 import TeamPage        from './pages/TeamPage';
 import BlogPage        from './pages/BlogPage';
 import BlogPostPage    from './pages/BlogPostPage';
@@ -72,7 +71,6 @@ export default function App() {
                 <Route path="/services"  element={<PublicLayout><ShopPage /></PublicLayout>} />
                 <Route path="/products"  element={<PublicLayout><ProductsPage /></PublicLayout>} />
                 <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
-                <Route path="/case-studies" element={<PublicLayout><CaseStudiesPage /></PublicLayout>} />
                 <Route path="/team"      element={<PublicLayout><TeamPage /></PublicLayout>} />
                 <Route path="/blog"      element={<PublicLayout><BlogPage /></PublicLayout>} />
                 <Route path="/blog/:id"  element={<PublicLayout><BlogPostPage /></PublicLayout>} />

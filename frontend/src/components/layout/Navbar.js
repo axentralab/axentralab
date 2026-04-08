@@ -27,14 +27,15 @@ export default function Navbar() {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const navLinks = [
-    { to: '/services',     label: 'Services' },
-    { to: '/products',     label: 'Products' },
-    { to: '/portfolio',    label: 'Portfolio' },
-    { to: '/case-studies', label: 'Case Studies' },
-    { to: '/team',         label: 'Team' },
-    { to: '/blog',         label: 'Blog' },
-    { to: '/contact',      label: 'Contact' },
-    { to: '/quote',        label: '💰 Quote', highlight: true },
+    { to: '/',          label: 'Home' },
+    { to: '/about',     label: 'About' },
+    { to: '/services',  label: 'Services' },
+    { to: '/products',  label: 'Products' },
+    { to: '/portfolio', label: 'Portfolio' },
+    { to: '/team',      label: 'Team' },
+    { to: '/blog',      label: 'Blog' },
+    { to: '/contact',   label: 'Contact' },
+    { to: '/quote',     label: '💰 Quote', highlight: true },
   ];
 
   const active = (path) =>
@@ -134,7 +135,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#22C55E,#16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 900, color: '#000' }}>A</div>
-          <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: -0.5 }}>Axentralab</span>
+          <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: -0.5 }}>AxentraLab</span>
         </Link>
 
         {/* Desktop nav */}
