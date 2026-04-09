@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 // ─── Design tokens (mirrors site palette) ────────────────────────────────────
-const GREEN  = '#22C55E';
+const GREEN  = '#8B5CF6';
 const BLUE   = '#3B82F6';
 const PURPLE = '#A855F7';
 const AMBER  = '#F59E0B';
 const CYAN   = '#06B6D4';
+const HERO_BG_IMAGE = process.env.REACT_APP_HERO_BG_IMAGE || '/images/hero-bg.png';
 
 // ─── Service Packs ────────────────────────────────────────────────────────────
 const PACKS = [
@@ -739,28 +740,34 @@ export default function ServicesPage() {
         <div style={{ position: 'relative', zIndex: 1 }}>
 
           {/* ── HERO ────────────────────────────────────────────────────────── */}
-          <div ref={heroRef} style={{
-            textAlign: 'center', marginBottom: 56,
-            opacity: heroVisible ? 1 : 0,
-            transform: heroVisible ? 'none' : 'translateY(24px)',
-            transition: 'opacity 0.6s, transform 0.6s',
-          }}>
-            <SectionLabel color={GREEN}>Services & Pricing</SectionLabel>
-            <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,6vw,64px)', fontWeight: 900, color: '#fff', marginTop: 18, letterSpacing: -2, lineHeight: 1.05, marginBottom: 16 }}>
-              Transparent pricing.<br />
-              <span style={{ color: GREEN }}>Real results.</span>
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
-              From startup landing pages to full-stack SaaS platforms — fixed-price packages with no hidden fees. Based in Dhaka, serving clients worldwide.
-            </p>
+          <section style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, marginBottom: 56, padding: '56px 20px' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(100deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.72) 48%, rgba(6,8,15,0.9) 100%)' }} />
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+            <div ref={heroRef} style={{
+              textAlign: 'center',
+              position: 'relative',
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? 'none' : 'translateY(24px)',
+              transition: 'opacity 0.6s, transform 0.6s',
+            }}>
+              <SectionLabel color={GREEN}>Services & Pricing</SectionLabel>
+              <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,6vw,64px)', fontWeight: 900, color: '#fff', marginTop: 18, letterSpacing: -2, lineHeight: 1.05, marginBottom: 16 }}>
+                Transparent pricing.<br />
+                <span style={{ color: GREEN }}>Real results.</span>
+              </h1>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
+                From startup landing pages to full-stack SaaS platforms — fixed-price packages with no hidden fees. Based in Dhaka, serving clients worldwide.
+              </p>
 
-            {/* trust chips */}
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-              {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request', '✓ BDT & USD accepted'].map((t, i) => (
-                <span key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", padding: '4px 12px', borderRadius: 999, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>{t}</span>
-              ))}
+              {/* trust chips */}
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request', '✓ BDT & USD accepted'].map((t, i) => (
+                  <span key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", padding: '4px 12px', borderRadius: 999, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>{t}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
 
           {/* ── TAB NAV ─────────────────────────────────────────────────────── */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 52 }}>
@@ -930,7 +937,7 @@ export default function ServicesPage() {
               </div>
 
               {/* CTA callout */}
-              <div style={{ marginTop: 48, textAlign: 'center', padding: '36px 28px', background: `linear-gradient(135deg,rgba(34,197,94,0.05),rgba(59,130,246,0.05))`, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 }}>
+              <div style={{ marginTop: 48, textAlign: 'center', padding: '36px 28px', background: `linear-gradient(135deg,rgba(139,92,246,0.05),rgba(59,130,246,0.05))`, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 }}>
                 <div style={{ fontSize: 36, marginBottom: 14 }}>📋</div>
                 <h3 style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 22, color: '#fff', letterSpacing: -0.5, marginBottom: 10 }}>Want a case study for your project?</h3>
                 <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 400, margin: '0 auto 24px', lineHeight: 1.7 }}>We document results for every enterprise project — you'll have real proof of ROI to share with stakeholders.</p>

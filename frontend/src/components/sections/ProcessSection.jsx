@@ -13,7 +13,7 @@ export default function ProcessSection() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16 }}>
           {[
-            { step: 1, title: 'Discovery & Planning', icon: '🔍', color: '#22C55E' },
+            { step: 1, title: 'Discovery & Planning', icon: '🔍', color: '#8B5CF6' },
             { step: 2, title: 'Design & Prototyping', icon: '🎨', color: '#3B82F6' },
             { step: 3, title: 'Development', icon: '⚙️', color: '#A855F7' },
             { step: 4, title: 'Testing & QA', icon: '✅', color: '#F59E0B' },

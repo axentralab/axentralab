@@ -6,7 +6,7 @@ import { useState } from 'react';
 // demoUrl প্রতিটা product-এ নিজের real link দিয়ে replace করো
 
 const PRODUCTS = [
-  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:19, billing:'monthly', color:'#22C55E', demoUrl:'https://wp-shield-pi.vercel.app/' },
+  { id:'p1', name:'WP Shield', tag:'WordPress Security', desc:'Enterprise-grade WordPress security scanner with real-time threat detection and automated malware removal.', features:['Malware scanning','Plugin vulnerability detection','Security header analysis','SSL certificate check','Automated fix suggestions'], price:19, billing:'monthly', color:'#8B5CF6', demoUrl:'https://wp-shield-pi.vercel.app/' },
   { id:'p2', name:'SiteGuard', tag:'Monitoring Platform', desc:'Continuous website security monitoring with instant alerts and automated incident responses.', features:['24/7 uptime monitoring','Threat intelligence feed','Auto IP blocking','Incident reports','Slack & email alerts'], price:49, billing:'monthly', color:'#3B82F6', demoUrl:'https://demo.axentralab.com/siteguard' },
   // { id:'p3', name:'API Scanner', tag:'API Security', desc:'Find and fix vulnerabilities in your APIs before attackers do. Covers OWASP API Top 10.', features:['OWASP API Top 10 coverage','Auth & rate limit testing','Detailed vulnerability report','CI/CD integration','Remediation guidance'], price:39, billing:'monthly', color:'#EF4444', demoUrl:'https://demo.axentralab.com/api-scanner' },
   // { id:'p4', name:'CloudArmor', tag:'Cloud Security', desc:'Full-spectrum cloud infrastructure security — audit your AWS, GCP or Azure setup against CIS benchmarks automatically.', features:['Multi-cloud support','CIS benchmark checks','IAM misconfiguration alerts','S3 / blob exposure scanner','Compliance PDF export'], price:69, billing:'monthly', color:'#A855F7', demoUrl:'https://demo.axentralab.com/cloudarmor' },
@@ -58,7 +58,7 @@ const TESTIMONIALS = [
     name:'Arif Hasan', 
     role:'CTO, ByteCraft Solutions', 
     avatar:'AH', 
-    color:'#22C55E', 
+    color:'#8B5CF6', 
     quote:'আমাদের WordPress site একবার হ্যাক হওয়ার পর WP Shield use করি। এখন automatic malware detect হয়ে যায়, manually check করার ঝামেলা নাই। peace of mind পাই।' 
   },
   { 
@@ -108,13 +108,14 @@ const FAQS = [
 ];
 
 const STATS = [
-  { value:'2,500+', label:'Security Scans Completed', color:'#22C55E' },
+  { value:'2,500+', label:'Security Scans Completed', color:'#8B5CF6' },
   { value:'99.9%', label:'System Uptime', color:'#3B82F6' },
   { value:'120+', label:'Active Clients', color:'#A855F7' },
   { value:'< 10 min', label:'Avg Issue Response Time', color:'#F97316' },
 ];
 
 const CATEGORIES = ['All', 'Cybersecurity', 'AI / Automation', 'SEO & Marketing'];
+const HERO_BG_IMAGE = process.env.REACT_APP_HERO_BG_IMAGE || '/images/hero-bg.png';
 
 const getCat = (tag) => {
   if (['WordPress Security','Monitoring Platform','API Security','Cloud Security','Automated Pentesting','Data Privacy','Email Security','Log Management','Bot Protection'].includes(tag)) return 'Cybersecurity';
@@ -162,15 +163,20 @@ export default function ProductsPage() {
         `}</style>
 
         {/* ── Hero ── */}
-        <div style={{ textAlign:'center', marginBottom:48 }}>
-          <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #3B82F640', background:'#3B82F612', color:'#3B82F6', fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>SaaS Products</span>
-          <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(28px,5vw,58px)', fontWeight:900, color:'#fff', marginTop:16, letterSpacing:-1.5 }}>
-            Security Tools Built by<br /><span style={{ color:'#22C55E' }}>Axentralab</span>
-          </h1>
-          <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:440, margin:'14px auto 0' }}>
-            Plug-and-play security, automation, and growth products — start in minutes.
-          </p>
-        </div>
+        <section style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, marginBottom: 48, padding: '56px 20px' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(100deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.72) 48%, rgba(6,8,15,0.9) 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+          <div style={{ textAlign:'center', position: 'relative' }}>
+            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #3B82F640', background:'#3B82F612', color:'#3B82F6', fontSize:11, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>SaaS Products</span>
+            <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(28px,5vw,58px)', fontWeight:900, color:'#fff', marginTop:16, letterSpacing:-1.5 }}>
+              Security Tools Built by<br /><span style={{ color:'#8B5CF6' }}>Axentralab</span>
+            </h1>
+            <p style={{ color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:440, margin:'14px auto 0' }}>
+              Plug-and-play security, automation, and growth products — start in minutes.
+            </p>
+          </div>
+        </section>
 
         {/* ── Stats Bar ── */}
         <div style={{ maxWidth:1100, margin:'0 auto 56px', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:1, background:'rgba(255,255,255,0.06)', borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.07)' }}>
@@ -186,9 +192,9 @@ export default function ProductsPage() {
         <div className="cat-bar" style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:36, flexWrap:'wrap' }}>
           {CATEGORIES.map(cat => (
             <button key={cat} onClick={() => setActiveCat(cat)}
-              style={{ padding:'8px 20px', borderRadius:10, border: activeCat===cat ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCat===cat ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.45)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:13, cursor:'pointer', transition:'all 0.18s' }}>
+              style={{ padding:'8px 20px', borderRadius:10, border: activeCat===cat ? '1px solid rgba(139,92,246,0.4)' : '1px solid rgba(255,255,255,0.08)', background: activeCat===cat ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)', color: activeCat===cat ? '#8B5CF6' : 'rgba(255,255,255,0.45)', fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:13, cursor:'pointer', transition:'all 0.18s' }}>
               {cat}
-              <span style={{ marginLeft:7, padding:'1px 7px', borderRadius:999, background: activeCat===cat ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)', fontSize:10, color: activeCat===cat ? '#22C55E' : 'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>
+              <span style={{ marginLeft:7, padding:'1px 7px', borderRadius:999, background: activeCat===cat ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.06)', fontSize:10, color: activeCat===cat ? '#8B5CF6' : 'rgba(255,255,255,0.3)', fontFamily:"'Space Mono',monospace" }}>
                 {cat === 'All' ? PRODUCTS.length : PRODUCTS.filter(p => getCat(p.tag) === cat).length}
               </span>
             </button>
@@ -219,7 +225,7 @@ export default function ProductsPage() {
                   ))}
                 </ul>
                 <div style={{ display:'flex', gap:10 }}>
-                  <button onClick={() => handleBuy(p)} className="btn-primary" style={{ flex:1, padding:'12px', background:isInCart(p.id)?'rgba(34,197,94,0.15)':p.color, color:isInCart(p.id)?p.color:'#000', border:isInCart(p.id)?`1px solid ${p.color}40`:'none', fontSize:14 }}>
+                  <button onClick={() => handleBuy(p)} className="btn-primary" style={{ flex:1, padding:'12px', background:isInCart(p.id)?'rgba(139,92,246,0.15)':p.color, color:isInCart(p.id)?p.color:'#000', border:isInCart(p.id)?`1px solid ${p.color}40`:'none', fontSize:14 }}>
                     {isInCart(p.id) ? '✓ Added to Cart' : isAuthenticated ? '🛒 Start Free Trial' : 'Get Started →'}
                   </button>
                   <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-outline"
@@ -331,7 +337,7 @@ export default function ProductsPage() {
         {/* ── How It Works ── */}
         <div style={{ maxWidth:1100, margin:'80px auto 0' }}>
           <div style={{ textAlign:'center', marginBottom:44 }}>
-            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Process</span>
+            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #8B5CF640', background:'#8B5CF610', color:'#8B5CF6', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Process</span>
             <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:28, fontWeight:800, color:'#fff', marginTop:12, letterSpacing:-0.5 }}>Up & Running in 3 Steps</h2>
           </div>
           <div className="step-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0 }}>
@@ -376,10 +382,10 @@ export default function ProductsPage() {
 
         {/* ── Bottom CTA ── */}
         <div style={{ maxWidth:1100, margin:'80px auto 0', paddingBottom:100 }}>
-          <div className="cta-inner" style={{ background:'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(59,130,246,0.08) 100%)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:24, padding:'64px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
-            <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 65%)', pointerEvents:'none' }} />
+          <div className="cta-inner" style={{ background:'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(59,130,246,0.08) 100%)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:24, padding:'64px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 65%)', pointerEvents:'none' }} />
             <div style={{ position:'relative' }}>
-              <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #22C55E40', background:'#22C55E10', color:'#22C55E', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Get Protected Today</span>
+              <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:999, border:'1px solid #8B5CF640', background:'#8B5CF610', color:'#8B5CF6', fontSize:10, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase', fontWeight:600 }}>Get Protected Today</span>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(26px,4vw,44px)', fontWeight:900, color:'#fff', margin:'20px auto 16px', letterSpacing:-1, maxWidth:600 }}>
                 Your Next Security Incident<br />Could Be Your Last
               </h2>
@@ -387,7 +393,7 @@ export default function ProductsPage() {
                 14-day free trial. No credit card required. Cancel anytime. Join 4,200+ teams already protected by Axentralab.
               </p>
               <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-                <button className="btn-primary" style={{ padding:'15px 36px', background:'#22C55E', color:'#000', fontSize:15, border:'none', fontWeight:700 }}>Start Free Trial →</button>
+                <button className="btn-primary" style={{ padding:'15px 36px', background:'#8B5CF6', color:'#000', fontSize:15, border:'none', fontWeight:700 }}>Start Free Trial →</button>
                 <button className="btn-outline" style={{ padding:'15px 28px', fontSize:15 }}>Book a Demo</button>
               </div>
               <div style={{ marginTop:24, display:'flex', gap:28, justifyContent:'center', flexWrap:'wrap' }}>

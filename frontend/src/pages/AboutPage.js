@@ -6,6 +6,7 @@ const C = {
   blue: '#0EA5E9', green: '#10B981', purple: '#8B5CF6', amber: '#F59E0B',
   text: '#F1F5F9', muted: 'rgba(241,245,249,0.42)', faint: 'rgba(241,245,249,0.18)',
 };
+const HERO_BG_IMAGE = process.env.REACT_APP_ABOUT_HERO_BG_IMAGE || '/images/about-hero-bg.png';
 
 const TEAM = [
   { name: 'Rafi Islam',    role: 'CEO & Lead Architect',   emoji: '🧠', color: C.blue   },
@@ -68,10 +69,12 @@ export default function AboutPage() {
 
         {/* ── HERO ─────────────────────────────────────────────── */}
         <section className="about-hero-grid" style={{
-          padding: '140px 5% 90px', textAlign: 'center', position: 'relative', overflow: 'hidden',
-          backgroundImage: 'linear-gradient(rgba(14,165,233,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,0.04) 1px,transparent 1px)',
+          padding: '170px 5% 130px', minHeight: '78vh', textAlign: 'center', position: 'relative', overflow: 'hidden',
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
           backgroundSize: '60px 60px',
         }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(100deg, rgba(5,10,20,0.9) 0%, rgba(5,10,20,0.72) 48%, rgba(5,10,20,0.9) 100%)' }} />
           <Glow color={C.blue}   style={{ width: 600, height: 600, top: '-20%', left: '50%', transform: 'translateX(-50%)' }} />
           <div style={{ position: 'relative', maxWidth: 720, margin: '0 auto', animation: 'fadeUp 0.7s ease both' }}>
             <span className="about-badge" style={{ background: `${C.purple}10`, border: `1px solid ${C.purple}28`, color: C.purple, marginBottom: 24 }}>

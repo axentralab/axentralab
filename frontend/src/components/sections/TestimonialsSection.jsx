@@ -5,7 +5,7 @@ const TESTIMONIALS = [
     name: 'Samiul Islam',
     role: 'CEO, TechStart Bangladesh',
     avatar: 'SI',
-    color: '#22C55E',
+    color: '#8B5CF6',
     company: 'TechStart Bangladesh',
     quote: 'Axentralab built our entire product from scratch. Amazing communication, delivered on time, and the code quality is production-ready. Best decision we made.',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Samiul',
@@ -173,7 +173,7 @@ export default function TestimonialsSection() {
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 16, padding: '32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20 }}>
           {[
-            { value: '6+', label: 'Happy Clients', color: '#22C55E' },
+            { value: '6+', label: 'Happy Clients', color: '#8B5CF6' },
             { value: '15+', label: 'Projects Done', color: '#3B82F6' },
             { value: '98%', label: 'Satisfaction', color: '#A855F7' },
           ].map((stat, i) => (
@@ -191,7 +191,7 @@ export default function TestimonialsSection() {
         {/* CTA */}
         <div style={{ textAlign: 'center', marginTop: 28 }}>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace" }}>
-            Ready to start your project? <a href="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Get in touch →</a>
+            Ready to start your project? <a href="/contact" style={{ color: '#8B5CF6', textDecoration: 'none', fontWeight: 700 }}>Get in touch →</a>
           </span>
         </div>
       </div>

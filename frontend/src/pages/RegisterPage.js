@@ -30,7 +30,7 @@ export default function RegisterPage() {
     return s;
   })();
   const strengthLabel = ['','Weak','Fair','Good','Strong'][strength];
-  const strengthColor = ['','#EF4444','#F59E0B','#3B82F6','#22C55E'][strength];
+  const strengthColor = ['','#EF4444','#F59E0B','#3B82F6','#8B5CF6'][strength];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,12 +100,12 @@ export default function RegisterPage() {
 
           {/* glow blobs */}
           <div style={{ position:'absolute', top:'-5%', right:'-10%', width:420, height:420, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 65%)', animation:'glow 5s ease-in-out infinite', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(34,197,94,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
 
           {/* Logo */}
           <div style={{ position:'relative', zIndex:1 }}>
             <Link to="/" style={{ display:'inline-flex', alignItems:'center', gap:10, textDecoration:'none' }}>
-              <div style={{ width:38, height:38, borderRadius:11, background:'linear-gradient(135deg,#22C55E,#16A34A)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:900, color:'#000', fontFamily:"'Sora',sans-serif" }}>A</div>
+              <div style={{ width:38, height:38, borderRadius:11, background:'linear-gradient(135deg,#8B5CF6,#7C3AED)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:900, color:'#000', fontFamily:"'Sora',sans-serif" }}>A</div>
               <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:18, color:'#fff', letterSpacing:-0.3 }}>Axentralab</span>
             </Link>
           </div>
@@ -231,7 +231,7 @@ export default function RegisterPage() {
                 <div style={{ position:'relative' }}>
                   <input className="reg-input" type={showCf ? 'text' : 'password'} placeholder="••••••••" required
                     value={form.confirm} onChange={e => setForm({ ...form, confirm:e.target.value })}
-                    style={{ paddingRight:44, borderColor: form.confirm && form.confirm !== form.password ? 'rgba(239,68,68,0.5)' : form.confirm && form.confirm === form.password ? 'rgba(34,197,94,0.4)' : undefined }} />
+                    style={{ paddingRight:44, borderColor: form.confirm && form.confirm !== form.password ? 'rgba(239,68,68,0.5)' : form.confirm && form.confirm === form.password ? 'rgba(139,92,246,0.4)' : undefined }} />
                   <button type="button" onClick={() => setShowCf(!showCf)}
                     style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', color:'rgba(255,255,255,0.3)', cursor:'pointer', fontSize:16, padding:0, lineHeight:1 }}>
                     {showCf ? '🙈' : '👁️'}

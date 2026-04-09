@@ -17,7 +17,7 @@ export default function BlogSection() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 20, marginBottom: 36 }}>
           {[
-            { title: 'Building Scalable Web Applications', excerpt: 'Learn best practices for large-scale applications.', category: 'Web Dev', color: '#22C55E' },
+            { title: 'Building Scalable Web Applications', excerpt: 'Learn best practices for large-scale applications.', category: 'Web Dev', color: '#8B5CF6' },
             { title: 'AI Automation: Save 20 Hours Weekly', excerpt: 'Practical AI workflows that automate repetitive tasks.', category: 'AI', color: '#A855F7' },
             { title: 'Cybersecurity Checklist for Startups', excerpt: 'A comprehensive guide to protecting your web app.', category: 'Security', color: '#EF4444' },
           ].map((post, i) => (

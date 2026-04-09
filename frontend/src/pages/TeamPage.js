@@ -8,7 +8,7 @@ const TEAM = [
     role:'Founder & CEO',
     bio:'Visionary behind Axentralab. Leads strategy, client relationships and overall direction.',
     photo:'/images/team/nazat.jpg',
-    color:'#22C55E',
+    color:'#8B5CF6',
     skills:['Leadership','Strategy','Business'],
     social:{ linkedin:'#' },
     badge:'Founder',
@@ -94,7 +94,7 @@ const TEAM = [
   { name:'Nusrat Jahan', role:'UI Designer', bio:'Modern UI creator.', photo:'/images/team/user6.jpg', color:'#D946EF', skills:['Figma'], social:{ } },
   { name:'Imran Khan', role:'SEO Specialist', bio:'Ranks websites.', photo:'/images/team/user7.jpg', color:'#84CC16', skills:['SEO'], social:{ } },
   { name:'Rifat Mahmud', role:'Content Writer', bio:'Writes conversion content.', photo:'/images/team/user8.jpg', color:'#F97316', skills:['Writing'], social:{ } },
-  { name:'Jahidul Islam', role:'Support Engineer', bio:'Client support expert.', photo:'/images/team/user9.jpg', color:'#22C55E', skills:['Support'], social:{ } },
+  { name:'Jahidul Islam', role:'Support Engineer', bio:'Client support expert.', photo:'/images/team/user9.jpg', color:'#8B5CF6', skills:['Support'], social:{ } },
   { name:'Hasan Mahmud', role:'Security Analyst', bio:'Handles vulnerabilities.', photo:'/images/team/user10.jpg', color:'#EF4444', skills:['Security'], social:{ } },
   { name:'Sabbir Hossain', role:'Mobile App Dev', bio:'Builds mobile apps.', photo:'/images/team/user11.jpg', color:'#3B82F6', skills:['React Native'], social:{ } },
   { name:'Farhan Ahmed', role:'Project Manager', bio:'Manages delivery.', photo:'/images/team/user12.jpg', color:'#8B5CF6', skills:['Management'], social:{ } },
@@ -107,7 +107,7 @@ const TEAM = [
 
 
 const STATS = [
-  { value: '25',   label: 'Core Team Members',   color: '#22C55E' },
+  { value: '25',   label: 'Core Team Members',   color: '#8B5CF6' },
   { value: '15+',  label: 'Projects Completed',   color: '#3B82F6' },
   { value: '5+',   label: 'Ongoing Projects',     color: '#A855F7' },
   { value: '7+',  label: 'Happy Clients',        color: '#F59E0B' },
@@ -115,7 +115,7 @@ const STATS = [
 
 const EXPERTISE = [
   { area: 'Web Development',      tags: ['React', 'Node.js', 'MERN', 'Business Sites', 'Corporate Portals'],    color: '#3B82F6' },
-  { area: 'E-commerce',           tags: ['Custom Shops', 'Product Management', 'Payment Integration', 'POS'],   color: '#22C55E' },
+  { area: 'E-commerce',           tags: ['Custom Shops', 'Product Management', 'Payment Integration', 'POS'],   color: '#8B5CF6' },
   { area: 'Custom Web Systems',   tags: ['POS Systems', 'Courier Platforms', 'SaaS Apps', 'Dashboards'],        color: '#F59E0B' },
   { area: 'UI/UX Design',         tags: ['Figma', 'User Research', 'Prototyping', 'Design Systems'],            color: '#A855F7' },
   { area: 'Cybersecurity',        tags: ['Basic Security Audit', 'HTTPS Setup', 'Vulnerability Check', 'OWASP'],color: '#EF4444' },
@@ -187,7 +187,7 @@ function MemberCard({ member, index }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(6,8,15,0.7) 100%)' }} />
         {member.badge && (
           <div style={{ position: 'absolute', top: 14, left: 14 }}>
-            <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 6, background: member.color, color: ['#22C55E','#F59E0B'].includes(member.color) ? '#000' : '#fff', fontSize: 9, fontFamily: "'Space Mono',monospace", fontWeight: 900, letterSpacing: 1 }}>
+            <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 6, background: member.color, color: ['#8B5CF6','#F59E0B'].includes(member.color) ? '#000' : '#fff', fontSize: 9, fontFamily: "'Space Mono',monospace", fontWeight: 900, letterSpacing: 1 }}>
               {member.badge.toUpperCase()}
             </span>
           </div>
@@ -284,14 +284,14 @@ export default function TeamPage() {
 
       {/* HERO */}
       <div style={{ textAlign: 'center', marginBottom: 64, animation: 'fadeUp 0.6s ease both' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 24 }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#22C55E', letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>The People Behind the Work</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.07)', marginBottom: 24 }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8B5CF6', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#8B5CF6', letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>The People Behind the Work</span>
         </div>
         <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,5.5vw,68px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: -2.5, lineHeight: 1.04 }}>
           Meet the{' '}
           <span style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.3)' }}>Team</span>
-          <span style={{ color: '#22C55E' }}>.</span>
+          <span style={{ color: '#8B5CF6' }}>.</span>
         </h1>
         <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(14px,1.8vw,18px)', color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 32px', lineHeight: 1.75 }}>
           A tight-knit crew of engineers, security specialists and designers — united by one goal: shipping software that just works.
@@ -365,23 +365,23 @@ export default function TeamPage() {
 
       {/* HIRING CTA */}
       <section style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 100 }}>
-        <div style={{ position: 'relative', background: 'linear-gradient(135deg,rgba(34,197,94,0.09) 0%,rgba(59,130,246,0.06) 100%)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 24, padding: 'clamp(40px,6vw,72px) clamp(24px,5%,64px)', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', background: 'linear-gradient(135deg,rgba(139,92,246,0.09) 0%,rgba(59,130,246,0.06) 100%)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 24, padding: 'clamp(40px,6vw,72px) clamp(24px,5%,64px)', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.08),transparent 65%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: '-20%', left: '10%',  width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle,rgba(59,130,246,0.07),transparent 65%)', pointerEvents: 'none' }} />
           <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 40, alignItems: 'center' }}>
             <div>
-              <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 18 }}>
+              <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #8B5CF640', background: '#8B5CF610', color: '#8B5CF6', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 18 }}>
                 We're Hiring
               </span>
               <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900, color: '#fff', margin: '0 0 16px', letterSpacing: -1, lineHeight: 1.15 }}>
                 Want to build<br />
-                <span style={{ color: '#22C55E' }}>great things with us?</span>
+                <span style={{ color: '#8B5CF6' }}>great things with us?</span>
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.8, margin: '0 0 28px', maxWidth: 400 }}>
                 We're always looking for sharp engineers, security researchers, and designers who care deeply about their craft. Remote-friendly. Async-first.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Link to="/contact" className="btn-primary" style={{ padding: '13px 28px', background: '#22C55E', color: '#000', borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: 'none', display: 'inline-block' }}>
+                <Link to="/contact" className="btn-primary" style={{ padding: '13px 28px', background: '#8B5CF6', color: '#000', borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: 'none', display: 'inline-block' }}>
                   Send Your CV →
                 </Link>
                 <Link to="/contact" className="btn-outline" style={{ padding: '13px 24px', fontSize: 14, borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
@@ -394,7 +394,7 @@ export default function TeamPage() {
               {[
                 { role: 'React / Node.js Developer',   type: 'Remote · Full-time',  color: '#3B82F6' },
                 { role: 'UI/UX Designer',              type: 'Remote · Part-time',  color: '#A855F7' },
-                { role: 'Sales Executive',             type: 'Remote · Full-time',  color: '#22C55E' },
+                { role: 'Sales Executive',             type: 'Remote · Full-time',  color: '#8B5CF6' },
                 { role: 'Digital Marketing Specialist',type: 'Remote · Part-time',  color: '#F59E0B' },
               ].map((job, i) => (
                 <div key={i}

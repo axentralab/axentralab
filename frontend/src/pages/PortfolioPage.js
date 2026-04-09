@@ -133,7 +133,7 @@ const PROJECTS = [
     title: "Video Agency",
     tag: "SaaS / Agency / POS",
     category: "Demo",
-    color: "#22C55E",
+    color: "#8B5CF6",
     year: "2025",
     thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775049937/demo-video-agency_t5w0yu.png",
     desc: "Demo for a video production agency — client portal, project management dashboard, sales analytics and inventory management system in one platform.",
@@ -152,7 +152,7 @@ const PROJECTS = [
     title: "Travel Agency",
     tag: "SaaS / Agency",
     category: "Live",
-    color: "#22C55E",
+    color: "#8B5CF6",
     year: "2025",
     thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775646905/Screenshot_2026-04-08_170919_w8jurr.png",
     desc: "Live Travel Agency website demo — client portal, booking management system, sales analytics dashboard and inventory management system in one platform.",
@@ -210,7 +210,7 @@ const PROJECTS = [
 const CATEGORIES = ["All", "Demo"];
 
 const STATS = [
-  { value: "15+", label: "Projects Completed", color: "#22C55E" },
+  { value: "15+", label: "Projects Completed", color: "#8B5CF6" },
   { value: "10+", label: "Happy Clients", color: "#3B82F6" },
   { value: "5+", label: "Ongoing Projects", color: "#A855F7" },
   { value: "8+", label: "Team Members", color: "#F59E0B" },
@@ -221,7 +221,7 @@ const TESTIMONIALS = [
     name: "A Happy Client",
     role: "Business Owner, Dhaka",
     avatar: "AH",
-    color: "#22C55E",
+    color: "#8B5CF6",
     quote:
       "Axentralab delivered a clean, professional website for our business on time and within budget. Great communication throughout.",
   },
@@ -529,7 +529,7 @@ function ProjectModal({ project, onClose }) {
                 flex: 1,
                 padding: "13px",
                 background: color,
-                color: ["#22C55E", "#F59E0B", "#06B6D4"].includes(color)
+                color: ["#8B5CF6", "#F59E0B", "#06B6D4"].includes(color)
                   ? "#000"
                   : "#fff",
                 border: "none",
@@ -1195,6 +1195,7 @@ function ProjectCard({ project, index, onOpenModal }) {
 // ── Derived constants ─────────────────────────────────────────────────────────
 const ALL_STACKS = [...new Set(PROJECTS.flatMap((p) => p.stack))].sort();
 const PER_LOAD = 12;
+const HERO_BG_IMAGE = process.env.REACT_APP_HERO_BG_IMAGE || '/images/hero-bg.png';
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
@@ -1284,31 +1285,39 @@ export default function PortfolioPage() {
       `}</style>
 
       {/* ── Hero ── */}
-      <div
+      <section
         style={{
-          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: 20,
           marginBottom: 64,
+          padding: "58px 20px",
+          textAlign: "center",
           animation: "fadeUp 0.6s ease both",
         }}
       >
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "5px 16px",
-            borderRadius: 999,
-            border: "1px solid rgba(34,197,94,0.3)",
-            background: "rgba(34,197,94,0.07)",
-            marginBottom: 20,
-          }}
-        >
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(100deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.72) 48%, rgba(6,8,15,0.9) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
+        <div style={{ position: "relative" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "5px 16px",
+              borderRadius: 999,
+              border: "1px solid rgba(139,92,246,0.3)",
+              background: "rgba(139,92,246,0.07)",
+              marginBottom: 20,
+            }}
+          >
           <span
             style={{
               width: 7,
               height: 7,
               borderRadius: "50%",
-              background: "#22C55E",
+              background: "#8B5CF6",
               display: "inline-block",
               animation: "pulse 2s infinite",
             }}
@@ -1317,7 +1326,7 @@ export default function PortfolioPage() {
             style={{
               fontFamily: "'Space Mono',monospace",
               fontSize: 11,
-              color: "#22C55E",
+              color: "#8B5CF6",
               letterSpacing: 1,
               textTransform: "uppercase",
               fontWeight: 600,
@@ -1347,7 +1356,7 @@ export default function PortfolioPage() {
             Speaks
           </span>
           <br />
-          <span style={{ color: "#22C55E" }}>for Itself.</span>
+          <span style={{ color: "#8B5CF6" }}>for Itself.</span>
         </h1>
         <p
           style={{
@@ -1387,8 +1396,9 @@ export default function PortfolioPage() {
               {v}
             </span>
           ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* ── Stats Bar ── */}
       <section
@@ -1457,14 +1467,14 @@ export default function PortfolioPage() {
               borderRadius: 10,
               border:
                 activeCategory === cat
-                  ? "1px solid rgba(34,197,94,0.4)"
+                  ? "1px solid rgba(139,92,246,0.4)"
                   : "1px solid rgba(255,255,255,0.08)",
               background:
                 activeCategory === cat
-                  ? "rgba(34,197,94,0.1)"
+                  ? "rgba(139,92,246,0.1)"
                   : "rgba(255,255,255,0.03)",
               color:
-                activeCategory === cat ? "#22C55E" : "rgba(255,255,255,0.45)",
+                activeCategory === cat ? "#8B5CF6" : "rgba(255,255,255,0.45)",
               fontFamily: "'Sora',sans-serif",
               fontWeight: 700,
               fontSize: 13,
@@ -1480,11 +1490,11 @@ export default function PortfolioPage() {
                 borderRadius: 999,
                 background:
                   activeCategory === cat
-                    ? "rgba(34,197,94,0.15)"
+                    ? "rgba(139,92,246,0.15)"
                     : "rgba(255,255,255,0.06)",
                 fontSize: 10,
                 color:
-                  activeCategory === cat ? "#22C55E" : "rgba(255,255,255,0.3)",
+                  activeCategory === cat ? "#8B5CF6" : "rgba(255,255,255,0.3)",
                 fontFamily: "'Space Mono',monospace",
               }}
             >
@@ -1563,10 +1573,10 @@ export default function PortfolioPage() {
             onChange={(e) => handleStack(e.target.value)}
             style={{
               background: "rgba(255,255,255,0.04)",
-              border: `1px solid ${activeStack ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)"}`,
+              border: `1px solid ${activeStack ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.1)"}`,
               borderRadius: 12,
               padding: "11px 36px 11px 14px",
-              color: activeStack ? "#22C55E" : "rgba(255,255,255,0.5)",
+              color: activeStack ? "#8B5CF6" : "rgba(255,255,255,0.5)",
               fontSize: 13,
               outline: "none",
               fontFamily: "'Sora',sans-serif",
@@ -1690,10 +1700,10 @@ export default function PortfolioPage() {
                 onClick={() => setVisible((v) => v + PER_LOAD)}
                 style={{
                   padding: "13px 40px",
-                  background: "rgba(34,197,94,0.1)",
-                  border: "1px solid rgba(34,197,94,0.3)",
+                  background: "rgba(139,92,246,0.1)",
+                  border: "1px solid rgba(139,92,246,0.3)",
                   borderRadius: 12,
-                  color: "#22C55E",
+                  color: "#8B5CF6",
                   fontSize: 14,
                   fontWeight: 700,
                   fontFamily: "'Sora',sans-serif",
@@ -1701,11 +1711,11 @@ export default function PortfolioPage() {
                   transition: "all 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(34,197,94,0.18)";
+                  e.currentTarget.style.background = "rgba(139,92,246,0.18)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(34,197,94,0.1)";
+                  e.currentTarget.style.background = "rgba(139,92,246,0.1)";
                   e.currentTarget.style.transform = "none";
                 }}
               >
@@ -2047,8 +2057,8 @@ export default function PortfolioPage() {
           style={{
             position: "relative",
             background:
-              "linear-gradient(135deg,rgba(34,197,94,0.09) 0%,rgba(59,130,246,0.06) 100%)",
-            border: "1px solid rgba(34,197,94,0.2)",
+              "linear-gradient(135deg,rgba(139,92,246,0.09) 0%,rgba(59,130,246,0.06) 100%)",
+            border: "1px solid rgba(139,92,246,0.2)",
             borderRadius: 24,
             padding: "clamp(48px,6vw,80px) clamp(24px,5%,64px)",
             textAlign: "center",
@@ -2065,7 +2075,7 @@ export default function PortfolioPage() {
               height: 500,
               borderRadius: "50%",
               background:
-                "radial-gradient(circle,rgba(34,197,94,0.07),transparent 65%)",
+                "radial-gradient(circle,rgba(139,92,246,0.07),transparent 65%)",
               pointerEvents: "none",
             }}
           />
@@ -2075,9 +2085,9 @@ export default function PortfolioPage() {
                 display: "inline-block",
                 padding: "3px 12px",
                 borderRadius: 999,
-                border: "1px solid #22C55E40",
-                background: "#22C55E10",
-                color: "#22C55E",
+                border: "1px solid #8B5CF640",
+                background: "#8B5CF610",
+                color: "#8B5CF6",
                 fontSize: 10,
                 fontFamily: "'Space Mono',monospace",
                 letterSpacing: 1,
@@ -2101,7 +2111,7 @@ export default function PortfolioPage() {
             >
               Ready to Build
               <br />
-              <span style={{ color: "#22C55E" }}>Something Real?</span>
+              <span style={{ color: "#8B5CF6" }}>Something Real?</span>
             </h2>
             <p
               style={{
@@ -2129,7 +2139,7 @@ export default function PortfolioPage() {
                 className="btn-primary"
                 style={{
                   padding: "15px 36px",
-                  background: "#22C55E",
+                  background: "#8B5CF6",
                   color: "#000",
                   fontSize: 15,
                   fontWeight: 700,

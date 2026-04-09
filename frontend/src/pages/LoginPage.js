@@ -71,7 +71,7 @@ export default function LoginPage() {
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
         * { box-sizing: border-box; }
         @keyframes float   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.35)} 50%{box-shadow:0 0 0 8px rgba(34,197,94,0)} }
+        @keyframes pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,0.35)} 50%{box-shadow:0 0 0 8px rgba(139,92,246,0)} }
         @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
         @keyframes spin    { to{transform:rotate(360deg)} }
         @keyframes gridMove { 0%{background-position:0 0} 100%{background-position:40px 40px} }
@@ -81,16 +81,16 @@ export default function LoginPage() {
           border-radius:12px; padding:13px 16px; color:#fff; font-size:14px;
           font-family:'DM Sans',sans-serif; outline:none; transition:all 0.2s;
         }
-        .login-input:focus { border-color:rgba(34,197,94,0.5); background:rgba(34,197,94,0.04); box-shadow:0 0 0 3px rgba(34,197,94,0.08); }
+        .login-input:focus { border-color:rgba(139,92,246,0.5); background:rgba(139,92,246,0.04); box-shadow:0 0 0 3px rgba(139,92,246,0.08); }
         .login-input::placeholder { color:rgba(255,255,255,0.2); }
         .login-input:disabled { opacity:0.5; cursor:not-allowed; }
         .login-submit {
-          width:100%; padding:14px; background:#22C55E; color:#000; border:none;
+          width:100%; padding:14px; background:#8B5CF6; color:#000; border:none;
           border-radius:12px; font-family:'Sora',sans-serif; font-weight:900;
           font-size:15px; cursor:pointer; transition:all 0.2s;
           display:flex; align-items:center; justify-content:center; gap:10px;
         }
-        .login-submit:hover:not(:disabled) { background:#16a34a; transform:translateY(-1px); box-shadow:0 8px 24px rgba(34,197,94,0.3); }
+        .login-submit:hover:not(:disabled) { background:#16a34a; transform:translateY(-1px); box-shadow:0 8px 24px rgba(139,92,246,0.3); }
         .login-submit:disabled { opacity:0.6; cursor:not-allowed; }
         .feat-item { animation: fadeUp 0.5s ease both; }
         .login-outer { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
@@ -106,28 +106,28 @@ export default function LoginPage() {
           border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.03);
           display:flex; align-items:center; justify-content:center; transition:all 0.15s;
         }
-        .cb-box.checked { background:#22C55E; border-color:#22C55E; }
+        .cb-box.checked { background:#8B5CF6; border-color:#8B5CF6; }
       `}</style>
 
       <div className="login-outer">
         {/* Left panel */}
         <div className="login-left" style={{ position: 'relative', background: '#06080F', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '48px 52px' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(34,197,94,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
             <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg,#22C55E,#16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#000', fontFamily: "'Sora',sans-serif" }}>A</div>
+              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg,#8B5CF6,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#000', fontFamily: "'Sora',sans-serif" }}>A</div>
               <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Axentralab</span>
             </Link>
           </div>
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 0' }}>
             <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: '32px 36px', width: '100%', maxWidth: 360, marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#8B5CF6', animation: 'pulse 2s infinite' }} />
                 <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: 'rgba(255,255,255,0.3)', letterSpacing: 2, textTransform: 'uppercase' }}>Live Dashboard Preview</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-                {[['$2.4M+', 'Revenue Generated', '#22C55E'], ['120+', 'Projects Done', '#3B82F6'], ['98%', 'Client Retention', '#F59E0B'], ['< 24h', 'Avg Kickoff', '#A855F7']].map(([v, l, c]) => (
+                {[['$2.4M+', 'Revenue Generated', '#8B5CF6'], ['120+', 'Projects Done', '#3B82F6'], ['98%', 'Client Retention', '#F59E0B'], ['< 24h', 'Avg Kickoff', '#A855F7']].map(([v, l, c]) => (
                   <div key={l} style={{ padding: '14px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 18, fontWeight: 900, color: c, letterSpacing: -0.5 }}>{v}</div>
                     <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 3, lineHeight: 1.4 }}>{l}</div>
@@ -135,7 +135,7 @@ export default function LoginPage() {
                 ))}
               </div>
             </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '10px 18px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 999, animation: 'float 4s ease-in-out infinite' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '10px 18px', background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 999, animation: 'float 4s ease-in-out infinite' }}>
               <span style={{ fontSize: 16 }}>🔒</span>
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>SOC 2 compliant · NDA on every deal</span>
             </div>
@@ -143,7 +143,7 @@ export default function LoginPage() {
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {FEATURES.map((f, i) => (
               <div key={i} className="feat-item" style={{ display: 'flex', alignItems: 'center', gap: 12, animationDelay: `${i * 0.1}s` }}>
-                <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{f.icon}</div>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{f.icon}</div>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: "'DM Sans',sans-serif" }}>{f.text}</span>
               </div>
             ))}
@@ -154,12 +154,12 @@ export default function LoginPage() {
         <div className="login-right" style={{ background: '#0A0D16', display: 'flex', alignItems: 'center', padding: 'clamp(40px,6vw,80px) clamp(24px,6vw,72px)' }}>
           <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
             <div style={{ marginBottom: 36 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.2)', background: 'rgba(34,197,94,0.06)', marginBottom: 28 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', display: 'inline-block' }} />
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: '#22C55E', letterSpacing: 2, textTransform: 'uppercase' }}>Client Portal</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', borderRadius: 999, border: '1px solid rgba(139,92,246,0.2)', background: 'rgba(139,92,246,0.06)', marginBottom: 28 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8B5CF6', display: 'inline-block' }} />
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: '#8B5CF6', letterSpacing: 2, textTransform: 'uppercase' }}>Client Portal</span>
               </div>
               <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px,4vw,38px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, lineHeight: 1.1, margin: '0 0 10px' }}>
-                Welcome<br />back<span style={{ color: '#22C55E' }}>.</span>
+                Welcome<br />back<span style={{ color: '#8B5CF6' }}>.</span>
               </h1>
               <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, fontFamily: "'DM Sans',sans-serif", lineHeight: 1.7, margin: 0 }}>
                 Sign in to track your projects, invoices, and deliverables.
@@ -182,7 +182,7 @@ export default function LoginPage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
                   <label style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase' }}>Password</label>
-                  <span style={{ fontSize: 12, color: 'rgba(34,197,94,0.7)', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>Forgot password?</span>
+                  <span style={{ fontSize: 12, color: 'rgba(139,92,246,0.7)', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>Forgot password?</span>
                 </div>
                 <div style={{ position: 'relative' }}>
                   <input className="login-input" type={show ? 'text' : 'password'} placeholder="••••••••" required disabled={isLocked}
@@ -225,7 +225,7 @@ export default function LoginPage() {
 
             <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: 'rgba(255,255,255,0.35)', fontFamily: "'DM Sans',sans-serif" }}>
               Don't have an account?{' '}
-              <Link to="/register" style={{ color: '#22C55E', fontWeight: 700, textDecoration: 'none' }}>Create one →</Link>
+              <Link to="/register" style={{ color: '#8B5CF6', fontWeight: 700, textDecoration: 'none' }}>Create one →</Link>
             </p>
           </div>
         </div>
