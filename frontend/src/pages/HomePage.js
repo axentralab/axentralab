@@ -444,19 +444,19 @@ const TOOLS_GRID = [
 const CORE_SERVICES = [
   {
     icon: '🌐', title: 'Website Development', label: 'Business & Corporate',
-    color: '#22C55E', price: '৳10,000+',
+    color: '#22C55E', price: '$100 / ৳10,000+',
     desc: 'Professional business websites, corporate portals and landing pages — fully responsive, fast-loading and built to convert visitors into clients.',
     features: ['Business / Corporate sites', 'Responsive mobile design', 'Contact forms & SEO setup', 'Custom branding & color system', 'CMS for easy content update', 'Delivered in 1–3 weeks'],
   },
   {
     icon: '🛒', title: 'E-commerce Development', label: 'Online Store Solutions',
-    color: '#3B82F6', price: '৳30,000+',
+    color: '#3B82F6', price: '$300 / ৳30,000+',
     desc: 'Full-featured online stores built for the Bangladesh market — product management, cart, checkout and payment gateway integration included.',
     features: ['Product listing & filters', 'Cart & checkout flow', 'Payment gateway setup', 'Order & inventory management', 'Admin dashboard', 'Mobile-first design'],
   },
   {
     icon: '⚙️', title: 'Custom Web Systems', label: 'POS / Courier / SaaS',
-    color: '#A855F7', price: '৳50,000+',
+    color: '#A855F7', price: '$500 / ৳50,000+',
     desc: 'Tailor-made web applications for your business — POS systems, courier management platforms, SaaS dashboards and custom admin panels.',
     features: ['Custom business logic', 'Role-based access control', 'Real-time dashboards', 'API integrations', 'Scalable architecture', 'Full source code handoff'],
   },
@@ -495,150 +495,150 @@ const DIGITAL_PRODUCTS = [
 
 // ─── Dashboard Preview Component ──────────────────────────────────────────────
 
-const DASH_NAV = [
-  { icon: '📊', label: 'Overview',  active: true },
-  { icon: '🤖', label: 'Automations', active: false },
-  { icon: '📦', label: 'Orders',    active: false },
-  { icon: '🛡️', label: 'Security',  active: false },
-  { icon: '👤', label: 'Profile',   active: false },
-];
+// const DASH_NAV = [
+//   { icon: '📊', label: 'Overview',  active: true },
+//   { icon: '🤖', label: 'Automations', active: false },
+//   { icon: '📦', label: 'Orders',    active: false },
+//   { icon: '🛡️', label: 'Security',  active: false },
+//   { icon: '👤', label: 'Profile',   active: false },
+// ];
 
-const DASH_METRICS = [
-  { label: 'Tasks Automated', value: '2,418', delta: '+14%', color: '#22C55E' },
-  { label: 'Revenue MRR',     value: '$8,340', delta: '+8.2%', color: '#3B82F6' },
-  { label: 'Active Bots',     value: '7',      delta: '+2',    color: '#F59E0B' },
-  { label: 'Threats Blocked', value: '1,103',  delta: '↓ 3%',  color: '#EF4444' },
-];
+// const DASH_METRICS = [
+//   { label: 'Tasks Automated', value: '2,418', delta: '+14%', color: '#22C55E' },
+//   { label: 'Revenue MRR',     value: '$8,340', delta: '+8.2%', color: '#3B82F6' },
+//   { label: 'Active Bots',     value: '7',      delta: '+2',    color: '#F59E0B' },
+//   { label: 'Threats Blocked', value: '1,103',  delta: '↓ 3%',  color: '#EF4444' },
+// ];
 
-const DASH_TOOLS = [
-  { name: 'AutoFlow AI',  status: 'running', uptime: '99.9%',  color: '#22C55E', runs: '1,244 runs today' },
-  { name: 'RankRadar',    status: 'running', uptime: '100%',   color: '#22D3EE', runs: 'Crawling 8 URLs' },
-  { name: 'WP Shield',    status: 'idle',    uptime: '99.4%',  color: '#EF4444', runs: 'Last scan 2h ago' },
-  { name: 'BotShield',    status: 'running', uptime: '99.8%',  color: '#F59E0B', runs: '47 threats blocked' },
-];
+// const DASH_TOOLS = [
+//   { name: 'AutoFlow AI',  status: 'running', uptime: '99.9%',  color: '#22C55E', runs: '1,244 runs today' },
+//   { name: 'RankRadar',    status: 'running', uptime: '100%',   color: '#22D3EE', runs: 'Crawling 8 URLs' },
+//   { name: 'WP Shield',    status: 'idle',    uptime: '99.4%',  color: '#EF4444', runs: 'Last scan 2h ago' },
+//   { name: 'BotShield',    status: 'running', uptime: '99.8%',  color: '#F59E0B', runs: '47 threats blocked' },
+// ];
 
-function DashboardPreview() {
-  const [activeNav, setActiveNav] = useState(0);
-  const [tick, setTick] = useState(0);
+// function DashboardPreview() {
+//   const [activeNav, setActiveNav] = useState(0);
+//   const [tick, setTick] = useState(0);
 
-  // simulate live metric updates
-  useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 2200);
-    return () => clearInterval(t);
-  }, []);
+//   // simulate live metric updates
+//   useEffect(() => {
+//     const t = setInterval(() => setTick(n => n + 1), 2200);
+//     return () => clearInterval(t);
+//   }, []);
 
-  const liveMetrics = DASH_METRICS.map((m, i) => ({
-    ...m,
-    value: i === 0 ? `${(2418 + tick * 3).toLocaleString()}` :
-           i === 3 ? `${(1103 + tick).toLocaleString()}` : m.value,
-  }));
+//   const liveMetrics = DASH_METRICS.map((m, i) => ({
+//     ...m,
+//     value: i === 0 ? `${(2418 + tick * 3).toLocaleString()}` :
+//            i === 3 ? `${(1103 + tick).toLocaleString()}` : m.value,
+//   }));
 
-  return (
-    <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
-            Live Dashboard Preview
-          </span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Your control center.</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 400, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything in one place — bots, metrics, security and orders. Real-time, always.</p>
-        </div>
+//   return (
+//     <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+//       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+//         <div style={{ textAlign: 'center', marginBottom: 48 }}>
+//           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 999, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', color: '#22C55E', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>
+//             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
+//             Live Dashboard Preview
+//           </span>
+//           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Your control center.</h2>
+//           <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 400, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything in one place — bots, metrics, security and orders. Real-time, always.</p>
+//         </div>
 
-        {/* Browser chrome wrapper */}
-        <div style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.6)' }}>
-          {/* Browser bar */}
-          <div style={{ padding: '12px 18px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#EF4444' }} />
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#F59E0B' }} />
-            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#22C55E' }} />
-            <div style={{ flex: 1, margin: '0 16px', background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-              app.axentralab.com/dashboard
-            </div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {['🔒','⟳'].map((i, x) => <span key={x} style={{ fontSize: 12, opacity: 0.3 }}>{i}</span>)}
-            </div>
-          </div>
+//         {/* Browser chrome wrapper */}
+//         <div style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.6)' }}>
+//           {/* Browser bar */}
+//           <div style={{ padding: '12px 18px', background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
+//             <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#EF4444' }} />
+//             <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#F59E0B' }} />
+//             <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#22C55E' }} />
+//             <div style={{ flex: 1, margin: '0 16px', background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+//               app.axentralab.com/dashboard
+//             </div>
+//             <div style={{ display: 'flex', gap: 6 }}>
+//               {['🔒','⟳'].map((i, x) => <span key={x} style={{ fontSize: 12, opacity: 0.3 }}>{i}</span>)}
+//             </div>
+//           </div>
 
-          {/* Dashboard layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', minHeight: 480 }}>
-            {/* Sidebar */}
-            <div style={{ background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '20px 0' }}>
-              <div style={{ padding: '0 16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: 8 }}>
-                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 14, color: '#fff', letterSpacing: -0.3 }}>Axentralab</div>
-                <div style={{ fontSize: 10, color: '#22C55E', fontFamily: "'Space Mono',monospace", marginTop: 2 }}>● Pro Plan</div>
-              </div>
-              {DASH_NAV.map((n, i) => (
-                <button key={i} onClick={() => setActiveNav(i)}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: activeNav === i ? 'rgba(34,197,94,0.1)' : 'none', border: 'none', borderLeft: activeNav === i ? '2px solid #22C55E' : '2px solid transparent', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
-                  <span style={{ fontSize: 14 }}>{n.icon}</span>
-                  <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: activeNav === i ? 700 : 500, color: activeNav === i ? '#22C55E' : 'rgba(255,255,255,0.45)' }}>{n.label}</span>
-                </button>
-              ))}
-              <div style={{ margin: '20px 16px 0', padding: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10 }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", marginBottom: 4 }}>STORAGE</div>
-                <div style={{ height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                  <div style={{ width: '62%', height: '100%', background: 'linear-gradient(90deg,#22C55E,#3B82F6)', borderRadius: 4 }} />
-                </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4, fontFamily: "'Space Mono',monospace" }}>6.2 / 10 GB</div>
-              </div>
-            </div>
+//           {/* Dashboard layout */}
+//           <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', minHeight: 480 }}>
+//             {/* Sidebar */}
+//             <div style={{ background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '20px 0' }}>
+//               <div style={{ padding: '0 16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: 8 }}>
+//                 <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 14, color: '#fff', letterSpacing: -0.3 }}>Axentralab</div>
+//                 <div style={{ fontSize: 10, color: '#22C55E', fontFamily: "'Space Mono',monospace", marginTop: 2 }}>● Pro Plan</div>
+//               </div>
+//               {DASH_NAV.map((n, i) => (
+//                 <button key={i} onClick={() => setActiveNav(i)}
+//                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: activeNav === i ? 'rgba(34,197,94,0.1)' : 'none', border: 'none', borderLeft: activeNav === i ? '2px solid #22C55E' : '2px solid transparent', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+//                   <span style={{ fontSize: 14 }}>{n.icon}</span>
+//                   <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, fontWeight: activeNav === i ? 700 : 500, color: activeNav === i ? '#22C55E' : 'rgba(255,255,255,0.45)' }}>{n.label}</span>
+//                 </button>
+//               ))}
+//               <div style={{ margin: '20px 16px 0', padding: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10 }}>
+//                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'Space Mono',monospace", marginBottom: 4 }}>STORAGE</div>
+//                 <div style={{ height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+//                   <div style={{ width: '62%', height: '100%', background: 'linear-gradient(90deg,#22C55E,#3B82F6)', borderRadius: 4 }} />
+//                 </div>
+//                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4, fontFamily: "'Space Mono',monospace" }}>6.2 / 10 GB</div>
+//               </div>
+//             </div>
 
-            {/* Main content */}
-            <div style={{ padding: '24px 24px 28px', overflow: 'hidden' }}>
-              {/* Top row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
-                <div>
-                  <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Good morning, Alex 👋</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 3 }}>
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}>🔔</div>
-                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>A</div>
-                </div>
-              </div>
+//             {/* Main content */}
+//             <div style={{ padding: '24px 24px 28px', overflow: 'hidden' }}>
+//               {/* Top row */}
+//               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
+//                 <div>
+//                   <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Good morning, Alex 👋</div>
+//                   <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 3 }}>
+//                     {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+//                   </div>
+//                 </div>
+//                 <div style={{ display: 'flex', gap: 8 }}>
+//                   <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}>🔔</div>
+//                   <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>A</div>
+//                 </div>
+//               </div>
 
-              {/* Metric cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 22 }}>
-                {liveMetrics.map((m, i) => (
-                  <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 14px 12px' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.4, marginBottom: 8, textTransform: 'uppercase' }}>{m.label}</div>
-                    <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: m.color, letterSpacing: -0.5, transition: 'all 0.4s' }}>{m.value}</div>
-                    <div style={{ fontSize: 10, color: m.delta.startsWith('+') ? '#22C55E' : m.delta.startsWith('↓') ? '#EF4444' : 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 4 }}>{m.delta} this month</div>
-                  </div>
-                ))}
-              </div>
+//               {/* Metric cards */}
+//               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 22 }}>
+//                 {liveMetrics.map((m, i) => (
+//                   <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 14px 12px' }}>
+//                     <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.4, marginBottom: 8, textTransform: 'uppercase' }}>{m.label}</div>
+//                     <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: m.color, letterSpacing: -0.5, transition: 'all 0.4s' }}>{m.value}</div>
+//                     <div style={{ fontSize: 10, color: m.delta.startsWith('+') ? '#22C55E' : m.delta.startsWith('↓') ? '#EF4444' : 'rgba(255,255,255,0.3)', fontFamily: "'Space Mono',monospace", marginTop: 4 }}>{m.delta} this month</div>
+//                   </div>
+//                 ))}
+//               </div>
 
-              {/* Active tools */}
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 10 }}>Active Tools</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {DASH_TOOLS.map((t, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.status === 'running' ? '#22C55E' : '#F59E0B', flexShrink: 0, animation: t.status === 'running' ? 'pulse 2s infinite' : 'none' }} />
-                      <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', flex: 1 }}>{t.name}</span>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace' " }}>{t.runs}</span>
-                      <span style={{ fontSize: 11, color: t.color, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>{t.uptime}</span>
-                      <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", background: t.status === 'running' ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${t.status === 'running' ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`, color: t.status === 'running' ? '#22C55E' : '#F59E0B' }}>
-                        {t.status.toUpperCase()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+//               {/* Active tools */}
+//               <div>
+//                 <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: "'Space Mono',monospace", letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 10 }}>Active Tools</div>
+//                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+//                   {DASH_TOOLS.map((t, i) => (
+//                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
+//                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.status === 'running' ? '#22C55E' : '#F59E0B', flexShrink: 0, animation: t.status === 'running' ? 'pulse 2s infinite' : 'none' }} />
+//                       <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', flex: 1 }}>{t.name}</span>
+//                       <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: "'Space Mono',monospace' " }}>{t.runs}</span>
+//                       <span style={{ fontSize: 11, color: t.color, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>{t.uptime}</span>
+//                       <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace", background: t.status === 'running' ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${t.status === 'running' ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`, color: t.status === 'running' ? '#22C55E' : '#F59E0B' }}>
+//                         {t.status.toUpperCase()}
+//                       </span>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
 
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
-          Ready to see the real thing? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Book a live demo →</Link>
-        </p>
-      </div>
-    </section>
-  );
-}
+//         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>
+//           Ready to see the real thing? <Link to="/contact" style={{ color: '#22C55E', textDecoration: 'none', fontWeight: 700 }}>Book a live demo →</Link>
+//         </p>
+//       </div>
+//     </section>
+//   );
+// }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
