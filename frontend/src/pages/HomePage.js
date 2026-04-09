@@ -7,23 +7,14 @@ import BlogSection from '../components/sections/BlogSection';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: 50,  suffix: '+', label: 'Projects Completed',    color: '#8B5CF6' },
-  { value: 30,  suffix: '+', label: 'Happy Clients',         color: '#3B82F6' },
+  { value: 24,  suffix: '+', label: 'Projects Completed',    color: '#8B5CF6' },
+  { value: 20,  suffix: '+', label: 'Happy Clients',         color: '#3B82F6' },
   { value: 99,  suffix: '%', label: 'Client Satisfaction',   color: '#A855F7' },
   { value: 24,  suffix: '/7', label: 'Security Monitoring',  color: '#F59E0B' },
 ];
 
 // Terminal lines shown in the floating code widget
-const TERMINAL_LINES = [
-  { delay: 0,    color: '#8B5CF6', text: '$ axentralab init --project my-business' },
-  { delay: 600,  color: '#94A3B8', text: '> Scanning codebase for vulnerabilities...' },
-  { delay: 1200, color: '#3B82F6', text: '> Web development stack initialized ✓' },
-  { delay: 1800, color: '#F59E0B', text: '> Security audit: 0 critical issues ✓' },
-  { delay: 2400, color: '#A855F7', text: '> Automation workflows configured...' },
-  { delay: 3000, color: '#06B6D4', text: '> WAF firewall rules applied ✓' },
-  { delay: 3600, color: '#8B5CF6', text: '✓ All systems secured. Ready to launch.' },
-  { delay: 4200, color: '#F59E0B', text: '🚀 Deployed to axentralab.app' },
-];
+
 
 // AI Tool tab definitions
 const AI_TABS = [
@@ -728,28 +719,17 @@ export default function HomePage() {
                   style={{ padding: '15px 32px', background: '#7C3AED', color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 12px 28px rgba(124,58,237,0.35)' }}>
                   LAUNCH A PROJECT →
                 </Link>
-                <Link to="/contact"
+                <Link to="/services"
                   style={{ padding: '15px 28px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}>
                   VIEW SERVICES
                 </Link>
               </div>
-
-              <div className="hero-trust" style={{ display: 'flex', gap: 26, flexWrap: 'wrap' }}>
-                {[
-                  { value: '50+', label: 'Projects Delivered' },
-                  { value: '99.9%', label: 'Security Uptime' },
-                  { value: '24/7', label: 'Threat Monitoring' },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 28, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>{item.value}</div>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: "'Space Mono',monospace" }}>{item.label}</span>
-                  </div>
-                ))}
-              </div>
+              <div className="stats-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
+          {STATS.map(s => <StatCard key={s.label} stat={s} />)}
+        </div>
             </div>
-
           </div>
         </div>
 
@@ -758,9 +738,7 @@ export default function HomePage() {
 
       {/* ── STATS BAR ─────────────────────────────────────────────────────── */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
-        <div className="stats-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
-          {STATS.map(s => <StatCard key={s.label} stat={s} />)}
-        </div>
+       
       </section>
 
       {/* ── FREE AI TOOL ──────────────────────────────────────────────────── */}

@@ -9,10 +9,10 @@ const C = {
 const HERO_BG_IMAGE = process.env.REACT_APP_ABOUT_HERO_BG_IMAGE || '/images/about-hero-bg.png';
 
 const TEAM = [
-  { name: 'Rafi Islam',    role: 'CEO & Lead Architect',   emoji: '🧠', color: C.blue   },
-  { name: 'Nadia Hasan',   role: 'Head of Cybersecurity',  emoji: '🛡️', color: C.green  },
+  { name: 'Nazat Hossain Adi',    role: 'CEO & Lead Architect',   emoji: '🧠', color: C.blue   },
+  { name: 'Arifin Hasan',   role: 'Head of Cybersecurity',  emoji: '🛡️', color: C.green  },
   { name: 'Tanvir Ahmed',  role: 'AI/ML Engineer',         emoji: '🤖', color: C.purple },
-  { name: 'Sara Chowdhury',role: 'DevOps Lead',            emoji: '☁️', color: C.amber  },
+  { name: 'Shakil Ahmed',role: 'DevOps Lead',            emoji: '☁️', color: C.amber  },
 ];
 
 const VALUES = [
