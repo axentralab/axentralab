@@ -7,22 +7,22 @@ import BlogSection from '../components/sections/BlogSection';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: 15,  suffix: '+', label: 'Projects Completed', color: '#22C55E' },
-  { value: 10,  suffix: '+', label: 'Happy Clients',      color: '#3B82F6' },
-  { value: 5,   suffix: '+', label: 'Ongoing Projects',   color: '#A855F7' },
-  { value: 25,   suffix: '+', label: 'Team Members',       color: '#F59E0B' },
+  { value: 50,  suffix: '+', label: 'Projects Completed',    color: '#22C55E' },
+  { value: 30,  suffix: '+', label: 'Happy Clients',         color: '#3B82F6' },
+  { value: 99,  suffix: '%', label: 'Client Satisfaction',   color: '#A855F7' },
+  { value: 24,  suffix: '/7', label: 'Security Monitoring',  color: '#F59E0B' },
 ];
 
 // Terminal lines shown in the floating code widget
 const TERMINAL_LINES = [
-  { delay: 0,    color: '#22C55E', text: '$ axentralab init --project my-saas' },
-  { delay: 600,  color: '#94A3B8', text: '> Scanning codebase...' },
-  { delay: 1200, color: '#3B82F6', text: '> AI agent initialized ✓' },
-  { delay: 1800, color: '#94A3B8', text: '> Connecting to cloud infra...' },
-  { delay: 2400, color: '#A855F7', text: '> Security audit running...' },
-  { delay: 3000, color: '#22C55E', text: '✓ All systems go. Ready to build.' },
-  { delay: 3600, color: '#F59E0B', text: '> Deploy? [Y/n]: Y' },
-  { delay: 4200, color: '#22C55E', text: '🚀 Deployed to axentralab.app' },
+  { delay: 0,    color: '#22C55E', text: '$ axentralab init --project my-business' },
+  { delay: 600,  color: '#94A3B8', text: '> Scanning codebase for vulnerabilities...' },
+  { delay: 1200, color: '#3B82F6', text: '> Web development stack initialized ✓' },
+  { delay: 1800, color: '#F59E0B', text: '> Security audit: 0 critical issues ✓' },
+  { delay: 2400, color: '#A855F7', text: '> Automation workflows configured...' },
+  { delay: 3000, color: '#06B6D4', text: '> WAF firewall rules applied ✓' },
+  { delay: 3600, color: '#22C55E', text: '✓ All systems secured. Ready to launch.' },
+  { delay: 4200, color: '#F59E0B', text: '🚀 Deployed to axentralab.app' },
 ];
 
 // AI Tool tab definitions
@@ -91,7 +91,7 @@ function Glow({ x, y, color = '#22C55E', size = 500 }) {
 
 // Animated headline that cycles through words
 function AnimatedHeadline() {
-  const words  = ['AI systems', 'SaaS platforms', 'secure apps'];
+  const words  = ['digital presence', 'secure systems', 'business growth'];
   const colors = ['#22C55E', '#3B82F6', '#F59E0B', '#A855F7'];
   const [idx, setIdx]     = useState(0);
   const [visible, setVis] = useState(true);
@@ -433,62 +433,62 @@ function FreeAITool() {
 // ─── New Section Data ─────────────────────────────────────────────────────────
 
 const TOOLS_GRID = [
-  { icon: '🌐', name: 'Business Website',   tag: 'Web Development',    desc: 'Clean, fast and professional websites for businesses, corporates and startups — responsive and SEO-ready.',       features: ['5+ pages', 'Mobile responsive', 'SEO setup'],      price: 10000, tier: 'From ৳', color: '#22C55E' },
-  { icon: '🛒', name: 'E-commerce Store',   tag: 'Online Shop',        desc: 'Full-featured online stores with product management, cart, checkout and local payment gateway integration.',          features: ['Product filters', 'Cart & checkout', 'Admin panel'], price: 30000, tier: 'From ৳', color: '#3B82F6' },
-  { icon: '⚙️', name: 'Custom Web System',  tag: 'POS / SaaS / Custom',desc: 'Tailor-made web apps — POS systems, courier platforms, SaaS dashboards built for your specific workflow.',          features: ['Custom logic', 'Role-based access', 'Dashboard'],   price: 50000, tier: 'From ৳', color: '#A855F7' },
-  { icon: '🎨', name: 'UI/UX Design',       tag: 'Design',             desc: 'User-centred design for web apps and websites — Figma wireframes, prototypes and production-ready design systems.',  features: ['Figma design', 'Wireframes', 'Prototype'],          price: 8000,  tier: 'From ৳', color: '#F59E0B' },
-  { icon: '🔐', name: 'Security Audit',     tag: 'Cybersecurity',      desc: 'Basic security checks for your website or web app — vulnerability scan, HTTPS setup and hardening recommendations.',  features: ['Vulnerability scan', 'HTTPS setup', 'Report'],      price: 5000,  tier: 'From ৳', color: '#EF4444' },
-  { icon: '📈', name: 'Digital Marketing',  tag: 'Marketing & Sales',  desc: 'Sales funnels, SEO, social media management and lead generation campaigns to grow your online presence.',            features: ['Sales funnel', 'SEO', 'Social media'],              price: 5000,  tier: 'From ৳', color: '#06B6D4' },
+  { icon: '🌐', name: 'Business Website',      tag: 'Web Development',    desc: 'Clean, fast and professional websites for businesses, corporates and startups — responsive, SEO-ready and conversion-focused.',         features: ['5+ pages', 'Mobile responsive', 'SEO setup'],         price: 10000, tier: 'From ৳', color: '#22C55E' },
+  { icon: '🛒', name: 'E-commerce Store',      tag: 'Online Shop',        desc: 'Full-featured online stores with product management, cart, checkout and local payment gateway (bKash/Nagad/Stripe) integration.',         features: ['Product filters', 'Cart & checkout', 'Admin panel'],  price: 30000, tier: 'From ৳', color: '#3B82F6' },
+  { icon: '⚙️', name: 'Custom Web System',     tag: 'POS / SaaS / Custom',desc: 'Tailor-made web apps — POS systems, courier platforms, SaaS dashboards built for your specific workflow.',                            features: ['Custom logic', 'Role-based access', 'Dashboard'],      price: 50000, tier: 'From ৳', color: '#A855F7' },
+  { icon: '🔐', name: 'Security Audit',        tag: 'Cybersecurity',      desc: 'Full OWASP-based vulnerability scan, malware detection, WAF setup and server hardening — before threats cost you money.',              features: ['OWASP scan', 'WAF setup', 'Pen testing'],              price: 22000, tier: 'From ৳', color: '#F59E0B' },
+  { icon: '🤖', name: 'Business Automation',   tag: 'Automation & AI',    desc: 'Automate your business processes — CRM setup, API integrations, chatbots and workflow automation using Zapier & Make.',                features: ['CRM setup', 'Chatbot', 'Workflow auto'],               price: 33000, tier: 'From ৳', color: '#06B6D4' },
+  { icon: '💼', name: 'White-Label Services',  tag: 'Agency Partner',     desc: 'Scale your agency without hiring — outsource web dev, cybersecurity support and emergency bug fixes under your brand.',                  features: ['Dev outsourcing', 'Security support', 'NDA included'], price: 500,   tier: 'From $', color: '#EC4899' },
 ];
 
 const CORE_SERVICES = [
   {
-    icon: '🌐', title: 'Website Development', label: 'Business & Corporate',
+    icon: '🌐', title: 'Web Development', label: 'Websites · eCommerce · SaaS',
     color: '#22C55E', price: '$100 / ৳10,000+',
-    desc: 'Professional business websites, corporate portals and landing pages — fully responsive, fast-loading and built to convert visitors into clients.',
-    features: ['Business / Corporate sites', 'Responsive mobile design', 'Contact forms & SEO setup', 'Custom branding & color system', 'CMS for easy content update', 'Delivered in 1–3 weeks'],
+    desc: 'We build fast, modern websites that actually convert visitors into customers — from simple landing pages to full-stack SaaS platforms.',
+    features: ['Business & corporate sites', 'E-commerce (Shopify/WooCommerce)', 'Custom web apps & SaaS dashboards', 'Landing pages (conversion-focused)', 'Speed optimization & SEO-ready setup', 'Bug fixing & performance improvement'],
   },
   {
-    icon: '🛒', title: 'E-commerce Development', label: 'Online Store Solutions',
-    color: '#3B82F6', price: '$300 / ৳30,000+',
-    desc: 'Full-featured online stores built for the Bangladesh market — product management, cart, checkout and payment gateway integration included.',
-    features: ['Product listing & filters', 'Cart & checkout flow', 'Payment gateway setup', 'Order & inventory management', 'Admin dashboard', 'Mobile-first design'],
+    icon: '🔐', title: 'Cybersecurity', label: 'Audit · WAF · Pen Testing',
+    color: '#F59E0B', price: '$200 / ৳22,000+',
+    desc: 'We protect your business from real-world cyber threats before they cost you money — full audits, malware removal, and 24/7 monitoring.',
+    features: ['Website security audit (OWASP)', 'Malware removal & cleanup', 'Web Application Firewall (WAF) setup', 'Penetration testing (Basic/Advanced)', 'Server hardening (Linux/Cloud)', 'API & SaaS security testing'],
   },
   {
-    icon: '⚙️', title: 'Custom Web Systems', label: 'POS / Courier / SaaS',
-    color: '#A855F7', price: '$500 / ৳50,000+',
-    desc: 'Tailor-made web applications for your business — POS systems, courier management platforms, SaaS dashboards and custom admin panels.',
-    features: ['Custom business logic', 'Role-based access control', 'Real-time dashboards', 'API integrations', 'Scalable architecture', 'Full source code handoff'],
+    icon: '⚙️', title: 'Automation & AI', label: 'Workflows · CRM · Chatbots',
+    color: '#06B6D4', price: '$300 / ৳33,000+',
+    desc: 'We automate your business processes to save time and increase efficiency — CRM setup, API integrations, chatbots, and workflow automation.',
+    features: ['Business process automation', 'CRM setup & integration', 'API integration (3rd party)', 'Chatbot development', 'Workflow automation (Zapier, Make)', 'Custom reporting & alerts'],
   },
 ];
 
 const DIGITAL_PRODUCTS = [
   {
-    icon: '🌐', name: 'Business Website Package', tag: 'Website',
-    desc: 'Professional 5-page business website — Home, About, Services, Portfolio and Contact. Responsive, fast and SEO-ready.',
-    includes: ['5 pages', 'Mobile responsive', 'Contact form', 'SEO setup'],
-    price: 15000, originalPrice: 20000, badge: 'Popular', color: '#22C55E',
+    icon: '🌐', name: 'Startup Growth Package', tag: 'Combo Deal',
+    desc: 'Website build + basic security + speed optimization. Everything a new business needs to go live fast.',
+    includes: ['3–5 pages', 'Security audit', 'Speed fix', 'SEO setup'],
+    price: 55000, originalPrice: 75000, badge: 'Popular', color: '#22C55E',
     priceUnit: '৳',
   },
   {
-    icon: '🛒', name: 'E-commerce Starter', tag: 'Online Shop',
-    desc: 'Ready-to-launch online store with product listings, cart, checkout and bKash/Nagad payment integration.',
-    includes: ['Product management', 'Cart & checkout', 'Payment gateway', 'Admin panel'],
-    price: 35000, originalPrice: null, badge: 'New', color: '#3B82F6',
+    icon: '🔒', name: 'Business Protection Pack', tag: 'Cybersecurity',
+    desc: 'Full security audit + malware removal + WAF setup. Protect your live site from real-world threats.',
+    includes: ['OWASP audit', 'Malware fix', 'WAF setup', 'Report'],
+    price: 33000, originalPrice: null, badge: 'New', color: '#F59E0B',
     priceUnit: '৳',
   },
   {
-    icon: '⚙️', name: 'POS System', tag: 'Custom System',
-    desc: 'Simple point-of-sale system for retail shops — sales tracking, inventory management and daily reports.',
-    includes: ['Sales dashboard', 'Inventory', 'Reports', 'User roles'],
-    price: 55000, originalPrice: null, badge: null, color: '#A855F7',
+    icon: '🏆', name: 'Premium All-in-One', tag: 'Full Package',
+    desc: 'Website + Security + Maintenance — total control of your online presence. We handle everything.',
+    includes: ['Full web build', 'Security hardening', 'Monthly maintenance', 'Priority support'],
+    price: 100000, originalPrice: null, badge: null, color: '#A855F7',
     priceUnit: '৳',
   },
   {
-    icon: '🎨', name: 'UI/UX Design Pack', tag: 'Design',
-    desc: 'Complete UI design for your web project — wireframes, full Figma prototype and developer-ready design system.',
-    includes: ['Wireframes', 'Figma design', 'Design system', 'Prototype'],
-    price: 8000, originalPrice: 12000, badge: null, color: '#F59E0B',
+    icon: '⚙️', name: 'Automation Starter', tag: 'Automation',
+    desc: 'Business process automation with CRM setup, API integrations and workflow automation using Zapier/Make.',
+    includes: ['CRM setup', 'API integration', 'Workflow auto', 'Chatbot'],
+    price: 33000, originalPrice: 45000, badge: null, color: '#06B6D4',
     priceUnit: '৳',
   },
 ];
@@ -764,8 +764,8 @@ export default function HomePage() {
       <section style={{ padding: '100px 5%', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #A855F740', background: '#A855F710', color: '#A855F7', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 16 }}>Our Services</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>6 services. One agency.</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Everything your business needs to build, grow and secure its digital presence — all under one roof.</p>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Build. Secure. Scale.</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Web development, cybersecurity and automation — everything your business needs, all under one roof.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 18, maxWidth: 1100, margin: '0 auto' }}>
           {TOOLS_GRID.map((tool, i) => (
@@ -822,8 +822,8 @@ export default function HomePage() {
       <section style={{ padding: '100px 5%', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>Core Services</span>
-          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>Built to grow your revenue</h2>
-          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 440, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Three flagship services. Every one custom-built, production-ready, and ROI-positive.</p>
+          <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, marginBottom: 14 }}>3 services. Unlimited impact.</h2>
+          <p style={{ color: 'rgba(255,255,255,0.35)', maxWidth: 440, margin: '0 auto', fontSize: 15, lineHeight: 1.7 }}>Web development, cybersecurity and automation — each one custom-built, production-ready and ROI-positive.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(310px,1fr))', gap: 22, maxWidth: 1080, margin: '0 auto' }}>
           {CORE_SERVICES.map((s, i) => (
@@ -870,63 +870,10 @@ export default function HomePage() {
       </section>
 
       {/* ── PRODUCTS (4 digital products) ────────────────────────────────── */}
-      <section style={{ padding: '100px 5%', position: 'relative', overflow: 'hidden' }}>
-        <Glow x="80%" y="50%" color="#3B82F6" size={400} />
-        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
-            <div>
-              <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #3B82F640', background: '#3B82F610', color: '#3B82F6', fontSize: 11, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 14 }}>Digital Products</span>
-              <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', letterSpacing: -1.2, margin: 0, lineHeight: 1.1 }}>Buy once.<br />Deploy forever.</h2>
-            </div>
-            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, maxWidth: 300, lineHeight: 1.7, margin: 0 }}>One-time purchase. Lifetime access. No subscriptions on these — they're yours.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 18 }}>
-            {DIGITAL_PRODUCTS.map((p, i) => (
-              <div key={i}
-                style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', transition: 'all 0.25s', display: 'flex', flexDirection: 'column' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}40`; e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = `0 18px 50px ${p.color}14`; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
-                {/* product thumbnail band */}
-                <div style={{ height: 80, background: `linear-gradient(135deg,${p.color}20,${p.color}05)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', borderBottom: `1px solid ${p.color}15` }}>
-                  <span style={{ fontSize: 36 }}>{p.icon}</span>
-                  {p.badge && (
-                    <span style={{ position: 'absolute', top: 10, right: 10, padding: '2px 8px', borderRadius: 6, background: p.badge === 'Popular' ? '#F59E0B20' : '#22C55E20', border: `1px solid ${p.badge === 'Popular' ? '#F59E0B40' : '#22C55E40'}`, color: p.badge === 'Popular' ? '#F59E0B' : '#22C55E', fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono',monospace" }}>
-                      {p.badge === 'Popular' ? '🔥 Popular' : '⭐ New'}
-                    </span>
-                  )}
-                </div>
-                <div style={{ padding: '20px 20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: p.color, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>{p.tag}</div>
-                  <h3 style={{ fontFamily: "'Sora',sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: -0.2 }}>{p.name}</h3>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: 16, flex: 1 }}>{p.desc}</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
-                    {p.includes.map((item, ii) => (
-                      <span key={ii} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', fontFamily: "'Space Mono',monospace" }}>✓ {item}</span>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                    <div>
-                      {p.originalPrice && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through', fontFamily: "'Space Mono',monospace" }}>{p.priceUnit || '$'}{p.originalPrice.toLocaleString()}</div>}
-                      <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 20, color: p.color }}>{p.priceUnit || '$'}{p.price.toLocaleString()}</div>
-                    </div>
-                    <button style={{ padding: '9px 16px', borderRadius: 10, background: p.color, color: ['#22C55E','#F59E0B','#22D3EE'].includes(p.color) ? '#000' : '#fff', border: 'none', fontSize: 12, fontWeight: 800, fontFamily: "'Sora',sans-serif", cursor: 'pointer', transition: 'opacity 0.15s', whiteSpace: 'nowrap' }}
-                      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                      onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-                      Buy Now →
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <Link to="/services" style={{ fontSize: 14, color: '#3B82F6', fontWeight: 700, textDecoration: 'none', fontFamily: "'Space Mono',monospace" }}>Browse all products →</Link>
-          </div>
-        </div>
-      </section>
+
 
       {/* ── DASHBOARD PREVIEW ─────────────────────────────────────────────── */}
-      <DashboardPreview />
+      {/* <DashboardPreview /> */}
 
       {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
       <TestimonialsSection />
@@ -938,33 +885,33 @@ export default function HomePage() {
       <BlogSection />
 
       {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
-      {/* <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(34,197,94,0.08),transparent 65%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', maxWidth: 620, margin: '0 auto' }}>
-          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Get Started</span>
+        <div style={{ position: 'relative', maxWidth: 640, margin: '0 auto' }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, border: '1px solid #22C55E40', background: '#22C55E10', color: '#22C55E', fontSize: 10, fontFamily: "'Space Mono',monospace", letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>Get Started Today</span>
           <h2 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(28px,5vw,56px)', fontWeight: 900, color: '#fff', margin: '18px auto 16px', letterSpacing: -1.5, lineHeight: 1.08 }}>
-            Ready to build<br /><span style={{ color: '#22C55E' }}>your next project?</span>
+            Ready to build, secure<br /><span style={{ color: '#22C55E' }}>&amp; scale your business?</span>
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 20, lineHeight: 1.7 }}>Tell us what you need — we'll respond within 24 hours with a clear proposal and honest pricing.</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 20, lineHeight: 1.7 }}>Tell us what you need — we'll respond within 24 hours with a clear proposal and honest pricing. No hidden fees. No BS.</p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 12, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.07)', marginBottom: 28 }}>
             <span style={{ fontSize: 14 }}>📍</span>
             <span style={{ fontFamily: "'Sora',sans-serif", fontSize: 13, color: '#86EFAC', fontWeight: 700 }}>Based in Dhaka, Bangladesh · Serving local & remote clients</span>
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 12, textDecoration: 'none' }}>
-              Start a Project →
+            <Link to="/contact" className="btn-primary" style={{ padding: '15px 36px', background: '#22C55E', color: '#000', fontSize: 15, fontWeight: 800, border: 'none', borderRadius: 12, textDecoration: 'none', fontFamily: "'Sora',sans-serif" }}>
+              🔍 Get Free Security Audit →
             </Link>
             <Link to="/contact" style={{ padding: '15px 28px', fontSize: 15, borderRadius: 12, textDecoration: 'none', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700 }}>
-              Schedule a Call
+              📞 Book a Free Consultation
             </Link>
           </div>
-          <div style={{ marginTop: 28, display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request'].map((t, i) => (
+          <div style={{ marginTop: 28, display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {['✓ Free consultation', '✓ Fixed-price quotes', '✓ NDA on request', '✓ BDT & USD accepted'].map((t, i) => (
               <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontFamily: "'Space Mono',monospace" }}>{t}</span>
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
     </div>
   );
 }
