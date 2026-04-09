@@ -9,10 +9,28 @@ export default function Footer() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 36, maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ gridColumn: 'span 2' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg,#22C55E,#16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#000' }}>A</div>
-            <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 17, color: '#fff' }}>Axentralab</span>
-          </div>
+<div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+  
+  <img 
+    src="https://res.cloudinary.com/dwrlbuej9/image/upload/v1775726329/Screenshot_2026-04-09_151038-removebg-preview_tsvt42.png"
+    alt="Axentralab Logo"
+    style={{ 
+      width: 60, 
+      height: 60, 
+      borderRadius: 8,
+      objectFit: 'contain'
+    }}
+  />
+
+  <span style={{ 
+    fontFamily: "'Sora',sans-serif", 
+    fontWeight: 700, 
+    fontSize: 17, 
+    color: '#fff' 
+  }}>
+    Axentralab
+  </span>
+</div>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7, maxWidth: 260 }}>AI automation, secure development and cloud infrastructure for modern companies.</p>
         </div>
         {[

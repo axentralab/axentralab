@@ -134,9 +134,19 @@ export default function Navbar() {
       }}>
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#22C55E,#16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 900, color: '#000' }}>A</div>
-          <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: -0.5 }}>AxentraLab</span>
-        </Link>
+        <img 
+          src="https://res.cloudinary.com/dwrlbuej9/image/upload/v1775726329/Screenshot_2026-04-09_151038-removebg-preview_tsvt42.png"
+          alt="AxentraLab Logo"
+          style={{ 
+            height: '40px', 
+            width: 'auto',
+            objectFit: 'contain'
+          }}
+        />      
+        <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', letterSpacing: -0.5 }}>
+          AxentraLab
+        </span>
+      </Link>
 
         {/* Desktop nav */}
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }} className="desktop-nav">
