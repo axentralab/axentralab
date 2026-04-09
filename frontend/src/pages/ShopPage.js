@@ -15,8 +15,8 @@ const PACKS = [
     badge: 'Entry Point',
     label: 'Startup Pack',
     tagline: 'Perfect for new businesses & MVPs',
-    price: '৳20,000',
-    priceMax: '৳50,000',
+    price: '$160 / ৳20,000',
+    priceMax: '$500 / ৳50,000',
     delivery: '7–10 days',
     support: '1 month post-launch',
     pages: '1–3 responsive pages',
@@ -39,8 +39,8 @@ const PACKS = [
     badge: 'Most Popular',
     label: 'SME Pack',
     tagline: 'For growing businesses & brands',
-    price: '৳50,000',
-    priceMax: '৳1,50,000',
+    price: '$400 / ৳50,000',
+    priceMax: '$1200 / ৳1,50,000',
     delivery: '10–20 days',
     support: '3 months post-launch',
     pages: '4–10 pages + blog',
@@ -56,7 +56,7 @@ const PACKS = [
       'Basic analytics & tracking setup',
       'Advanced custom JS features',
     ],
-    addons: ['eCommerce +৳30,000', 'CRM integration +৳20,000', 'Maintenance contract'],
+    addons: ['eCommerce +$500', 'CRM integration +৳20,000', 'Maintenance contract'],
     popular: true,
   },
   {
@@ -64,7 +64,7 @@ const PACKS = [
     badge: 'Full Power',
     label: 'Enterprise Pack',
     tagline: 'Custom platforms, SaaS & dashboards',
-    price: '৳1,50,000',
+    price: '$1,500 / ৳1,50,000',
     priceMax: null,
     delivery: '20+ days',
     support: '6 months + optional contract',
@@ -141,6 +141,7 @@ const CASES = [
 
 // ─── Portfolio items ──────────────────────────────────────────────────────────
 const PORTFOLIO = [
+  { name: 'Travel Agency', cat: 'Startup', icon: '✈️', color: CYAN,   tech: 'MERN', desc: 'Tour booking site with custom itinerary builder.' },
   { name: 'AgroTech BD', cat: 'Startup', icon: '🌾', color: GREEN,  tech: 'WordPress', desc: 'Agricultural marketplace for rural Bangladesh farmers.' },
   { name: 'MediConnect',  cat: 'SME',     icon: '🏥', color: BLUE,   tech: 'Next.js',   desc: 'Doctor appointment booking platform with telemedicine.' },
   { name: 'EduFlow LMS',  cat: 'Enterprise', icon: '📚', color: PURPLE, tech: 'React + Node.js', desc: 'Full learning management system with live classes.' },
