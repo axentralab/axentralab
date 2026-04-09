@@ -853,8 +853,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── PRODUCTS (4 digital products) ────────────────────────────────── */}
-
+ 
 
       {/* ── DASHBOARD PREVIEW ─────────────────────────────────────────────── */}
       {/* <DashboardPreview /> */}
