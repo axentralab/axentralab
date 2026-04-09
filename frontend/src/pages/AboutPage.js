@@ -54,14 +54,26 @@ export default function AboutPage() {
         }
         .team-card:hover { transform: translateY(-5px); }
 
+        @media (max-width:992px) {
+          .about-mission-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .about-mission-card { padding: 28px !important; }
+        }
         @media (max-width:768px) {
+          .about-hero-grid { min-height: 64vh !important; padding: 130px 5% 90px !important; background-size: 40px 40px !important; }
+          .about-hero-title { letter-spacing: -1px !important; line-height: 1.1 !important; }
+          .about-hero-sub { font-size: 15px !important; line-height: 1.75 !important; }
+          .about-section { padding: 72px 5% !important; }
           .about-values-grid { grid-template-columns: 1fr 1fr !important; }
           .about-team-grid   { grid-template-columns: 1fr 1fr !important; }
-          .about-hero-grid   { background-size: 40px 40px !important; }
+          .about-badge { font-size: 9px !important; letter-spacing: 1.2px !important; }
         }
         @media (max-width:480px) {
+          .about-hero-grid { min-height: 58vh !important; padding: 118px 5% 78px !important; }
           .about-values-grid { grid-template-columns: 1fr !important; }
           .about-team-grid   { grid-template-columns: 1fr 1fr !important; }
+          .about-mission-card { padding: 22px !important; border-radius: 18px !important; }
+          .about-cta-buttons { flex-direction: column !important; }
+          .about-cta-buttons a { width: 100% !important; justify-content: center !important; }
         }
       `}</style>
 
@@ -80,20 +92,20 @@ export default function AboutPage() {
             <span className="about-badge" style={{ background: `${C.purple}10`, border: `1px solid ${C.purple}28`, color: C.purple, marginBottom: 24 }}>
               Our Story
             </span>
-            <h1 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(36px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1.05, color: C.text, marginBottom: 22 }}>
+            <h1 className="about-hero-title" style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(36px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1.05, color: C.text, marginBottom: 22 }}>
               Built by engineers.<br />
               <span style={{ color: C.blue }}>Trusted by teams worldwide.</span>
             </h1>
-            <p style={{ color: C.muted, fontSize: 17, lineHeight: 1.85, maxWidth: 560, margin: '0 auto' }}>
+            <p className="about-hero-sub" style={{ color: C.muted, fontSize: 17, lineHeight: 1.85, maxWidth: 560, margin: '0 auto' }}>
               Universe Soft Tech was founded in Dhaka with a single mission: deliver enterprise-grade technology without the enterprise overhead. From cybersecurity to AI — we build things that matter.
             </p>
           </div>
         </section>
 
         {/* ── MISSION ─────────────────────────────────────────── */}
-        <section style={{ padding: '90px 5%', position: 'relative' }}>
+        <section className="about-section" style={{ padding: '90px 5%', position: 'relative' }}>
           <Glow color={C.green} style={{ width: 500, height: 500, top: '10%', right: '-10%' }} />
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+          <div className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
               <span className="about-badge" style={{ background: `${C.green}10`, border: `1px solid ${C.green}28`, color: C.green, marginBottom: 18 }}>Mission & Vision</span>
               <h2 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(26px,3.5vw,44px)', fontWeight: 800, letterSpacing: -1.2, color: C.text, marginBottom: 20, lineHeight: 1.15 }}>
@@ -107,7 +119,7 @@ export default function AboutPage() {
               </p>
             </div>
             {/* Stats panel */}
-            <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: 36, position: 'relative', overflow: 'hidden' }}>
+            <div className="about-mission-card" style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: 36, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${C.blue}, ${C.purple})` }} />
               {[
                 ['2019', 'Founded in Dhaka'],
@@ -125,7 +137,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── VALUES ─────────────────────────────────────────── */}
-        <section style={{ padding: '90px 5%', position: 'relative' }}>
+        <section className="about-section" style={{ padding: '90px 5%', position: 'relative' }}>
           <Glow color={C.purple} style={{ width: 500, height: 500, bottom: '0%', left: '-10%' }} />
           <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -154,7 +166,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── TEAM ───────────────────────────────────────────── */}
-        <section style={{ padding: '90px 5%', position: 'relative', borderTop: `1px solid ${C.border}` }}>
+        <section className="about-section" style={{ padding: '90px 5%', position: 'relative', borderTop: `1px solid ${C.border}` }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <span className="about-badge" style={{ background: `${C.amber}10`, border: `1px solid ${C.amber}28`, color: C.amber, marginBottom: 16 }}>The Team</span>
@@ -182,12 +194,12 @@ export default function AboutPage() {
         </section>
 
         {/* ── CTA ─────────────────────────────────────────────── */}
-        <section style={{ padding: '90px 5%', textAlign: 'center', borderTop: `1px solid ${C.border}` }}>
+        <section className="about-section" style={{ padding: '90px 5%', textAlign: 'center', borderTop: `1px solid ${C.border}` }}>
           <h2 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 'clamp(26px,3.5vw,44px)', fontWeight: 800, letterSpacing: -1, color: C.text, marginBottom: 16 }}>
             Want to work with us?
           </h2>
           <p style={{ color: C.muted, fontSize: 16, marginBottom: 32 }}>We'd love to hear about your project.</p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="about-cta-buttons" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/contact" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 12, background: C.blue, color: '#fff', fontFamily: "'Outfit',sans-serif", fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: `0 0 24px ${C.blue}40`, transition: 'all 0.2s' }}>
               Get in touch →
             </Link>
