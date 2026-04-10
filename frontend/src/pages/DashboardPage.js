@@ -228,8 +228,7 @@ export default function DashboardPage() {
     { icon: '📊', label: 'Overview',  path: '/dashboard' },
     { icon: '📦', label: 'My Orders', path: '/dashboard/orders' },
     { icon: '👤', label: 'Profile',   path: '/dashboard/profile' },
-    { icon: '�', label: 'Referrals', path: '/referrals' },
-    { icon: '�🛒', label: 'Shop',      path: '/services' },
+    { icon: '🛒', label: 'Shop',      path: '/services' },
   ];
 
   return (

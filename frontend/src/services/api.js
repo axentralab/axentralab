@@ -13,19 +13,15 @@
 
 import axios from 'axios';
 
-// Use hardcoded backend URL for development
-// In production, will be set via environment variable
-const API_URL = 'http://localhost:5000/api';
-
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: process.env.REACT_APP_API_URL || '/api',
   withCredentials: true,
   timeout: 15000,
 });
 
 // ── Request interceptor: attach token ────────────────────────────────────────
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('ax_token');
+  const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -48,8 +44,7 @@ api.interceptors.response.use(
 
     // Unauthorized — token expired or invalid
     if (status === 401) {
-      localStorage.removeItem('ax_token');
-      localStorage.removeItem('ax_user');
+      localStorage.removeItem('token');
       // Only redirect if not already on auth pages
       const authPages = ['/login', '/register'];
       if (!authPages.some(p => window.location.pathname.startsWith(p))) {

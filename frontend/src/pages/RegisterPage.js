@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const REGISTER_BG_IMAGE =
   process.env.REACT_APP_REGISTER_BG_IMAGE ||
-  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80';
+  '/images/home-hero-bg.png';
 
 const STEPS = [
   { icon:'📋', title:'Tell us about your project',  desc:'We scope it out and send a fixed-price proposal.' },
@@ -18,8 +18,6 @@ const LOGOS = ['FinNova','BankCo','LearnLoop','Carrgo','Medify','Vaultify'];
 export default function RegisterPage() {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const referralCode = searchParams.get('ref') || searchParams.get('referral') || '';
   const [form, setForm]     = useState({ name:'', email:'', company:'', password:'', confirm:'' });
   const [error, setError]   = useState('');
   const [showPw, setShowPw] = useState(false);
@@ -43,7 +41,7 @@ export default function RegisterPage() {
     setError('');
     if (form.password !== form.confirm) return setError('Passwords do not match.');
     if (form.password.length < 6)       return setError('Password must be at least 6 characters.');
-    const result = await register(form.name, form.email, form.password, form.company, referralCode);
+    const result = await register(form.name, form.email, form.password, form.company);
     if (result.success) navigate('/dashboard');
     else setError(result.message);
   };
@@ -87,10 +85,10 @@ export default function RegisterPage() {
           display:grid;
           grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);
           overflow:hidden;
-          backgroundSize: cover;
-          backgroundPosition: center;
-          backgroundRepeat: no-repeat;
-          backgroundAttachment: fixed;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
         }
         .reg-outer::before {
           content:'';

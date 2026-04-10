@@ -1,13 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Referral = require('../models/Referral');
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, company, referralCode } = req.body;
+    const { name, email, password, company } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
 
@@ -16,22 +15,6 @@ exports.register = async (req, res) => {
 
     const user = await User.create({ name, email, password, company });
     const token = signToken(user._id);
-
-    // Handle referral
-    if (referralCode) {
-      try {
-        const existingReferral = await Referral.findOne({ referralCode });
-        if (existingReferral) {
-          existingReferral.referee = user._id;
-          existingReferral.status = 'activated';
-          existingReferral.activatedAt = new Date();
-          await existingReferral.save();
-        }
-      } catch (refErr) {
-        console.error('Referral error:', refErr.message);
-        // Don't fail registration on referral error
-      }
-    }
 
     res.status(201).json({
       success: true,
