@@ -103,6 +103,18 @@ export default function LoginPage() {
           display:grid;
           grid-template-columns:minmax(0,1.12fr) minmax(0,0.88fr);
           overflow:hidden;
+          backgroundSize: cover;
+          backgroundPosition: center;
+          backgroundRepeat: no-repeat;
+          backgroundAttachment: fixed;
+        }
+        .login-outer::before {
+          content:'';
+          position:absolute;
+          inset:0;
+          background:linear-gradient(118deg, rgba(6,8,15,0.92) 0%, rgba(88,28,135,0.55) 50%, rgba(6,8,15,0.88) 100%);
+          zIndex:0;
+          pointerEvents:none;
         }
         @media (max-width:860px) {
           .login-outer { grid-template-columns:1fr !important; }
@@ -119,8 +131,8 @@ export default function LoginPage() {
         .cb-box.checked { background:#8B5CF6; border-color:#8B5CF6; }
       `}</style>
 
-      <div className="login-outer">
-        {/* Left panel — photo bg only on this column */}
+      <div className="login-outer" style={{ backgroundImage: `url(${LOGIN_BG_IMAGE})` }}>
+        {/* Left panel */}
         <div
           className="login-left"
           style={{
@@ -131,33 +143,11 @@ export default function LoginPage() {
             justifyContent: 'space-between',
             padding: '48px 52px',
             borderRight: '1px solid rgba(139,92,246,0.12)',
+            zIndex: 1,
           }}
         >
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 0,
-              backgroundImage: `url(${LOGIN_BG_IMAGE})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'left center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          />
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 1,
-              background:
-                'linear-gradient(118deg, rgba(6,8,15,0.9) 0%, rgba(88,28,135,0.5) 50%, rgba(6,8,15,0.85) 100%)',
-              pointerEvents: 'none',
-            }}
-          />
-          <div style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundImage: 'linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, zIndex: 2, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, backgroundImage: 'linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, zIndex: 0, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
           <div style={{ position: 'relative', zIndex: 3 }}>
             <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
               <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg,#8B5CF6,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#000', fontFamily: "'Sora',sans-serif" }}>A</div>
@@ -199,14 +189,16 @@ export default function LoginPage() {
           className="login-right"
           style={{
             position: 'relative',
-            background: '#0A0D16',
             display: 'flex',
             alignItems: 'center',
             padding: 'clamp(40px,6vw,80px) clamp(24px,6vw,72px)',
+            zIndex: 1,
           }}
         >
           <div
             style={{
+              position: 'relative',
+              zIndex: 2,
               width: '100%',
               maxWidth: 420,
               margin: '0 auto',

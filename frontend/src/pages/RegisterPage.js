@@ -85,6 +85,18 @@ export default function RegisterPage() {
           display:grid;
           grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);
           overflow:hidden;
+          backgroundSize: cover;
+          backgroundPosition: center;
+          backgroundRepeat: no-repeat;
+          backgroundAttachment: fixed;
+        }
+        .reg-outer::before {
+          content:'';
+          position:absolute;
+          inset:0;
+          background:linear-gradient(135deg, rgba(7,11,18,0.93) 0%, rgba(15,76,129,0.58) 50%, rgba(7,11,18,0.91) 100%);
+          zIndex:0;
+          pointerEvents:none;
         }
         @media (max-width:900px) {
           .reg-outer { grid-template-columns:1fr !important; }
@@ -96,9 +108,9 @@ export default function RegisterPage() {
         }
       `}</style>
 
-      <div className="reg-outer">
+      <div className="reg-outer" style={{ backgroundImage: `url(${REGISTER_BG_IMAGE})` }}>
 
-        {/* ── LEFT — image bg only on this column ── */}
+        {/* ── LEFT ── */}
         <div
           className="reg-left"
           style={{
@@ -109,38 +121,15 @@ export default function RegisterPage() {
             justifyContent: 'space-between',
             padding: '48px 52px',
             borderRight: '1px solid rgba(59,130,246,0.14)',
+            zIndex: 1,
           }}
         >
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 0,
-              backgroundImage: `url(${REGISTER_BG_IMAGE})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'left center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          />
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 1,
-              background:
-                'linear-gradient(135deg, rgba(7,11,18,0.9) 0%, rgba(15,76,129,0.52) 50%, rgba(7,11,18,0.88) 100%)',
-              pointerEvents: 'none',
-            }}
-          />
-
           {/* diagonal stripe bg */}
-          <div style={{ position:'absolute', inset:0, zIndex:2, backgroundImage:'repeating-linear-gradient(135deg,rgba(59,130,246,0.03) 0px,rgba(59,130,246,0.03) 1px,transparent 1px,transparent 28px)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', inset:0, zIndex:0, backgroundImage:'repeating-linear-gradient(135deg,rgba(59,130,246,0.03) 0px,rgba(59,130,246,0.03) 1px,transparent 1px,transparent 28px)', pointerEvents:'none' }} />
 
           {/* glow blobs */}
-          <div style={{ position:'absolute', top:'-5%', right:'-10%', width:420, height:420, zIndex:2, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 65%)', animation:'glow 5s ease-in-out infinite', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, zIndex:2, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', top:'-5%', right:'-10%', width:420, height:420, zIndex:0, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 65%)', animation:'glow 5s ease-in-out infinite', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, zIndex:0, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
 
           {/* Logo */}
           <div style={{ position:'relative', zIndex:3 }}>
@@ -194,15 +183,17 @@ export default function RegisterPage() {
           className="reg-right"
           style={{
             position: 'relative',
-            background: '#0A0D16',
             display: 'flex',
             alignItems: 'center',
             padding: 'clamp(40px,5vw,72px) clamp(24px,6vw,72px)',
             overflowY: 'auto',
+            zIndex: 1,
           }}
         >
           <div
             style={{
+              position: 'relative',
+              zIndex: 2,
               width: '100%',
               maxWidth: 460,
               margin: '0 auto',
