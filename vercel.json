@@ -1,16 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "build" }
-    }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/frontend/$1" }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/build",
+  "framework": "react",
   "env": {
-    "REACT_APP_API_URL": "https://your-backend-url.com"
+    "REACT_APP_API_URL": "@react_app_api_url",
+    "REACT_APP_STRIPE_PUBLISHABLE_KEY": "@react_app_stripe_publishable_key"
   }
 }

@@ -142,15 +142,38 @@ curl -X POST http://localhost:5000/api/auth/login \
    git push heroku main
    ```
 
-### Option 3: Deploy Backend to Render.com
+### Option 3: Deploy Backend to Render.com ⭐ RECOMMENDED
 
 1. **Create Render Account** → https://render.com
-2. **Connect GitHub**
-3. **Create Web Service**
-4. **Build Command:** `npm install`
-5. **Start Command:** `node server.js`
-6. **Add Environment Variables**
-7. **Deploy** → Auto-deployed
+2. **Connect GitHub Repository**
+3. **Import from YAML**
+   - Click "Build and deploy from Git"
+   - Select your repository
+   - Click "Connect"
+4. **Render will auto-detect render.yaml** → Deploy with correct config
+5. **If manual setup needed:**
+   - **Root Directory:** `.` (use root folder)
+   - **Build Command:** `npm install`
+   - **Start Command:** `node backend/server.js`
+   - **Plan:** Free or Starter
+   - **Region:** Oregon or US
+
+6. **Add Environment Variables:**
+   ```
+   MONGO_URI=mongodb+srv://USER:PASSWORD@cluster.mongodb.net/axentralab
+   JWT_SECRET=your_unique_secret_key_min_32_chars
+   NODE_ENV=production
+   PORT=5000
+   STRIPE_SECRET_KEY=sk_test_xxxxx
+   OPENAI_API_KEY=sk-xxxxx
+   SENDGRID_API_KEY=SG.xxxxx (optional)
+   TELEGRAM_BOT_TOKEN=xxxxx (optional)
+   FRONTEND_URL=https://your-frontend-url.vercel.app
+   ```
+
+7. **Deploy** → Render auto-deploys on Git push
+
+**✅ Note:** `render.yaml` is already created in your project root. Render will use it automatically!
 
 ---
 
@@ -268,6 +291,12 @@ vercel
 ---
 
 ## 🐛 Troubleshooting
+
+### Render Build Failed - "npm" command shows help menu
+**Problem:** Build command is set to just `npm`  
+**Solution:** 
+- ✅ You now have `render.yaml` - Render will auto-use it
+- Alternatively, in Render UI set: **Build Command:** `npm install`
 
 ### Backend won't start
 ```bash
