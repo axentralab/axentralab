@@ -21,7 +21,7 @@ const api = axios.create({
 
 // ── Request interceptor: attach token ────────────────────────────────────────
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('ax_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -44,7 +44,8 @@ api.interceptors.response.use(
 
     // Unauthorized — token expired or invalid
     if (status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('ax_token');
+      localStorage.removeItem('ax_user');
       // Only redirect if not already on auth pages
       const authPages = ['/login', '/register'];
       if (!authPages.some(p => window.location.pathname.startsWith(p))) {
