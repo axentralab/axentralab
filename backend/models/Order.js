@@ -20,6 +20,10 @@ const orderSchema = new mongoose.Schema({
   stripeSessionId: { type: String, default: '' },
   notes:       { type: String, default: '' },
   invoiceUrl:  { type: String, default: '' },
+  referrer:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  referralCommission: { type: Number, default: 0 },
+  referralPercentage: { type: Number, default: 0 },
+  referralBounty: { type: Number, default: 0 },
 }, { timestamps: true });
 
 // Auto-generate order number

@@ -1,25 +1,51 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Referral = require('../models/Referral');
+const { v4: uuidv4 } = require('uuid');
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 
+const generateReferralCode = () => {
+  return uuidv4().slice(0, 12).toUpperCase();
+};
+
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, company } = req.body;
+    const { name, email, password, company, referralCode } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
 
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ success: false, message: 'Email already registered' });
 
-    const user = await User.create({ name, email, password, company });
+    // Create user with new referral code
+    const newReferralCode = generateReferralCode();
+    const user = await User.create({ name, email, password, company, referralCode: newReferralCode });
+    
+    // Handle referral if referralCode provided
+    let referralRecord = null;
+    if (referralCode && referralCode.trim()) {
+      const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+      if (referrer) {
+        referralRecord = await Referral.create({
+          referrer: referrer._id,
+          referee: user._id,
+          referralCode: referralCode.toUpperCase(),
+          referralLink: `${process.env.FRONTEND_URL || 'http://localhost:3000'}?ref=${referralCode.toUpperCase()}`,
+          refereeEmail: email,
+          status: 'activated',
+          activatedAt: new Date(),
+        });
+      }
+    }
+
     const token = signToken(user._id);
 
     res.status(201).json({
       success: true,
       token,
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role, company: user.company },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role, company: user.company, referralCode: newReferralCode },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

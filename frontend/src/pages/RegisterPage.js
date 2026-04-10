@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const REGISTER_BG_IMAGE =
@@ -18,10 +18,20 @@ const LOGOS = ['FinNova','BankCo','LearnLoop','Carrgo','Medify','Vaultify'];
 export default function RegisterPage() {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm]     = useState({ name:'', email:'', company:'', password:'', confirm:'' });
+  const [searchParams] = useSearchParams();
+  const [form, setForm]     = useState({ name:'', email:'', company:'', password:'', confirm:'', referralCode: '' });
   const [error, setError]   = useState('');
   const [showPw, setShowPw] = useState(false);
   const [showCf, setShowCf] = useState(false);
+  const [referralInfo, setReferralInfo] = useState(null);
+
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      setForm(prev => ({ ...prev, referralCode: refCode }));
+      setReferralInfo({ code: refCode, message: `✨ Registered with referral link!` });
+    }
+  }, [searchParams]);
 
   const strength = (() => {
     const p = form.password;
@@ -41,7 +51,7 @@ export default function RegisterPage() {
     setError('');
     if (form.password !== form.confirm) return setError('Passwords do not match.');
     if (form.password.length < 6)       return setError('Password must be at least 6 characters.');
-    const result = await register(form.name, form.email, form.password, form.company);
+    const result = await register(form.name, form.email, form.password, form.company, form.referralCode);
     if (result.success) navigate('/dashboard');
     else setError(result.message);
   };
@@ -219,6 +229,13 @@ export default function RegisterPage() {
               </p>
             </div>
 
+            {/* Referral Info */}
+            {referralInfo && (
+              <div style={{ background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.3)', borderRadius:12, padding:'12px 16px', marginBottom:20, fontSize:13, color:'#10B981', fontFamily:"'DM Sans',sans-serif", display:'flex', alignItems:'center', gap:8, animation:'fadeUp 0.3s ease' }}>
+                <span>🎁</span> {referralInfo.message}
+              </div>
+            )}
+
             {/* Error */}
             {error && (
               <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12, padding:'12px 16px', marginBottom:20, fontSize:13, color:'#EF4444', fontFamily:"'DM Sans',sans-serif", display:'flex', alignItems:'center', gap:8, animation:'fadeUp 0.3s ease' }}>
@@ -250,6 +267,15 @@ export default function RegisterPage() {
                 </label>
                 <input className="reg-input" type="text" placeholder="Acme Corp"
                   value={form.company} onChange={e => setForm({ ...form, company:e.target.value })} />
+              </div>
+
+              {/* Referral Code */}
+              <div>
+                <label style={{ display:'block', fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.32)', marginBottom:7, fontFamily:"'Space Mono',monospace", letterSpacing:1, textTransform:'uppercase' }}>
+                  Referral Code <span style={{ color:'rgba(255,255,255,0.18)', fontWeight:400, fontSize:10 }}>(optional)</span>
+                </label>
+                <input className="reg-input" type="text" placeholder="Enter referral code"
+                  value={form.referralCode} onChange={e => setForm({ ...form, referralCode:e.target.value })} disabled={!!searchParams.get('ref')} style={{ opacity: !!searchParams.get('ref') ? 0.6 : 1, cursor: !!searchParams.get('ref') ? 'not-allowed' : 'text' }} />
               </div>
 
               {/* Password */}
