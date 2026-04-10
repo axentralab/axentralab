@@ -3,6 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
+const LOGIN_BG_IMAGE =
+  process.env.REACT_APP_LOGIN_BG_IMAGE ||
+  'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1920&q=80';
+
 const FEATURES = [
   { icon: '🛡️', text: 'Enterprise-grade security on every project' },
   { icon: '⚡', text: 'Kick off within 24 hours of payment' },
@@ -93,7 +97,13 @@ export default function LoginPage() {
         .login-submit:hover:not(:disabled) { background:#16a34a; transform:translateY(-1px); box-shadow:0 8px 24px rgba(139,92,246,0.3); }
         .login-submit:disabled { opacity:0.6; cursor:not-allowed; }
         .feat-item { animation: fadeUp 0.5s ease both; }
-        .login-outer { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+        .login-outer {
+          position:relative;
+          min-height:100vh;
+          display:grid;
+          grid-template-columns:minmax(0,1.12fr) minmax(0,0.88fr);
+          overflow:hidden;
+        }
         @media (max-width:860px) {
           .login-outer { grid-template-columns:1fr !important; }
           .login-left  { display:none !important; }
@@ -110,17 +120,51 @@ export default function LoginPage() {
       `}</style>
 
       <div className="login-outer">
-        {/* Left panel */}
-        <div className="login-left" style={{ position: 'relative', background: '#06080F', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '48px 52px' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
+        {/* Left panel — photo bg only on this column */}
+        <div
+          className="login-left"
+          style={{
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            padding: '48px 52px',
+            borderRight: '1px solid rgba(139,92,246,0.12)',
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              backgroundImage: `url(${LOGIN_BG_IMAGE})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'left center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1,
+              background:
+                'linear-gradient(118deg, rgba(6,8,15,0.9) 0%, rgba(88,28,135,0.5) 50%, rgba(6,8,15,0.85) 100%)',
+              pointerEvents: 'none',
+            }}
+          />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundImage: 'linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 6s linear infinite', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480, zIndex: 2, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 65%)', pointerEvents: 'none', animation: 'glow 4s ease-in-out infinite' }} />
+          <div style={{ position: 'relative', zIndex: 3 }}>
             <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
               <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg,#8B5CF6,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#000', fontFamily: "'Sora',sans-serif" }}>A</div>
               <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 900, fontSize: 18, color: '#fff', letterSpacing: -0.3 }}>Axentralab</span>
             </Link>
           </div>
-          <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 0' }}>
+          <div style={{ position: 'relative', zIndex: 3, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 0' }}>
             <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: '32px 36px', width: '100%', maxWidth: 360, marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#8B5CF6', animation: 'pulse 2s infinite' }} />
@@ -140,7 +184,7 @@ export default function LoginPage() {
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>SOC 2 compliant · NDA on every deal</span>
             </div>
           </div>
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {FEATURES.map((f, i) => (
               <div key={i} className="feat-item" style={{ display: 'flex', alignItems: 'center', gap: 12, animationDelay: `${i * 0.1}s` }}>
                 <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{f.icon}</div>
@@ -151,8 +195,28 @@ export default function LoginPage() {
         </div>
 
         {/* Right: form */}
-        <div className="login-right" style={{ background: '#0A0D16', display: 'flex', alignItems: 'center', padding: 'clamp(40px,6vw,80px) clamp(24px,6vw,72px)' }}>
-          <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+        <div
+          className="login-right"
+          style={{
+            position: 'relative',
+            background: '#0A0D16',
+            display: 'flex',
+            alignItems: 'center',
+            padding: 'clamp(40px,6vw,80px) clamp(24px,6vw,72px)',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 420,
+              margin: '0 auto',
+              padding: 'clamp(22px,3vw,34px)',
+              borderRadius: 20,
+              border: '1px solid rgba(139,92,246,0.14)',
+              background: 'linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(10,13,22,0.5) 100%)',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)',
+            }}
+          >
             <div style={{ marginBottom: 36 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', borderRadius: 999, border: '1px solid rgba(139,92,246,0.2)', background: 'rgba(139,92,246,0.06)', marginBottom: 28 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8B5CF6', display: 'inline-block' }} />

@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const REGISTER_BG_IMAGE =
+  process.env.REACT_APP_REGISTER_BG_IMAGE ||
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80';
+
 const STEPS = [
   { icon:'📋', title:'Tell us about your project',  desc:'We scope it out and send a fixed-price proposal.' },
   { icon:'✍️', title:'Sign the contract + NDA',      desc:'E-sign in one click. Legally protected from day one.' },
@@ -74,11 +78,13 @@ export default function RegisterPage() {
         .step-item { transition:all 0.2s; }
         .step-item:hover { transform:translateX(4px); }
 
-        /* Layout */
+        /* Layout — wider form column vs login (inverted split) */
         .reg-outer {
+          position:relative;
           min-height:100vh;
           display:grid;
-          grid-template-columns:1fr 1fr;
+          grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);
+          overflow:hidden;
         }
         @media (max-width:900px) {
           .reg-outer { grid-template-columns:1fr !important; }
@@ -92,18 +98,52 @@ export default function RegisterPage() {
 
       <div className="reg-outer">
 
-        {/* ── LEFT VISUAL PANEL ── */}
-        <div className="reg-left" style={{ position:'relative', background:'#070B12', overflow:'hidden', display:'flex', flexDirection:'column', justifyContent:'space-between', padding:'48px 52px' }}>
+        {/* ── LEFT — image bg only on this column ── */}
+        <div
+          className="reg-left"
+          style={{
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            padding: '48px 52px',
+            borderRight: '1px solid rgba(59,130,246,0.14)',
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              backgroundImage: `url(${REGISTER_BG_IMAGE})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'left center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1,
+              background:
+                'linear-gradient(135deg, rgba(7,11,18,0.9) 0%, rgba(15,76,129,0.52) 50%, rgba(7,11,18,0.88) 100%)',
+              pointerEvents: 'none',
+            }}
+          />
 
           {/* diagonal stripe bg */}
-          <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(135deg,rgba(59,130,246,0.03) 0px,rgba(59,130,246,0.03) 1px,transparent 1px,transparent 28px)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', inset:0, zIndex:2, backgroundImage:'repeating-linear-gradient(135deg,rgba(59,130,246,0.03) 0px,rgba(59,130,246,0.03) 1px,transparent 1px,transparent 28px)', pointerEvents:'none' }} />
 
           {/* glow blobs */}
-          <div style={{ position:'absolute', top:'-5%', right:'-10%', width:420, height:420, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 65%)', animation:'glow 5s ease-in-out infinite', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', top:'-5%', right:'-10%', width:420, height:420, zIndex:2, borderRadius:'50%', background:'radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 65%)', animation:'glow 5s ease-in-out infinite', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', bottom:'10%', left:'-8%', width:300, height:300, zIndex:2, borderRadius:'50%', background:'radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)', pointerEvents:'none' }} />
 
           {/* Logo */}
-          <div style={{ position:'relative', zIndex:1 }}>
+          <div style={{ position:'relative', zIndex:3 }}>
             <Link to="/" style={{ display:'inline-flex', alignItems:'center', gap:10, textDecoration:'none' }}>
               <div style={{ width:38, height:38, borderRadius:11, background:'linear-gradient(135deg,#8B5CF6,#7C3AED)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:900, color:'#000', fontFamily:"'Sora',sans-serif" }}>A</div>
               <span style={{ fontFamily:"'Sora',sans-serif", fontWeight:900, fontSize:18, color:'#fff', letterSpacing:-0.3 }}>Axentralab</span>
@@ -111,7 +151,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Center headline + steps */}
-          <div style={{ position:'relative', zIndex:1, flex:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'36px 0' }}>
+          <div style={{ position:'relative', zIndex:3, flex:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'36px 0' }}>
             <div style={{ marginBottom:36 }}>
               <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(22px,3vw,32px)', fontWeight:900, color:'#fff', letterSpacing:-1, lineHeight:1.1, margin:'0 0 12px' }}>
                 From idea to launch —<br />
@@ -137,7 +177,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Bottom: client logos ticker */}
-          <div style={{ position:'relative', zIndex:1 }}>
+          <div style={{ position:'relative', zIndex:3 }}>
             <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,0.2)', letterSpacing:2, textTransform:'uppercase', marginBottom:12 }}>Trusted by</div>
             <div style={{ overflow:'hidden' }}>
               <div style={{ display:'flex', animation:'ticker 16s linear infinite', width:'max-content', gap:0 }}>
@@ -150,8 +190,29 @@ export default function RegisterPage() {
         </div>
 
         {/* ── RIGHT: REGISTER FORM ── */}
-        <div className="reg-right" style={{ background:'#0A0D16', display:'flex', alignItems:'center', padding:'clamp(40px,5vw,72px) clamp(24px,6vw,72px)', overflowY:'auto' }}>
-          <div style={{ width:'100%', maxWidth:440, margin:'0 auto' }}>
+        <div
+          className="reg-right"
+          style={{
+            position: 'relative',
+            background: '#0A0D16',
+            display: 'flex',
+            alignItems: 'center',
+            padding: 'clamp(40px,5vw,72px) clamp(24px,6vw,72px)',
+            overflowY: 'auto',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 460,
+              margin: '0 auto',
+              padding: 'clamp(22px,3vw,36px)',
+              borderRadius: 22,
+              border: '1px solid rgba(59,130,246,0.16)',
+              background: 'linear-gradient(200deg, rgba(59,130,246,0.07) 0%, rgba(10,13,22,0.55) 55%)',
+              boxShadow: '0 28px 90px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.05)',
+            }}
+          >
 
             {/* Header */}
             <div style={{ marginBottom:32 }}>
