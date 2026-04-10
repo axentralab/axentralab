@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   phone:    { type: String, default: '' },
   avatar:   { type: String, default: '' },
   stripeCustomerId: { type: String, default: '' },
+  referralCode: { type: String, unique: true, sparse: true, default: null },
+  referralEarnings: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 

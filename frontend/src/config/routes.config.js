@@ -37,6 +37,7 @@ export const ROUTES = {
     HOME: '/dashboard',
     ORDERS: '/dashboard/orders',
     PROFILE: '/dashboard/profile',
+    REFERRAL: '/referral',
   },
 
   // Admin routes

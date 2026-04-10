@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import ReferralPromoAd from '../components/ui/ReferralPromoAd';
 
 // ─── Design tokens (mirrors site palette) ────────────────────────────────────
 const GREEN  = '#8B5CF6';
@@ -948,6 +949,10 @@ export default function ServicesPage() {
             </div>
           )}
 
+          {/* ── REFERRAL PROMO ──────────────────────────────────────────────── */}
+          <div style={{ maxWidth: 1100, margin: '80px auto 0', padding: '0 20px' }}>
+            <ReferralPromoAd variant="vip" style={{ marginBottom: 40 }} />
+          </div>
         </div>
       </div>
     </>

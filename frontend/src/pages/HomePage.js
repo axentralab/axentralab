@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import TestimonialsSection from '../components/sections/TestimonialsSection';
 import ProcessSection from '../components/sections/ProcessSection';
 import BlogSection from '../components/sections/BlogSection';
+import ReferralTierComparison from '../components/sections/ReferralTierComparison';
+import { ReferralCtaBanner } from '../components/ui/ReferralPromoAd';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -866,7 +868,8 @@ export default function HomePage() {
 
       {/* ── BLOG SECTION ──────────────────────────────────────────────────── */}
       <BlogSection />
-
+      {/* ── REFERRAL TIER COMPARISON ──────────────────────────────────────── */}
+      <ReferralTierComparison />
       {/* ── MAIN CTA ─────────────────────────────────────────────────────── */}
       <section style={{ padding: '100px 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.08),transparent 65%)', pointerEvents: 'none' }} />

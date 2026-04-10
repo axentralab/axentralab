@@ -27,9 +27,30 @@ const referralSchema = new mongoose.Schema({
   },
   commissionPercentage: {
     type: Number,
-    default: 10, // 10% commission
+    default: 15, // 15% commission
+  },
+  tier: {
+    type: String,
+    enum: ['bronze', 'silver', 'gold', 'vip_elite'],
+    default: 'bronze',
+  },
+  tierName: {
+    type: String,
+    default: 'Bronze Partner',
+  },
+  bountyAmount: {
+    type: Number,
+    default: 0, // $200 for Gold/Elite high-ticket clients
+  },
+  isHighTicket: {
+    type: Boolean,
+    default: false, // True if order value >= $1000
   },
   commissionAmount: {
+    type: Number,
+    default: 0,
+  },
+  projectValue: {
     type: Number,
     default: 0,
   },

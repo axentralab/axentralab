@@ -37,7 +37,7 @@ export default function Footer() {
           { title: 'Services', links: [{ to:'/services', l:'AI Automation'},{to:'/services',l:'Cybersecurity'},{to:'/services',l:'Web Development'},{to:'/services',l:'DevOps'}] },
           { title: 'Products', links: [{to:'/products',l:'WP Shield'},{to:'/products',l:'SiteGuard'},{to:'/products',l:'API Scanner'}] },
           { title: 'Company',  links: [{to:'/portfolio',l:'Portfolio'},{to:'/blog',l:'Blog'},{to:'/careers',l:'Careers'},{to:'/contact',l:'Contact'}] },
-          { title: 'Account',  links: [{to:'/login',l:'Login'},{to:'/register',l:'Sign Up'},{to:'/dashboard',l:'Dashboard'},{to:'/cart',l:'Cart'}] },
+          { title: 'Account',  links: [{to:'/login',l:'Login'},{to:'/register',l:'Sign Up'},{to:'/dashboard',l:'Dashboard'},{to:'/referral',l:'Earn with Referral'},{to:'/cart',l:'Cart'}] },
         ].map(col => (
           <div key={col.title}>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 14 }}>{col.title}</div>
