@@ -27,7 +27,7 @@ const PROJECTS = [
       "Custom color system",
     ],
     liveUrl: "https://chaka-ride.vercel.app/en",
-    featured: true,
+    featured: false,
     isDemo: true,
   },
   {
@@ -46,7 +46,7 @@ const PROJECTS = [
       "Mobile-first design",
     ],
     liveUrl: "https://demo-com2.vercel.app/",
-    featured: true,
+    featured: false,
     isDemo: true,
   },
    {
@@ -61,7 +61,7 @@ const PROJECTS = [
     stack: ['Next.js 14', 'React', 'Tailwind CSS', 'Framer Motion', 'TypeScript'],
     results: ['Advanced search & filtering', 'Premium UI/UX micro-interactions', 'Fully responsive design'],
     liveUrl: 'https://food-xpress-gules.vercel.app', 
-    featured: true,
+    featured: false,
     isDemo: true,
   },
   {
@@ -144,7 +144,7 @@ const PROJECTS = [
       "Sales analytics with charts",
     ],
     liveUrl: "https://vagencys.vercel.app/",
-    featured: true,
+    featured: false,
     isDemo: true,
   },
   {
