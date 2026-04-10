@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import api from '../services/api';
 
-
+const HERO_BG_IMAGE = process.env.REACT_APP_CONTACT_HERO_BG_IMAGE || '/images/contact-hero-bg.png';
 
 const SERVICES = ['AI Automation','Web Development','Cybersecurity','DevOps & Cloud','SaaS Development','IT Consulting','Other'];
 const BUDGETS  = ['Under $5k','$5k – $15k','$15k – $50k','$50k+','Let\'s discuss'];
@@ -148,23 +148,27 @@ export default function ContactPage() {
 
         <div style={{ position:'relative', zIndex:1, maxWidth:1160, margin:'0 auto', padding:'0 clamp(16px,5%,5%)' }}>
 
-          {/* ── Page Header ── */}
-          <div style={{ textAlign:'center', marginBottom:'clamp(36px,6vw,64px)' }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:999, border:'1px solid rgba(139,92,246,0.25)', background:'rgba(139,92,246,0.06)', marginBottom:18 }}>
-              <span style={{ width:7, height:7, borderRadius:'50%', background:'#8B5CF6', display:'inline-block', animation:'blink 1.4s ease-in-out infinite' }} />
-              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#8B5CF6', letterSpacing:2, textTransform:'uppercase', fontWeight:700 }}>Secure Channel Open</span>
+          {/* ── HERO SECTION ── */}
+          <section style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, marginBottom: 56, padding: '56px 20px' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(100deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.72) 48%, rgba(6,8,15,0.9) 100%)' }} />
+            <div style={{ position: 'relative', zIndex: 2, textAlign:'center', marginBottom:'clamp(36px,6vw,64px)' }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 14px', borderRadius:999, border:'1px solid rgba(139,92,246,0.25)', background:'rgba(139,92,246,0.06)', marginBottom:18 }}>
+                <span style={{ width:7, height:7, borderRadius:'50%', background:'#8B5CF6', display:'inline-block', animation:'blink 1.4s ease-in-out infinite' }} />
+                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'#8B5CF6', letterSpacing:2, textTransform:'uppercase', fontWeight:700 }}>Secure Channel Open</span>
+              </div>
+              <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(32px,5.5vw,64px)', fontWeight:900, color:'#fff', letterSpacing:-2, lineHeight:1.05, margin:'0 0 16px' }}>
+                Let's Build<br />
+                <span style={{ WebkitTextStroke:'1px rgba(139,92,246,0.6)', color:'transparent' }}>Something</span>
+                {' '}<span style={{ color:'#8B5CF6' }}>Real</span>
+              </h1>
+              <p style={{ color:'rgba(255,255,255,0.38)', fontSize:15, maxWidth:400, margin:'0 auto', lineHeight:1.8, fontFamily:"'DM Sans',sans-serif" }}>
+                Tell us about your project. We respond within 24 hours with a tailored proposal — no generic templates.
+              </p>
             </div>
-            <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:'clamp(32px,5.5vw,64px)', fontWeight:900, color:'#fff', letterSpacing:-2, lineHeight:1.05, margin:'0 0 16px' }}>
-              Let's Build<br />
-              <span style={{ WebkitTextStroke:'1px rgba(139,92,246,0.6)', color:'transparent' }}>Something</span>
-              {' '}<span style={{ color:'#8B5CF6' }}>Real</span>
-            </h1>
-            <p style={{ color:'rgba(255,255,255,0.38)', fontSize:15, maxWidth:400, margin:'0 auto', lineHeight:1.8, fontFamily:"'DM Sans',sans-serif" }}>
-              Tell us about your project. We respond within 24 hours with a tailored proposal — no generic templates.
-            </p>
-          </div>
+          </section>
 
-          {/* ── Main Grid ── */}
+          {/* ── Main Content ── */}
           <div className="contact-main-grid">
 
             {/* ── LEFT PANEL ── */}

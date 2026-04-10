@@ -28,6 +28,7 @@ import CheckoutPage     from './pages/CheckoutPage';
 import DashboardPage    from './pages/DashboardPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminPage        from './pages/AdminPage';
+import ReferralPage     from './pages/ReferralPage';
 import NotFoundPage     from './pages/NotFoundPage';
 
 function ScrollToTop() {
@@ -84,6 +85,7 @@ export default function App() {
                 <Route path="/dashboard"         element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/dashboard/orders"  element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/dashboard/profile" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/referrals"         element={<ProtectedRoute><PublicLayout><ReferralPage /></PublicLayout></ProtectedRoute>} />
                 <Route path="/admin"        element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
                 <Route path="/admin/leads"  element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />
                 <Route path="/admin/orders" element={<AdminRoute><AppLayout><AdminPage /></AppLayout></AdminRoute>} />

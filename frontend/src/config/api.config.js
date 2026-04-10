@@ -58,6 +58,16 @@ export const API_ENDPOINTS = {
     HIGH_PRIORITY: '/leads/admin/high-priority',
     ANALYTICS: '/leads/admin/analytics',
   },
+
+  // Referrals
+  REFERRALS: {
+    GET_CODE: '/referrals/code',
+    GET_STATS: '/referrals/stats',
+    GET_HISTORY: '/referrals/history',
+    VERIFY: '/referrals/verify',
+    ALL: '/referrals/all',
+    COMPLETE: '/referrals/complete',
+  },
 };
 
 // Request timeout

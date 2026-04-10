@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+const HERO_BG_IMAGE = process.env.REACT_APP_TEAM_HERO_BG_IMAGE || '/images/team-hero-bg.png';
 
 const TEAM = [
   {
@@ -283,25 +284,29 @@ export default function TeamPage() {
       `}</style>
 
       {/* HERO */}
-      <div style={{ textAlign: 'center', marginBottom: 64, animation: 'fadeUp 0.6s ease both' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.07)', marginBottom: 24 }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8B5CF6', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#8B5CF6', letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>The People Behind the Work</span>
+      <section style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, marginBottom: 64, padding: '72px 20px' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${HERO_BG_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(100deg, rgba(5,10,20,0.9) 0%, rgba(5,10,20,0.72) 48%, rgba(5,10,20,0.9) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', animation: 'fadeUp 0.6s ease both' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', borderRadius: 999, border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.07)', marginBottom: 24 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8B5CF6', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+            <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: '#8B5CF6', letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>The People Behind the Work</span>
+          </div>
+          <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,5.5vw,68px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: -2.5, lineHeight: 1.04 }}>
+            Meet the{' '}
+            <span style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.3)' }}>Team</span>
+            <span style={{ color: '#8B5CF6' }}>.</span>
+          </h1>
+          <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(14px,1.8vw,18px)', color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 32px', lineHeight: 1.75 }}>
+            A tight-knit crew of engineers, security specialists and designers — united by one goal: shipping software that just works.
+          </p>
+          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {['🌏 Remote-first','⚡ Async by default','🔒 Security-obsessed','🚢 Ship fast, fix faster'].map((v, i) => (
+              <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontFamily: "'Space Mono',monospace" }}>{v}</span>
+            ))}
+          </div>
         </div>
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(32px,5.5vw,68px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: -2.5, lineHeight: 1.04 }}>
-          Meet the{' '}
-          <span style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.3)' }}>Team</span>
-          <span style={{ color: '#8B5CF6' }}>.</span>
-        </h1>
-        <p style={{ fontFamily: "'Sora',sans-serif", fontSize: 'clamp(14px,1.8vw,18px)', color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 32px', lineHeight: 1.75 }}>
-          A tight-knit crew of engineers, security specialists and designers — united by one goal: shipping software that just works.
-        </p>
-        <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {['🌏 Remote-first','⚡ Async by default','🔒 Security-obsessed','🚢 Ship fast, fix faster'].map((v, i) => (
-            <span key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontFamily: "'Space Mono',monospace" }}>{v}</span>
-          ))}
-        </div>
-      </div>
+      </section>
 
       {/* STATS BAR */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 80 }}>

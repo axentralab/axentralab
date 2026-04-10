@@ -30,6 +30,7 @@ export const ROUTES = {
     CART: '/cart',
     CHECKOUT: '/checkout',
     ORDER_SUCCESS: '/order-success',
+    REFERRALS: '/referrals',
   },
 
   // User dashboard

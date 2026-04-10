@@ -67,6 +67,7 @@ app.use('/api/quotes',   require('./routes/quotes'));
 app.use('/api/chatbot',  require('./routes/chatbot'));
 app.use('/api/newsletter', require('./routes/newsletter'));
 app.use('/api/blog',     require('./routes/blog'));
+app.use('/api/referrals', require('./routes/referrals'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));

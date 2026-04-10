@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const REGISTER_BG_IMAGE =
@@ -18,6 +18,8 @@ const LOGOS = ['FinNova','BankCo','LearnLoop','Carrgo','Medify','Vaultify'];
 export default function RegisterPage() {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get('ref') || searchParams.get('referral') || '';
   const [form, setForm]     = useState({ name:'', email:'', company:'', password:'', confirm:'' });
   const [error, setError]   = useState('');
   const [showPw, setShowPw] = useState(false);
@@ -41,7 +43,7 @@ export default function RegisterPage() {
     setError('');
     if (form.password !== form.confirm) return setError('Passwords do not match.');
     if (form.password.length < 6)       return setError('Password must be at least 6 characters.');
-    const result = await register(form.name, form.email, form.password, form.company);
+    const result = await register(form.name, form.email, form.password, form.company, referralCode);
     if (result.success) navigate('/dashboard');
     else setError(result.message);
   };
