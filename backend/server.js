@@ -56,8 +56,10 @@ app.use('/api/', limiter);
 
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-// Routes
-app.use('/api/auth',     require('./routes/auth'));
+// Routes - Use dev routes if MongoDB not connected
+const authRoutes = !process.env.MONGO_URI ? require('./routes/auth-dev') : require('./routes/auth');
+
+app.use('/api/auth',     authRoutes);
 app.use('/api/users',    require('./routes/users'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/orders',   require('./routes/orders'));
@@ -86,7 +88,17 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
+  console.log('\n' + '='.repeat(60));
   console.log(`🚀 Server running on port ${PORT}`);
+  
+  if (!process.env.MONGO_URI) {
+    console.log('📝 Using Development Auth (In-Memory Users)');
+    console.log('   ✅ Test Login: admin@axentralab.com / admin123!');
+  } else {
+    console.log('📦 Using MongoDB Authentication');
+  }
+  
+  console.log('='.repeat(60) + '\n');
   
   // Initialize AI Automation Scheduler
   if (process.env.ENABLE_AUTOMATION !== 'false') {
