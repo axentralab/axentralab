@@ -13,8 +13,12 @@
 
 import axios from 'axios';
 
+// Use hardcoded backend URL for development
+// In production, will be set via environment variable
+const API_URL = 'http://localhost:5000/api';
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: API_URL,
   withCredentials: true,
   timeout: 15000,
 });
