@@ -203,6 +203,25 @@ const PROJECTS = [
     liveUrl: "https://usaguidedtours.com/",
     featured: true,
     isDemo: true,
+  },
+  {
+    id: "d12",
+    title: "Bangladesh travel agency",
+    tag: "Tours / Agency",
+    category: "Live",
+    color: "#7594b1",
+    year: "2025",
+    thumbnail: "https://res.cloudinary.com/dwrlbuej9/image/upload/v1775874281/Screenshot_2026-04-11_082119_whfwkk.png",
+    desc: "Bangladesh base travel agency website demo — client portal, booking management system, sales analytics dashboard and inventory management system in one platform.",
+    stack: ["React", "Chart.js", "Node.js", "MongoDB", "JWT"],
+    results: [
+      "Client portal with booking updates",
+      "Booking management system",
+      "Sales analytics with charts",
+    ],
+    liveUrl: "https://cosmosholiday.com/",
+    featured: true,
+    isDemo: true,
   }
 ];
 
